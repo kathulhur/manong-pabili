@@ -37,7 +37,7 @@ const MapPage = () => {
     const [marker, setMarker] = useState<tt.Marker>(null)
     useEffect(() => {
         const map = tt.map({
-            key: 'OAMsA3S1SJAF6JXq9evV7VeNrj8jv3dy',
+            key: process.env.TOMTOM_API_KEY,
             container: 'map',
             center: [121.004995, 14.610395],
             zoom: 12,
