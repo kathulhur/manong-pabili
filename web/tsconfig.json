@@ -1,6 +1,7 @@
 {
   "compilerOptions": {
     "noEmit": true,
+    "checkJs": true,// recommended to be added by tomtom (https://developer.tomtom.com/maps-sdk-web-js/tutorials/advanced/use-typescript-type-annotations)
     "allowJs": true,
     "esModuleInterop": true,
     "target": "esnext",
