@@ -1,4 +1,5 @@
 import type { APIGatewayEvent, Context } from 'aws-lambda'
+import Pusher from 'pusher'
 
 import { logger } from 'src/lib/logger'
 
@@ -18,21 +19,35 @@ import { logger } from 'src/lib/logger'
  * @param { Context } context - contains information about the invocation,
  * function, and execution environment.
  */
-export const handler = async (event: APIGatewayEvent, _context: Context) => {
-  logger.info(`${event.httpMethod} ${event.path}: broadcast function`)
+export const pusher = new Pusher({
+    appId: process.env.PUSHER_APP_ID || '',
+    key: process.env.PUSHER_APP_KEY || '',
+    secret: process.env.PUSHER_APP_SECRET || '',
+    cluster: process.env.PUSHER_APP_CLUSTER || '',
+    useTLS: true,
+})
 
-  return {
-    statusCode: 200,
-    headers: {
-      'Content-Type': 'application/json',
-    },
-    body: JSON.stringify({
-      data: {
-        name: 'Manong Greg',
-        lng: 121.004995,
-        lat: 14.610395,
-        products: ['fishball', 'kikiam', 'kwek-kwek'],
-      },
-    }),
-  }
+export const handler = async (event: APIGatewayEvent, _context: Context) => {
+    logger.info(`${event.httpMethod} ${event.path}: broadcast function`)
+    {
+        if (event.httpMethod !== 'POST') {
+            return {
+                statusCode: 405,
+                body: 'Method Not Allowed',
+            }
+        }
+
+        const body = JSON.parse(event.body || '{}')
+        const { channel, event: eventName, data } = body
+
+        pusher.trigger(channel, eventName, {
+            message: data,
+        })
+        console.log(channel, eventName, data)
+
+        return {
+            statusCode: 200,
+            body: { success: true, message: 'Message sent' },
+        }
+    }
 }

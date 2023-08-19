@@ -1,25 +1,10 @@
-import { useEffect, useState } from 'react'
+import { useCallback, useEffect, useState } from 'react'
 
-import './style.css'
+import '@tomtom-international/web-sdk-maps/dist/maps.css'
 import tt from '@tomtom-international/web-sdk-maps'
+import Pusher from 'pusher-js'
 
-import { set } from '@redwoodjs/forms'
-import { Link, routes } from '@redwoodjs/router'
 import { MetaTags } from '@redwoodjs/web'
-
-const fetchLocation = async () => {
-    const response = await fetch(
-        'http://localhost:8910/.redwood/functions/broadcast'
-    )
-    const { data } = await response.json()
-    const { lat, lng, name, products } = data
-    return {
-        name,
-        products,
-        lng: parseFloat(lng),
-        lat: parseFloat(lat),
-    }
-}
 
 function buildPopupHtml({ name, products }) {
     return `
@@ -32,52 +17,81 @@ function buildPopupHtml({ name, products }) {
   `
 }
 
+const pusher = new Pusher(process.env.PUSHER_APP_KEY, {
+    cluster: process.env.PUSHER_APP_CLUSTER,
+})
+
+export const createMarker = ({
+    coordinates,
+    vendor: { id, name, products },
+}) => {
+    const marker = new tt.Marker().setLngLat(coordinates)
+    marker.setPopup(
+        new tt.Popup({ offset: 35 }).setHTML(buildPopupHtml({ name, products }))
+    )
+    marker.getElement().id = id
+    return marker
+}
+
 const MapPage = () => {
-    const [map, setMap] = useState(null)
-    const [marker, setMarker] = useState<tt.Marker>(null)
-    useEffect(() => {
-        const map = tt.map({
-            key: process.env.TOMTOM_API_KEY,
-            container: 'map',
-            center: [121.004995, 14.610395],
-            zoom: 12,
-        })
-        setMap(map)
+    const [map, setMap] = useState<tt.Map>(null)
+    const [markers, setMarkers] = useState<tt.Marker[]>([])
+
+    const mapRef = useCallback((node) => {
+        if (node !== null) {
+            const map = tt.map({
+                key: process.env.TOMTOM_API_KEY,
+                container: node,
+                center: [121.004995, 14.610395],
+                zoom: 12,
+            })
+            setMap(map)
+        }
     }, [])
 
-    const displayMarker = (name, products) => {
-        if (navigator.geolocation) {
-            navigator.geolocation.getCurrentPosition((position) => {
-                const { latitude, longitude } = position.coords
-                if (marker) {
-                    marker.remove()
-                }
-                const newMarker = new tt.Marker()
-                    .setLngLat([longitude, latitude])
-                    .addTo(map)
-                const popup = new tt.Popup({
-                    offset: 40,
-                }).setHTML(buildPopupHtml({ name, products }))
-                newMarker.setPopup(popup)
-                setMarker(newMarker)
+    useEffect(() => {
+        const channel = pusher.subscribe(process.env.PUSHER_CHANNEL)
+
+        channel.bind('location-broadcast', (data) => {
+            console.log(data)
+            const marker = createMarker(data.message)
+            // check if marker already exists, if it does, remove it, then add the new one
+            setMarkers([
+                ...markers.filter(
+                    (m) => m.getElement().id !== marker.getElement().id
+                ),
+                marker,
+            ])
+        })
+
+        return () => {
+            channel.unbind()
+            pusher.unsubscribe(process.env.PUSHER_CHANNEL)
+        }
+    }, [markers])
+
+    useEffect(() => {
+        if (!map) return
+        console.log(markers)
+        markers.forEach((marker) => {
+            marker.addTo(map)
+        })
+
+        return () => {
+            markers.forEach((marker) => {
+                marker.remove()
             })
         }
-    }
-
-    const addMarkerOnClick = async () => {
-        const { name, products } = await fetchLocation()
-        displayMarker(name, products)
-        setTimeout(() => {
-            console.log('adding marker')
-            addMarkerOnClick()
-        }, 2000)
-    }
+    }, [map, markers])
 
     return (
         <>
             <MetaTags title="Map" description="Map page" />
-            <button onClick={addMarkerOnClick}>Show my location</button>
-            <div id="map" style={{ width: '100%', height: '100vh' }}></div>
+            <div
+                id="map"
+                ref={mapRef}
+                style={{ width: '100%', height: '100vh' }}
+            ></div>
             <h1>Let the games begin</h1>
         </>
     )

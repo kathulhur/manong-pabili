@@ -1,5 +1,3 @@
-import { useState } from 'react'
-
 import type { DashboardProductsQuery } from 'types/graphql'
 
 import { Link, routes } from '@redwoodjs/router'
@@ -40,13 +38,14 @@ const UPDATE_PRODUCT_MUTATION = gql`
 
 export const Success = ({
     dashboardProducts,
-}: CellSuccessProps<DashboardProductsQuery>) => {
+    userId,
+}: CellSuccessProps<DashboardProductsQuery> & { userId: number }) => {
     return (
         <>
             <ul>
                 {dashboardProducts.map((product) => (
                     <li key={product.id}>
-                        <DashboardProduct product={product} />
+                        <DashboardProduct product={product} userId={userId} />
                     </li>
                 ))}
             </ul>
@@ -57,13 +56,11 @@ export const Success = ({
 
 const DashboardProduct = ({
     product,
+    userId,
 }: {
     product: DashboardProductsQuery['dashboardProducts'][number]
+    userId: number
 }) => {
-    const [isProductAvailable, setIsProductAvailable] = useState(
-        product.availability
-    )
-
     const [updateProduct] = useMutation(UPDATE_PRODUCT_MUTATION, {
         onError: (error) => {
             toast.error('Error updating product availability')
@@ -73,7 +70,7 @@ const DashboardProduct = ({
             toast.success('Product availability updated')
             console.log('Product updated')
         },
-        refetchQueries: [{ query: QUERY }],
+        refetchQueries: [{ query: QUERY, variables: { userId } }],
     })
 
     const updateProductAvailability = (id: number, availability: boolean) => {
@@ -90,7 +87,6 @@ const DashboardProduct = ({
     const productAvailabilityButtonHandler = () => {
         try {
             updateProductAvailability(product.id, product.availability)
-            setIsProductAvailable(!isProductAvailable)
         } catch (error) {
             alert('Error updating product availability')
             console.log(error)
@@ -104,7 +100,7 @@ const DashboardProduct = ({
                     type="button"
                     onClick={productAvailabilityButtonHandler}
                 >
-                    {isProductAvailable ? 'Available' : 'Unavailable'}
+                    {product.availability ? 'Available' : 'Unavailable'}
                 </button>
             </div>
         </div>

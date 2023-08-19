@@ -17,6 +17,7 @@
     "@redwoodjs/web": "6.1.0",
     "@tomtom-international/web-sdk-maps": "^6.23.0",
     "prop-types": "15.8.1",
+    "pusher-js": "^8.3.0",
     "react": "18.2.0",
     "react-dom": "18.2.0"
   },

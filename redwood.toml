@@ -12,7 +12,10 @@
   includeEnvironmentVariables = [
     # Add any ENV vars that should be available to the web side to this array
     # See https://redwoodjs.com/docs/environment-variables#web
-    ['TOMTOM_API_KEY']
+    'TOMTOM_API_KEY',
+    'PUSHER_APP_KEY',
+    'PUSHER_APP_CLUSTER',
+    'PUSHER_CHANNEL'
   ]
 [api]
   port = 8911
