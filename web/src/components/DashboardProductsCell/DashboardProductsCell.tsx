@@ -1,5 +1,10 @@
+import { useState } from 'react'
+
+import { Props } from 'react-modal'
+import Modal from 'react-modal'
 import type { DashboardProductsQuery } from 'types/graphql'
 
+import { FieldError, Form, Label, Submit, TextField } from '@redwoodjs/forms'
 import { Link, routes } from '@redwoodjs/router'
 import {
     type CellSuccessProps,
@@ -16,6 +21,16 @@ export const QUERY = gql`
         }
     }
 `
+
+const CREATE_PRODUCT_MUTATION = gql`
+    mutation CreateProductMutation($input: CreateProductInput!) {
+        createProduct(input: $input) {
+            id
+        }
+    }
+`
+
+Modal.setAppElement('#redwood-app')
 
 export const Loading = () => <div>Loading...</div>
 
@@ -40,8 +55,48 @@ export const Success = ({
     dashboardProducts,
     userId,
 }: CellSuccessProps<DashboardProductsQuery> & { userId: number }) => {
+    const [isCreateProductModalOpen, setIsCreateProductModalOpen] =
+        useState(false)
+
+    const [createProduct] = useMutation(CREATE_PRODUCT_MUTATION, {
+        onError: (error) => {
+            alert('Error creating product')
+            console.log(error)
+        },
+        onCompleted: () => {
+            alert('Product created')
+            setIsCreateProductModalOpen(false)
+        },
+        refetchQueries: [{ query: QUERY, variables: { userId } }],
+    })
+
+    const onCreateProductModalSubmit = (data: { name: string }) => {
+        createProduct({
+            variables: {
+                input: {
+                    name: data.name,
+                    availability: false,
+                    userId,
+                },
+            },
+        })
+    }
+
     return (
         <>
+            <button
+                type="button"
+                onClick={() =>
+                    setIsCreateProductModalOpen(!isCreateProductModalOpen)
+                }
+            >
+                Add Product
+            </button>
+            <CreateProductModal
+                onRequestClose={() => setIsCreateProductModalOpen(false)}
+                isOpen={isCreateProductModalOpen}
+                onSubmit={onCreateProductModalSubmit}
+            />
             <ul>
                 {dashboardProducts.map((product) => (
                     <li key={product.id}>
@@ -104,5 +159,36 @@ const DashboardProduct = ({
                 </button>
             </div>
         </div>
+    )
+}
+
+const CreateProductModal = ({
+    isOpen,
+    onRequestClose,
+    onSubmit,
+    id,
+}: Props & { onSubmit: (data: any) => void }) => {
+    const [name, setName] = useState('')
+
+    return (
+        <Modal
+            id={id}
+            isOpen={isOpen}
+            onRequestClose={onRequestClose}
+            contentLabel="Add Product"
+        >
+            <Form onSubmit={onSubmit}>
+                <Label name="name" className="label" errorClassName="error" />
+                <TextField
+                    name="name"
+                    value={name}
+                    onChange={(e) => setName(e.target.value)}
+                    validation={{ required: true }}
+                />
+                <FieldError name="name" className="error-message" />
+
+                <Submit className="button">Add Product</Submit>
+            </Form>
+        </Modal>
     )
 }

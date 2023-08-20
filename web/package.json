@@ -16,10 +16,12 @@
     "@redwoodjs/router": "6.1.0",
     "@redwoodjs/web": "6.1.0",
     "@tomtom-international/web-sdk-maps": "^6.23.0",
+    "@types/react-modal": "^3.16.0",
     "prop-types": "15.8.1",
     "pusher-js": "^8.3.0",
     "react": "18.2.0",
-    "react-dom": "18.2.0"
+    "react-dom": "18.2.0",
+    "react-modal": "^3.16.1"
   },
   "devDependencies": {
     "@redwoodjs/vite": "6.1.0"
