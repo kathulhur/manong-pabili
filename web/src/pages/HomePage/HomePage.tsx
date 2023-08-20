@@ -220,7 +220,9 @@ const HomePage = () => {
             <button type="button" onClick={logOut}>
                 Log Out
             </button>
-            <h1>Magandang Araw, Mang {currentUser?.username}</h1>
+            <h1 className="font-bold">
+                Magandang Araw, Mang {currentUser?.username}
+            </h1>
             <div>
                 <h2>Mga Produkto</h2>
             </div>
