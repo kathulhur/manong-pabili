@@ -16,6 +16,20 @@ const pusher = new Pusher(process.env.PUSHER_APP_KEY, {
     cluster: process.env.PUSHER_APP_CLUSTER,
 })
 
+async function getCurrentPositionAsync(options) {
+    return new Promise<GeolocationPosition>((resolve, reject) => {
+        navigator.geolocation.getCurrentPosition(
+            (position) => {
+                resolve(position)
+            },
+            (error) => {
+                reject(error)
+            },
+            options
+        )
+    })
+}
+
 const HomePage = () => {
     const { isAuthenticated, currentUser, logOut, loading } = useAuth()
     const [isLocationShown, setIsLocationShown] = useState(false)
@@ -24,6 +38,27 @@ const HomePage = () => {
     const [position, setPosition] = useState<GeolocationCoordinates>(null)
     const [map, setMap] = useState<tt.Map>(null)
     const [isPageVisible, setIsPageVisible] = useState(true)
+
+    useEffect(() => {
+        const channel = pusher.subscribe(process.env.PUSHER_CHANNEL)
+        channel.bind('location-broadcast', ({vendor}) => {
+            const marker = createMarker(vendor)
+            // check if marker already exists, if it does, remove it, then add the new one
+            setMarkers([
+                ...markers.filter(
+                    (m) => m.getElement().id !== marker.getElement().id
+                ),
+                marker,
+            ])
+        })
+
+        return () => {
+            channel.unbind('location-broadcast')
+            pusher.unsubscribe(process.env.PUSHER_CHANNEL)
+        }
+    })
+
+
     useEffect(() => {
         const handleVisibilityChange = () => {
             setIsPageVisible(!document.hidden)
@@ -51,7 +86,6 @@ const HomePage = () => {
                 zoom: 12,
             })
             setMap(map)
-            console.log('hey')
         }
     }, [])
 
@@ -71,21 +105,7 @@ const HomePage = () => {
                     body: JSON.stringify({
                         channel: process.env.PUSHER_CHANNEL,
                         event: 'location-broadcast',
-                        data: {
-                            coordinates: [
-                                position.coords.longitude,
-                                position.coords.latitude,
-                            ],
-                            vendor: {
-                                id: currentUser?.id,
-                                name: currentUser?.username,
-                                products: [
-                                    'Chicken Joy',
-                                    'Spaghetti',
-                                    'Burger Steak',
-                                ],
-                            },
-                        },
+                        vendor: currentUser
                     }),
                 }
             )
@@ -125,30 +145,10 @@ const HomePage = () => {
         }
     }, [isPageVisible, isRealTime, broadcastLocation, isLocationShown])
 
-    useEffect(() => {
-        const channel = pusher.subscribe(process.env.PUSHER_CHANNEL)
 
-        channel.bind('location-broadcast', (data) => {
-            console.log(data)
-            const marker = createMarker(data.message)
-            // check if marker already exists, if it does, remove it, then add the new one
-            setMarkers([
-                ...markers.filter(
-                    (m) => m.getElement().id !== marker.getElement().id
-                ),
-                marker,
-            ])
-        })
-
-        return () => {
-            channel.unbind()
-            pusher.unsubscribe(process.env.PUSHER_CHANNEL)
-        }
-    }, [markers])
 
     useEffect(() => {
         if (!map) return
-        console.log(markers)
         markers.forEach((marker) => {
             marker.addTo(map)
         })
@@ -185,19 +185,7 @@ const HomePage = () => {
         broadcastLocation()
     }
 
-    async function getCurrentPositionAsync(options) {
-        return new Promise<GeolocationPosition>((resolve, reject) => {
-            navigator.geolocation.getCurrentPosition(
-                (position) => {
-                    resolve(position)
-                },
-                (error) => {
-                    reject(error)
-                },
-                options
-            )
-        })
-    }
+
 
     const focusLocationButtonHandler = () => {
         if (!map) return

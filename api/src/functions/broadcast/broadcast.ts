@@ -1,8 +1,8 @@
 import type { APIGatewayEvent, Context } from 'aws-lambda'
 import Pusher from 'pusher'
+import { db } from 'src/lib/db'
 
 import { logger } from 'src/lib/logger'
-
 /**
  * The handler function is your code that processes http request events.
  * You can use return and throw to send a response or error, respectively.
@@ -38,12 +38,18 @@ export const handler = async (event: APIGatewayEvent, _context: Context) => {
         }
 
         const body = JSON.parse(event.body || '{}')
-        const { channel, event: eventName, data } = body
+        const { channel, event: eventName, vendor } = body
+
+        await db.user.update({
+            where: { id: vendor.id },
+            data: { longitude: vendor.longitude, latitude: vendor.latitude },
+        })
 
         pusher.trigger(channel, eventName, {
-            message: data,
+            vendor,
         })
-        console.log(channel, eventName, data)
+
+        console.log(channel, eventName, vendor)
 
         return {
             statusCode: 200,

@@ -21,6 +21,8 @@ model User {
   resetToken          String?
   resetTokenExpiresAt DateTime?
   products            Product[]
+  latitude            Float?
+  longitude           Float?
 }
 
 model Product {
