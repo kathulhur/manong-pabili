@@ -5,6 +5,7 @@ import Pusher from 'pusher-js'
 
 import { MetaTags, useQuery } from '@redwoodjs/web'
 import { User } from 'types/graphql'
+import { set } from '@redwoodjs/forms'
 
 const VENDORS_QUERY = gql`
     query VendorsQuery {
@@ -33,9 +34,6 @@ function buildPopupHtml({ name, products }) {
   `
 }
 
-const pusher = new Pusher(process.env.PUSHER_APP_KEY, {
-    cluster: process.env.PUSHER_APP_CLUSTER,
-})
 
 export const createMarker = (vendor: User) => {
     const marker = new tt.Marker().setLngLat([vendor.longitude, vendor.latitude])
@@ -52,10 +50,13 @@ const MapPage = () => {
     const {data}= useQuery(VENDORS_QUERY)
     const [vendors, setVendors] = useState<User[]>([])
 
-    // subscribe to pusher channel
     useEffect(() => {
+        console.log("Intializing pusher")
+        const pusher = new Pusher(process.env.PUSHER_APP_KEY, {
+            cluster: process.env.PUSHER_APP_CLUSTER,
+        })
+
         const channel = pusher.subscribe(process.env.PUSHER_CHANNEL)
-        console.log("subscribing")
         channel.bind('location-broadcast', ({vendor}: {vendor: User}) => {
             console.log("location-broadcast")
             // check if marker already exists, if it does, update it, else add it as a new one
@@ -72,8 +73,8 @@ const MapPage = () => {
         })
 
         return () => {
-            channel.unbind('location-broadcast')
-            pusher.unsubscribe(process.env.PUSHER_CHANNEL)
+            console.log('disconnecting...')
+            pusher.disconnect()
         }
     }, [])
 

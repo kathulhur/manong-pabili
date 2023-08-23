@@ -12,9 +12,6 @@ import DashboardProductsCell from 'src/components/DashboardProductsCell'
 
 import { createMarker } from '../MapPage/MapPage'
 
-const pusher = new Pusher(process.env.PUSHER_APP_KEY, {
-    cluster: process.env.PUSHER_APP_CLUSTER,
-})
 
 async function getCurrentPositionAsync(options) {
     return new Promise<GeolocationPosition>((resolve, reject) => {
@@ -40,6 +37,10 @@ const HomePage = () => {
     const [isPageVisible, setIsPageVisible] = useState(true)
 
     useEffect(() => {
+        console.log('Intializing pusher')
+        const pusher = new Pusher(process.env.PUSHER_APP_KEY, {
+            cluster: process.env.PUSHER_APP_CLUSTER,
+        })
         const channel = pusher.subscribe(process.env.PUSHER_CHANNEL)
         channel.bind('location-broadcast', ({vendor}) => {
             const marker = createMarker(vendor)
@@ -53,10 +54,13 @@ const HomePage = () => {
         })
 
         return () => {
-            channel.unbind('location-broadcast')
-            pusher.unsubscribe(process.env.PUSHER_CHANNEL)
+            console.log('disconnecting...')
+            pusher.disconnect()
         }
-    })
+    }, [])
+
+
+
 
 
     useEffect(() => {
@@ -97,7 +101,6 @@ const HomePage = () => {
                 maximumAge: 1000,
             })
             setPosition(position.coords)
-            console.log(position)
             const response = await fetch(
                 'http://localhost:8910/.redwood/functions/broadcast',
                 {
@@ -105,12 +108,17 @@ const HomePage = () => {
                     body: JSON.stringify({
                         channel: process.env.PUSHER_CHANNEL,
                         event: 'location-broadcast',
-                        vendor: currentUser
+                        vendor: {
+                            id: currentUser.id,
+                            username: currentUser.username,
+                            products: currentUser.products,
+                            longitude: position.coords.longitude,
+                            latitude: position.coords.latitude,
+                        }
                     }),
                 }
             )
             const data = await response.json()
-            console.log(data)
         } catch (err) {
             console.log(err)
             if (err.code === 1) {
