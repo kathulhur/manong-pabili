@@ -111,6 +111,9 @@ export const handler = async (
         handler: ({ username, hashedPassword, salt, userAttributes }) => {
             return db.user.create({
                 data: {
+                    name: userAttributes?.name,
+                    mobileNumber: userAttributes?.mobileNumber,
+                    role: userAttributes?.role,
                     username: username,
                     hashedPassword: hashedPassword,
                     salt: salt,

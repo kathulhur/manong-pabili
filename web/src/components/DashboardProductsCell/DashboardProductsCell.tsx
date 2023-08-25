@@ -1,17 +1,16 @@
 import { useState } from 'react'
-
-import { Props } from 'react-modal'
-import Modal from 'react-modal'
-import type { DashboardProductsQuery } from 'types/graphql'
-
-import { FieldError, Form, Label, Submit, TextField } from '@redwoodjs/forms'
+import type { CreateProductInput, DashboardProductsQuery } from 'types/graphql'
 import { Link, routes } from '@redwoodjs/router'
 import {
     type CellSuccessProps,
     type CellFailureProps,
     useMutation,
 } from '@redwoodjs/web'
-import { toast } from '@redwoodjs/web/dist/toast'
+import DashboardProduct from '../DashboardProduct/DashboardProduct'
+import CreateProductModal from '../Modals/CreateProductModal'
+import { useAuth } from 'src/auth'
+
+
 export const QUERY = gql`
     query DashboardProductsQuery($userId: Int!) {
         dashboardProducts: productsByUser(userId: $userId) {
@@ -30,31 +29,15 @@ const CREATE_PRODUCT_MUTATION = gql`
     }
 `
 
-Modal.setAppElement('#redwood-app')
+
+
+
 
 export const Loading = () => <div>Loading...</div>
 
-export const Empty = () => <div>Empty</div>
+export const Empty = () => {
+    const { currentUser } = useAuth()
 
-export const Failure = ({ error }: CellFailureProps) => (
-    <div style={{ color: 'red' }}>Error: {error?.message}</div>
-)
-
-const UPDATE_PRODUCT_MUTATION = gql`
-    mutation UpdateProductAvailabilityMutation(
-        $id: Int!
-        $input: UpdateProductInput!
-    ) {
-        updateProduct(id: $id, input: $input) {
-            id
-        }
-    }
-`
-
-export const Success = ({
-    dashboardProducts,
-    userId,
-}: CellSuccessProps<DashboardProductsQuery> & { userId: number }) => {
     const [isCreateProductModalOpen, setIsCreateProductModalOpen] =
         useState(false)
 
@@ -67,23 +50,24 @@ export const Success = ({
             alert('Product created')
             setIsCreateProductModalOpen(false)
         },
-        refetchQueries: [{ query: QUERY, variables: { userId } }],
+        refetchQueries: [{ query: QUERY, variables: { userId: currentUser?.id } }],
     })
 
-    const onCreateProductModalSubmit = (data: { name: string }) => {
-        createProduct({
-            variables: {
-                input: {
-                    name: data.name,
-                    availability: false,
-                    userId,
-                },
-            },
-        })
+    const onCreateProductModalSubmit = async (input: CreateProductInput) => {
+        try {
+            await createProduct({
+                variables: {
+                    input,
+                }
+            });
+        } catch (error) {
+            console.log(error)
+            alert('Error creating product')
+        }
     }
 
-    return (
-        <>
+    return <>
+        <div>
             <button
                 type="button"
                 onClick={() =>
@@ -93,102 +77,85 @@ export const Success = ({
                 Add Product
             </button>
             <CreateProductModal
-                onRequestClose={() => setIsCreateProductModalOpen(false)}
                 isOpen={isCreateProductModalOpen}
+                onClose={() => setIsCreateProductModalOpen(false)}
                 onSubmit={onCreateProductModalSubmit}
             />
-            <ul>
-                {dashboardProducts.map((product) => (
-                    <li key={product.id}>
-                        <DashboardProduct product={product} userId={userId} />
-                    </li>
-                ))}
-            </ul>
-            <Link to={routes.products()}>visit products page</Link>
-        </>
-    )
+            <p></p>Empty
+
+        </div>
+    </>
 }
 
-const DashboardProduct = ({
-    product,
-    userId,
-}: {
-    product: DashboardProductsQuery['dashboardProducts'][number]
-    userId: number
-}) => {
-    const [updateProduct] = useMutation(UPDATE_PRODUCT_MUTATION, {
+export const Failure = ({ error }: CellFailureProps) => (
+    <div style={{ color: 'red' }}>Error: {error?.message}</div>
+)
+
+
+export const Success = ({
+    dashboardProducts,
+}: CellSuccessProps<DashboardProductsQuery>) => {
+    const { currentUser } = useAuth()
+    const [isCreateProductModalOpen, setIsCreateProductModalOpen] =
+        useState(false)
+
+    const [createProduct] = useMutation(CREATE_PRODUCT_MUTATION, {
         onError: (error) => {
-            toast.error('Error updating product availability')
+            alert('Error creating product')
             console.log(error)
         },
         onCompleted: () => {
-            toast.success('Product availability updated')
-            console.log('Product updated')
+            alert('Product created')
+            setIsCreateProductModalOpen(false)
         },
-        refetchQueries: [{ query: QUERY, variables: { userId } }],
+        refetchQueries: [{ query: QUERY, variables: { userId: currentUser?.id } }],
     })
 
-    const updateProductAvailability = (id: number, availability: boolean) => {
-        updateProduct({
-            variables: {
-                id,
-                input: {
-                    availability: !availability,
-                },
-            },
-        })
-    }
-
-    const productAvailabilityButtonHandler = () => {
+    const onCreateProductModalSubmit = async (input: CreateProductInput) => {
         try {
-            updateProductAvailability(product.id, product.availability)
+            await createProduct({
+                variables: {
+                    input,
+                }
+            });
         } catch (error) {
-            alert('Error updating product availability')
             console.log(error)
+            alert('Error creating product')
         }
     }
+
     return (
-        <div>
-            <div>
-                <span>{product.name}</span>
+        <div className='my-8'>
+            <div className='flex justify-between'>
+                <h2 className='font-semibold text-lg'>Mga Produkto</h2>
                 <button
+                    className='border py-2 px-4 rounded-md'
                     type="button"
-                    onClick={productAvailabilityButtonHandler}
-                >
-                    {product.availability ? 'Available' : 'Unavailable'}
+                    onClick={() =>
+                        setIsCreateProductModalOpen(!isCreateProductModalOpen)
+                    }
+                    >
+                    Add Product
                 </button>
-            </div>
-        </div>
-    )
-}
-
-const CreateProductModal = ({
-    isOpen,
-    onRequestClose,
-    onSubmit,
-    id,
-}: Props & { onSubmit: (data: any) => void }) => {
-    const [name, setName] = useState('')
-
-    return (
-        <Modal
-            id={id}
-            isOpen={isOpen}
-            onRequestClose={onRequestClose}
-            contentLabel="Add Product"
-        >
-            <Form onSubmit={onSubmit}>
-                <Label name="name" className="label" errorClassName="error" />
-                <TextField
-                    name="name"
-                    value={name}
-                    onChange={(e) => setName(e.target.value)}
-                    validation={{ required: true }}
+                <CreateProductModal
+                    isOpen={isCreateProductModalOpen}
+                    onClose={() => setIsCreateProductModalOpen(false)}
+                    onSubmit={onCreateProductModalSubmit}
                 />
-                <FieldError name="name" className="error-message" />
-
-                <Submit className="button">Add Product</Submit>
-            </Form>
-        </Modal>
+            </div>
+            <ul className='my-8'>
+                {dashboardProducts.map((product) => (
+                    <li key={product.id} className='my-4'>
+                        <DashboardProduct product={product} />
+                    </li>
+                ))}
+            </ul>
+            <Link
+                className='border py-2 px-4 rounded-md'
+                to={routes.products()}
+            >
+                visit products page
+            </Link>
+        </div>
     )
 }

@@ -11,7 +11,7 @@ import { useAuth } from 'src/auth'
 import DashboardProductsCell from 'src/components/DashboardProductsCell'
 
 import { createMarker } from '../MapPage/MapPage'
-
+import VendorProfileModal from 'src/components/Modals/VendorProfileModal'
 
 async function getCurrentPositionAsync(options) {
     return new Promise<GeolocationPosition>((resolve, reject) => {
@@ -28,13 +28,16 @@ async function getCurrentPositionAsync(options) {
 }
 
 const HomePage = () => {
-    const { isAuthenticated, currentUser, logOut, loading } = useAuth()
+    const { isAuthenticated, currentUser, loading } = useAuth()
     const [isLocationShown, setIsLocationShown] = useState(false)
     const [isRealTime, setIsRealTime] = useState(false)
     const [markers, setMarkers] = useState<tt.Marker[]>([])
     const [position, setPosition] = useState<GeolocationCoordinates>(null)
     const [map, setMap] = useState<tt.Map>(null)
     const [isPageVisible, setIsPageVisible] = useState(true)
+    const [isVendorProfileModalOpen, setIsVendorProfileModalOpen] = useState(
+        false
+    )
 
     useEffect(() => {
         console.log('Intializing pusher')
@@ -58,9 +61,6 @@ const HomePage = () => {
             pusher.disconnect()
         }
     }, [])
-
-
-
 
 
     useEffect(() => {
@@ -109,9 +109,9 @@ const HomePage = () => {
                         channel: process.env.PUSHER_CHANNEL,
                         event: 'location-broadcast',
                         vendor: {
-                            id: currentUser.id,
-                            username: currentUser.username,
-                            products: currentUser.products,
+                            id: currentUser?.id,
+                            username: currentUser?.username,
+                            products: currentUser?.products,
                             longitude: position.coords.longitude,
                             latitude: position.coords.latitude,
                         }
@@ -211,30 +211,50 @@ const HomePage = () => {
     }
 
     return (
-        <>
+        <div
+            className='max-w-7xl mx-auto p-8'
+        >
             <MetaTags title="Home" description="Home page" />
-            <button type="button" onClick={logOut}>
-                Log Out
-            </button>
-            <h1 className="font-bold">
+            <div className='flex justify-between'>
+                <h1>Manong Pabili</h1>
+                <button
+                    className='border py-2 px-4 rounded-md'
+                    type="button"
+                    onClick={() => setIsVendorProfileModalOpen(true)}
+                >
+                    Vendor Profile
+                </button>
+                <VendorProfileModal
+                    isOpen={isVendorProfileModalOpen}
+                    onClose={() => setIsVendorProfileModalOpen(false)}
+                />
+            </div>
+            <h1 className="font-bold text-2xl">
                 Magandang Araw, Mang {currentUser?.username}
             </h1>
-            <div>
-                <h2>Mga Produkto</h2>
-            </div>
-            <DashboardProductsCell userId={currentUser.id} />
-            <div>
-                <h2>Broadcast mode</h2>
-                <button type="button" onClick={realTimeModeButtonHandler}>
+
+            <DashboardProductsCell userId={currentUser?.id} />
+            <div className='my-8'>
+                <h2 className='font-semibold text-lg'>Broadcast mode</h2>
+                <button
+                    className='border py-2 px-4 rounded-md'
+                    type="button"
+                    onClick={realTimeModeButtonHandler}
+                >
                     RealTime
                 </button>
-                <button type="button" onClick={manualModeButtonHandler}>
+                <button
+                    className='border py-2 px-4 rounded-md'
+                    type="button"
+                    onClick={manualModeButtonHandler}
+                >
                     Manual
                 </button>
             </div>
             <section>
-                <h2>Your Location</h2>
+                <h2 className='font-semibold text-lg'>Your Location</h2>
                 <button
+                    className='border py-2 px-4 rounded-md'
                     type="button"
                     disabled={!isLocationShown}
                     onClick={focusLocationButtonHandler}
@@ -243,6 +263,7 @@ const HomePage = () => {
                 </button>
                 {!isRealTime && (
                     <button
+                        className='border py-2 px-4 rounded-md'
                         type="button"
                         disabled={!isLocationShown || isRealTime}
                         onClick={updateLocationButtonHandler}
@@ -271,15 +292,21 @@ const HomePage = () => {
                     Your location is hidden
                 </div>
                 <div>
-                    <button type="button" onClick={showLocationButtonHandler}>
+                    <button
+                        className='border py-2 px-4 rounded-md'
+                        type="button"
+                        onClick={showLocationButtonHandler}>
                         Show my location
                     </button>
-                    <button type="button" onClick={hideLocationButtonHandler}>
+                    <button
+                        className='border py-2 px-4 rounded-md'
+                        type="button"
+                        onClick={hideLocationButtonHandler}>
                         Hide my location
                     </button>
                 </div>
             </section>
-        </>
+        </div>
     )
 }
 

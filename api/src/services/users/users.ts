@@ -5,6 +5,8 @@ import type {
 } from "types/graphql";
 
 import { db } from "src/lib/db";
+import { hashPassword } from "@redwoodjs/auth-dbauth-api";
+import { validate, validateWith, validateWithSync } from "@redwoodjs/api";
 
 export const users: QueryResolvers["users"] = () => {
   return db.user.findMany();
@@ -30,13 +32,32 @@ export const updateUser: MutationResolvers["updateUser"] = ({ id, input }) => {
 };
 
 export const deleteUser: MutationResolvers["deleteUser"] = ({ id }) => {
-  return db.user.delete({
-    where: { id },
-  });
+    return db.user.delete({
+      where: { id },
+    })
+
 };
+
 
 export const User: UserRelationResolvers = {
   products: (_obj, { root }) => {
     return db.user.findUnique({ where: { id: root?.id } }).products();
   },
 };
+
+export const updateUserPassword: MutationResolvers['updateUserPassword'] =
+  async ({ id, input }) => {
+    const { oldPassword, newPassword } = input;
+    // TODO: perform validation
+
+    const [hashedPassword, salt] = hashPassword(newPassword);
+
+    return db.user.update({
+      data: {
+        hashedPassword,
+        salt,
+      },
+      where: { id },
+    });
+  }
+

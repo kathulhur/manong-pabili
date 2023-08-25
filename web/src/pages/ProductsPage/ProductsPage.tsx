@@ -18,9 +18,13 @@ const ProductsPage = () => {
     return (
         <>
             <MetaTags title="Products" description="Products page" />
-            <Link to={routes.home()}>&lt; Go back</Link>
-            <h1>Lahat ng iyong produkto</h1>
-            <ProductsCell userId={currentUser.id} />
+            <div
+                className='max-w-7xl mx-auto p-8'
+            >
+                <Link to={routes.home()}>&lt; Go back</Link>
+                <ProductsCell userId={currentUser.id} />
+
+            </div>
         </>
     )
 }

@@ -16,6 +16,7 @@ model User {
   email               String?   @unique
   username            String    @unique
   name                String?
+  mobileNumber        String?
   hashedPassword      String
   salt                String
   resetToken          String?
@@ -23,12 +24,13 @@ model User {
   products            Product[]
   latitude            Float?
   longitude           Float?
+  role                String    @default("VENDOR")
 }
 
 model Product {
   id           Int     @id @default(autoincrement())
   name         String
   availability Boolean
-  user         User    @relation(fields: [userId], references: [id])
+  user         User    @relation(fields: [userId], references: [id], onDelete: Cascade)
   userId       Int
 }
