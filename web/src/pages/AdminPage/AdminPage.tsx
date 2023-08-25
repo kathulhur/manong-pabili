@@ -4,17 +4,7 @@ import { useEffect } from "react";
 import { useAuth } from "src/auth";
 
 const AdminPage = () => {
-  const { isAuthenticated, currentUser, logOut, loading} = useAuth()
-
-  if (loading) {
-    return <div>Loading...</div>
-  }
-
-  useEffect(() => {
-    if (!isAuthenticated) {
-      navigate(routes.adminLogin())
-    }
-  }, [isAuthenticated])
+  const { logOut } = useAuth()
 
 
 

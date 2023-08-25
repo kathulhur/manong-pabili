@@ -4,7 +4,6 @@ import { useCallback, useEffect, useState } from 'react'
 import tt from '@tomtom-international/web-sdk-maps'
 import Pusher from 'pusher-js'
 
-import { navigate, routes } from '@redwoodjs/router'
 import { MetaTags } from '@redwoodjs/web'
 
 import { useAuth } from 'src/auth'
@@ -28,7 +27,7 @@ async function getCurrentPositionAsync(options) {
 }
 
 const HomePage = () => {
-    const { isAuthenticated, currentUser, loading } = useAuth()
+    const { currentUser } = useAuth()
     const [isLocationShown, setIsLocationShown] = useState(false)
     const [isRealTime, setIsRealTime] = useState(false)
     const [markers, setMarkers] = useState<tt.Marker[]>([])
@@ -201,14 +200,6 @@ const HomePage = () => {
         map.zoomTo(18)
     }
 
-    if (loading) {
-        return <div>Loading...</div>
-    }
-
-    if (!isAuthenticated) {
-        navigate(routes.login())
-        return 'hello'
-    }
 
     return (
         <div

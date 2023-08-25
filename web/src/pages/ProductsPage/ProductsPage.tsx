@@ -5,16 +5,8 @@ import { useAuth } from 'src/auth'
 import ProductsCell from 'src/components/ProductsCell'
 
 const ProductsPage = () => {
-    const { isAuthenticated, currentUser, loading } = useAuth()
+    const { currentUser } = useAuth()
 
-    if (loading) {
-        return <div>Loading...</div>
-    }
-
-    if (!isAuthenticated) {
-        routes.login()
-        return null
-    }
     return (
         <>
             <MetaTags title="Products" description="Products page" />
@@ -22,7 +14,7 @@ const ProductsPage = () => {
                 className='max-w-7xl mx-auto p-8'
             >
                 <Link to={routes.home()}>&lt; Go back</Link>
-                <ProductsCell userId={currentUser.id} />
+                <ProductsCell userId={currentUser?.id} />
 
             </div>
         </>

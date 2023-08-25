@@ -3,16 +3,8 @@ import { useAuth } from "src/auth";
 import VendorAccountCell from "src/components/VendorAccountCell";
 
 const VendorAccountPage = () => {
-  const { currentUser, loading: authLoading, isAuthenticated } = useAuth();
+  const { currentUser } = useAuth();
 
-  if (authLoading) {
-    return <div>Loading...</div>;
-  }
-
-  if (!isAuthenticated) {
-    navigate(routes.login())
-    return null
-  }
 
   return (
   <div className="max-w-7xl mx-auto p-8">
