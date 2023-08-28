@@ -15,9 +15,15 @@ export const schema = gql`
     role: String!
   }
 
+  type VendorPage {
+    vendors: [User!]!
+    count: Int!
+  }
+
   type Query {
     users: [User!]! @requireAuth
     user(id: Int!): User @requireAuth
+    vendorPage(page: Int): VendorPage @requireAuth
   }
 
   input CreateUserInput {
@@ -62,7 +68,7 @@ export const schema = gql`
     updateUser(id: Int!, input: UpdateUserInput!): User! @requireAuth
     updateUserPassword(id: Int!, input: UpdateUserPasswordInput!): User!
       @requireAuth
+    deleteUserAccount(id: Int!, input: DeleteUserAccountInput!): User! @requireAuth
     deleteUser(id: Int!): User! @requireAuth
-
   }
 `;

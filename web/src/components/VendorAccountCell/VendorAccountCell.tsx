@@ -18,8 +18,12 @@ import type {
   UpdateMobileNumberMutationVariables,
   UpdateUserPasswordMutation,
   UpdateUserPasswordMutationVariables,
+  DeleteAccountMutation,
+  DeleteAccountMutationVariables
 } from "types/graphql";
 import type { CellSuccessProps, CellFailureProps } from "@redwoodjs/web";
+import { Form, FormError } from "@redwoodjs/forms";
+import { useAuth } from "src/auth";
 
 
 export const QUERY = gql`
@@ -68,6 +72,14 @@ const CHANGE_PASSWORD_MUTATION = gql`
   }
 `;
 
+const DELETE_ACCOUNT_MUTATION = gql`
+  mutation DeleteAccountMutation($id: Int!, $password: String!) {
+    deleteUserAccount(id: $id, input: { password: $password }) {
+      id
+    }
+  }
+`;
+
 
 
 export const Loading = () => <div>Loading...</div>;
@@ -86,10 +98,12 @@ export const Success = ({
   FindVendorAccountQuery,
   FindVendorAccountQueryVariables
 >) => {
+  const { logOut } = useAuth();
   const [updateUsername] = useMutation<UpdateUsernameMutation, UpdateUsernameMutationVariables>(UPDATE_USERNAME_MUTATION);
   const [updateName] = useMutation<UpdateNameMutation, UpdateNameMutationVariables>(UPDATE_NAME_MUTATION);
   const [updateMobileNumber] = useMutation<UpdateMobileNumberMutation, UpdateMobileNumberMutationVariables>(UPDATE_MOBILE_NUMBER_MUTATION);
-  const [updateUserPasswordMutation] = useMutation<UpdateUserPasswordMutation, UpdateUserPasswordMutationVariables>(CHANGE_PASSWORD_MUTATION);
+  const [updateUserPasswordMutation, { error }] = useMutation<UpdateUserPasswordMutation, UpdateUserPasswordMutationVariables>(CHANGE_PASSWORD_MUTATION);
+  const [deleteUserAccount] = useMutation<DeleteAccountMutation, DeleteAccountMutationVariables>(DELETE_ACCOUNT_MUTATION);
 
   const [isUpdateUsernameModalOpen, setIsUpdateUsernameModalOpen] = useState(false);
   const [isUpdateNameModalOpen, setIsUpdateNameModalOpen] = useState(false);
@@ -110,14 +124,13 @@ export const Success = ({
           alert('Username updated successfully');
         },
         onError: (err) => {
-          alert(err.message);
+          alert(err);
         },
 
       });
 
-      // TODO: find a way to refresh the current user (perhaps we can just create a cell for this instead)
     } catch (err) {
-      alert(err.message)
+      alert(err)
     }
   }
 
@@ -174,6 +187,12 @@ export const Success = ({
           oldPassword
         },
         refetchQueries: [QUERY],
+        onError: (err) => {
+          err.graphQLErrors.forEach((error) => {
+            alert(error.message);
+          })
+
+        },
         onCompleted: () => {
           setIsChangePasswordModalOpen(false);
           alert('Password updated successfully');
@@ -181,25 +200,50 @@ export const Success = ({
         }
       });
     } catch (e) {
-      alert('Error updating password');
+      console.log('exception', e)
+
     }
   }
 
 
-  const onDeleteAccount = async (password: String) => {
-    // TODO: delete account
-  }
+  const onDeleteAccount = async (password: string) => {
+    try {
+      await deleteUserAccount({
+        variables: {
+          id: vendorAccount.id,
+          password
+        },
+        refetchQueries: [QUERY],
+        onCompleted: () => {
+          setIsDeleteAccountModalOpen(false);
+          alert('Account deleted successfully');
+          logOut();
+        },
+        onError: (err) => {
+          err.graphQLErrors.forEach((error) => {
+            alert(error.message);
+          })
+        },
 
+      });
+
+    } catch (err) {
+      alert(err.message)
+    }
+
+  }
 
 
 
   return (
     <div className="space-y-16">
+      <p></p>
       <h2
         className="text-2xl font-bold"
       >
         Your Profile
       </h2>
+
 
       <div
         className="flex space-x-8 justify-between items-center mt-4"
