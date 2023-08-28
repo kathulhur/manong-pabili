@@ -53,7 +53,7 @@ const DashboardProduct = ({
     }
 
     return (
-        <div className="p-4 border">
+        <div className="py-2">
             <div className="flex justify-between items-center">
                 <span>{product.name}</span>
                 <button

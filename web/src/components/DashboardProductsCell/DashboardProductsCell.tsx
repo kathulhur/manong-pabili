@@ -9,6 +9,9 @@ import {
 import DashboardProduct from '../DashboardProduct/DashboardProduct'
 import CreateProductModal from '../Modals/CreateProductModal'
 import { useAuth } from 'src/auth'
+import { Toaster } from '@redwoodjs/web/dist/toast'
+import { PlusIcon } from '@heroicons/react/20/solid'
+import Button from '../Button/Button'
 
 
 export const QUERY = gql`
@@ -126,17 +129,17 @@ export const Success = ({
 
     return (
         <div className='my-8'>
-            <div className='flex justify-between'>
-                <h2 className='font-semibold text-lg'>Mga Produkto</h2>
-                <button
-                    className='border py-2 px-4 rounded-md'
+            <div className='flex justify-between items-center'>
+                <h2 className='font-bold text-lg'>Products</h2>
+                <Button
                     type="button"
+                    aria-label='Add Product'
                     onClick={() =>
                         setIsCreateProductModalOpen(!isCreateProductModalOpen)
                     }
-                    >
-                    Add Product
-                </button>
+                >
+                    <PlusIcon className="h-7 w-7 text-slate-100"/>
+                </Button>
                 <CreateProductModal
                     isOpen={isCreateProductModalOpen}
                     onClose={() => setIsCreateProductModalOpen(false)}
