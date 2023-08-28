@@ -245,7 +245,7 @@ const HomePage = () => {
 
             <section className='relative rounded-lg mb-4 h-64 bg-green-100 overflow-hidden'>
                 {
-                    isLocationShown ?  <>
+                    isLocationShown &&  <>
                         <div
                             id="map"
                             ref={mapRef}
@@ -259,7 +259,8 @@ const HomePage = () => {
                             <MapPinIcon className='w-6 h-6 text-green-600'></MapPinIcon>
                         </button>
                     </>
-                    : <div
+                }
+                { !isLocationShown && <div
                         className='grid place-items-center h-full'
                     >
                         <div className='flex flex-col items-center'>
