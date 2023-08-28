@@ -2,8 +2,10 @@ import { Link, navigate, routes } from "@redwoodjs/router";
 import { MetaTags } from "@redwoodjs/web";
 import { useEffect } from "react";
 import { useAuth } from "src/auth";
+import AdminDashboardCell from "src/components/AdminDashboardCell";
 
-const AdminPage = () => {
+
+const AdminPage = ({ page = 1}) => {
   const { logOut } = useAuth()
 
 
@@ -11,8 +13,7 @@ const AdminPage = () => {
   return (
     <>
       <MetaTags title="Admin" description="Admin page" />
-      <button onClick={logOut}>Logout</button>
-      <h1> Admin Page </h1>
+      <AdminDashboardCell page={page} />
     </>
   );
 };
