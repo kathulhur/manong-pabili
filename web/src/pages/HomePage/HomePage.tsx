@@ -42,7 +42,6 @@ const HomePage = () => {
     const [isVendorProfileModalOpen, setIsVendorProfileModalOpen] = useState(
         false
     )
-    const [enabled, setEnabled] = useState(false);
 
     useEffect(() => {
         console.log('Intializing pusher')
@@ -195,6 +194,7 @@ const HomePage = () => {
     }
 
     const updateLocationButtonHandler = () => {
+        console.log('Update location')
         broadcastLocation()
     }
 
@@ -272,7 +272,12 @@ const HomePage = () => {
 
             </section>
 
-            <Tab.Group>
+            <Tab.Group onChange={(index) => {
+                switch(index) {
+                    case 0: return manualModeButtonHandler()
+                    case 1: return realTimeModeButtonHandler()
+                }
+            }}>
                 <Tab.List className="flex space-x-1 rounded-xl bg-green-300/20 p-1 mb-4">
                     <Tab
                         className={({ selected }) =>
@@ -284,7 +289,7 @@ const HomePage = () => {
                                 : 'text-green-500 hover:bg-white/[0.12] hover:text-green-600'
                             )
                         }
-                    >Realtime</Tab>
+                    >Manual</Tab>
                     <Tab
                         className={({ selected }) =>
                             clsx(
@@ -295,90 +300,14 @@ const HomePage = () => {
                                 : 'text-green-500 hover:bg-white/[0.12] hover:text-green-600'
                             )
                         }
-                    >Manual</Tab>
+                    >Realtime</Tab>
                 </Tab.List>
                 <Tab.Panels>
                     <Tab.Panel>
-                    </Tab.Panel>
-                    <Tab.Panel>
-                        <Button fullWidth>Update location</Button>
+                        <Button fullWidth onClick={updateLocationButtonHandler}>Update location</Button>
                     </Tab.Panel>
                 </Tab.Panels>
             </Tab.Group>
-
-
-
-            {/* <div className='my-8'>
-                <h2 className='font-semibold text-lg'>Broadcast mode</h2>
-                <button
-                    className='border py-2 px-4 rounded-md'
-                    type="button"
-                    onClick={realTimeModeButtonHandler}
-                >
-                    RealTime
-                </button>
-                <button
-                    className='border py-2 px-4 rounded-md'
-                    type="button"
-                    onClick={manualModeButtonHandler}
-                >
-                    Manual
-                </button>
-            </div> */}
-            <section>
-                {/* <button
-                    className='border py-2 px-4 rounded-md'
-                    type="button"
-                    disabled={!isLocationShown}
-                    onClick={focusLocationButtonHandler}
-                >
-                    Focus on my location
-                </button> */}
-                {/* {!isRealTime && (
-                    <button
-                        className='border py-2 px-4 rounded-md'
-                        type="button"
-                        disabled={!isLocationShown || isRealTime}
-                        onClick={updateLocationButtonHandler}
-                    >
-                        Update Location
-                    </button>
-                )} */}
-                {/* <div
-                    hidden={!isLocationShown}
-                    id="map"
-                    ref={mapRef}
-                    style={{
-                        maxWidth: '24rem',
-                        height: '16rem',
-                        border: '1px solid black',
-                    }}
-                ></div> */}
-                {/* <div
-                    hidden={isLocationShown}
-                    style={{
-                        maxWidth: '24rem',
-                        height: '16rem',
-                        border: '1px solid black',
-                    }}
-                >
-                    Your location is hidden
-                </div> */}
-                {/* <div>
-                    <button
-                        className='border py-2 px-4 rounded-md'
-                        type="button"
-                        onClick={showLocationButtonHandler}>
-                        Show my location
-                    </button>
-                    <button
-                        className='border py-2 px-4 rounded-md'
-                        type="button"
-                        onClick={hideLocationButtonHandler}>
-                        Hide my location
-                    </button>
-                </div> */}
-            </section>
 
             <DashboardProductsCell userId={currentUser?.id} />
         </div>
