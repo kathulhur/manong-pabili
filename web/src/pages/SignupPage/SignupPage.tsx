@@ -8,6 +8,7 @@ import {
     PasswordField,
     FieldError,
     Submit,
+    RadioField,
 } from '@redwoodjs/forms'
 import { Link, navigate, routes } from '@redwoodjs/router'
 import { MetaTags } from '@redwoodjs/web'
@@ -25,31 +26,40 @@ const SignupPage = () => {
     }, [isAuthenticated])
 
     // focus on username box on page load
-    const usernameRef = useRef<HTMLInputElement>(null)
+    const nameRef = useRef<HTMLInputElement>(null)
     useEffect(() => {
-        usernameRef.current?.focus()
+        nameRef.current?.focus()
     }, [])
 
     const onSubmit = async (data: Record<string, string>) => {
-        const response = await signUp({
-            username: data.username,
-            password: data.password,
-        })
+        try {
+            const response = await signUp({
+                name: data.name,
+                mobileNumber: data.mobileNumber,
+                role: "VENDOR",
+                gender: data.gender,
+                username: data.username,
+                password: data.password,
+            })
 
-        if (response.message) {
-            toast(response.message)
-        } else if (response.error) {
-            toast.error(response.error)
-        } else {
-            // user is signed in automatically
-            toast.success('Welcome!')
+            console.log(response)
+
+            if (response.message) {
+                toast(response.message)
+            } else if (response.error) {
+                toast.error(response.error)
+            } else {
+                // user is signed in automatically
+                toast.success('Welcome!')
+            }
+        } catch (error) {
+            toast.error(error.message)
         }
     }
 
     return (
         <>
             <MetaTags title="Signup" />
-
             <main className="rw-main">
                 <Toaster
                     toastOptions={{ className: 'rw-toast', duration: 6000 }}
@@ -68,58 +78,138 @@ const SignupPage = () => {
                                     onSubmit={onSubmit}
                                     className="rw-form-wrapper"
                                 >
+                                    <div>
+                                        <Label
+                                            name="name"
+                                            className="rw-label"
+                                            errorClassName="rw-label rw-label-error"
+                                        />
+                                        <TextField
+                                            name="name"
+                                            className="rw-input"
+                                            errorClassName="rw-input rw-input-error"
+                                            ref={nameRef}
+                                            validation={{
+                                                required: {
+                                                    value: true,
+                                                    message: 'name is required',
+                                                },
+                                            }}
+                                        />
+                                        <FieldError
+                                            name="name"
+                                            className="rw-field-error"
+                                        />
+
+                                        {/* Gender */}
+                                        <div>
+
+                                        <Label name="Male" htmlFor='male'
+                                            className="rw-label"
+                                            errorClassName="rw-label rw-label-error"
+                                            />
+                                        <RadioField
+                                            required
+                                            id='male'
+                                            name='gender'
+                                            className="rw-input"
+                                            errorClassName="rw-input rw-input-error"
+                                            value='Male'
+                                            />
+                                        <Label name="Female" htmlFor='female'
+                                            className="rw-label"
+                                            errorClassName="rw-label rw-label-error"
+                                            />
+                                        <RadioField
+                                            required
+                                            id='female'
+                                            value='Female'
+                                            name='gender'
+                                            className="rw-input"
+                                            errorClassName="rw-input rw-input-error"
+                                        />
+                                        </div>
+
+                                    </div>
+
+                                    {/* Contact Number */}
                                     <Label
-                                        name="username"
+                                        name="Contact Number"
                                         className="rw-label"
                                         errorClassName="rw-label rw-label-error"
-                                    >
-                                        Username
-                                    </Label>
+                                    />
                                     <TextField
-                                        name="username"
+                                        name="mobileNumber"
                                         className="rw-input"
                                         errorClassName="rw-input rw-input-error"
-                                        ref={usernameRef}
+                                        ref={nameRef}
                                         validation={{
                                             required: {
                                                 value: true,
-                                                message: 'Username is required',
+                                                message: 'Mobile Number is required',
                                             },
                                         }}
                                     />
                                     <FieldError
-                                        name="username"
+                                        name="mobileNumber"
                                         className="rw-field-error"
                                     />
 
-                                    <Label
-                                        name="password"
-                                        className="rw-label"
-                                        errorClassName="rw-label rw-label-error"
-                                    >
-                                        Password
-                                    </Label>
-                                    <PasswordField
-                                        name="password"
-                                        className="rw-input"
-                                        errorClassName="rw-input rw-input-error"
-                                        autoComplete="current-password"
-                                        validation={{
-                                            required: {
-                                                value: true,
-                                                message: 'Password is required',
-                                            },
-                                        }}
-                                    />
-                                    <FieldError
-                                        name="password"
-                                        className="rw-field-error"
-                                    />
+                                    <div className='mt-8'>
+                                        <h2 className='font-semibold text-lg'>Login Credentials</h2>
+                                        {/* Username */}
+                                        <Label
+                                            name="Username"
+                                            htmlFor='username'
+                                            className="rw-label"
+                                            errorClassName="rw-label rw-label-error"
+                                        />
+                                        <TextField
+                                            name="username"
+                                            className="rw-input"
+                                            errorClassName="rw-input rw-input-error"
+                                            validation={{
+                                                required: {
+                                                    value: true,
+                                                    message: 'Username is required',
+                                                },
+                                            }}
+                                        />
+                                        <FieldError
+                                            name="username"
+                                            className="rw-field-error"
+                                        />
 
-                                    <div className="rw-button-group">
-                                        <Submit className="rw-button rw-button-blue">
-                                            Sign Up
-                                        </Submit>
+                                        {/* Password */}
+                                        <Label
+                                            name="password"
+                                            className="rw-label"
+                                            errorClassName="rw-label rw-label-error"
+                                            >
+                                            Password
+                                        </Label>
+                                        <PasswordField
+                                            name="password"
+                                            className="rw-input"
+                                            errorClassName="rw-input rw-input-error"
+                                            autoComplete="current-password"
+                                            validation={{
+                                                required: {
+                                                    value: true,
+                                                    message: 'Password is required',
+                                                },
+                                            }}
+                                            />
+                                        <FieldError
+                                            name="password"
+                                            className="rw-field-error"
+                                            />
+
+                                        <div className="rw-button-group">
+                                            <Submit className="rw-button rw-button-blue">
+                                                Sign Up
+                                            </Submit>
+                                        </div>
                                     </div>
                                 </Form>
                             </div>
