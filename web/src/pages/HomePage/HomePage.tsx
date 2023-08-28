@@ -12,6 +12,11 @@ import DashboardProductsCell from 'src/components/DashboardProductsCell'
 import { createMarker } from '../MapPage/MapPage'
 import VendorProfileModal from 'src/components/Modals/VendorProfileModal'
 
+import { Switch, Tab } from '@headlessui/react'
+import { Bars2Icon, EyeSlashIcon, MapPinIcon } from '@heroicons/react/20/solid'
+import clsx from 'clsx'
+import Button from 'src/components/Button/Button'
+
 async function getCurrentPositionAsync(options) {
     return new Promise<GeolocationPosition>((resolve, reject) => {
         navigator.geolocation.getCurrentPosition(
@@ -37,6 +42,7 @@ const HomePage = () => {
     const [isVendorProfileModalOpen, setIsVendorProfileModalOpen] = useState(
         false
     )
+    const [enabled, setEnabled] = useState(false);
 
     useEffect(() => {
         console.log('Intializing pusher')
@@ -206,26 +212,102 @@ const HomePage = () => {
             className='max-w-7xl mx-auto p-8'
         >
             <MetaTags title="Home" description="Home page" />
-            <div className='flex justify-between'>
-                <h1>Manong Pabili</h1>
-                <button
-                    className='border py-2 px-4 rounded-md'
-                    type="button"
-                    onClick={() => setIsVendorProfileModalOpen(true)}
-                >
-                    Vendor Profile
+            <div className='flex justify-between items-center mb-10'>
+                <h1 className='font-extrabold text-xl text-green-700'>Manong Pabili</h1>
+                <button type='button' onClick={() => setIsVendorProfileModalOpen(true)}>
+                    <Bars2Icon
+                        className="h-7 w-7 text-gray-800 hover:text-gray-400"
+                    />
                 </button>
                 <VendorProfileModal
                     isOpen={isVendorProfileModalOpen}
                     onClose={() => setIsVendorProfileModalOpen(false)}
                 />
             </div>
-            <h1 className="font-bold text-2xl">
-                Magandang Araw, Mang {currentUser?.username}
-            </h1>
 
-            <DashboardProductsCell userId={currentUser?.id} />
-            <div className='my-8'>
+            <p className='mb-4 font-black text-2xl'>Good day, {currentUser?.username}</p>
+            <div className='mb-2 flex items-center justify-between'>
+                <span className='text-lg font-semibold'>Show location</span>
+                <Switch
+                    checked={isLocationShown}
+                    onChange={isLocationShown ? hideLocationButtonHandler : showLocationButtonHandler}
+                    className={`${isLocationShown ? 'bg-green-600' : 'bg-green-400'}
+                    relative inline-flex h-[28px] w-[56px] shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none focus-visible:ring-2  focus-visible:ring-white focus-visible:ring-opacity-75`}
+                    >
+                    <span className="sr-only">Show location</span>
+                    <span
+                        aria-hidden="true"
+                        className={`${isLocationShown ? 'translate-x-7' : 'translate-x-0'}
+                        pointer-events-none inline-block h-[24px] w-[24px] transform rounded-full bg-white shadow-lg ring-0 transition duration-200 ease-in-out`}
+                    />
+                </Switch>
+            </div>
+
+            <section className='relative rounded-lg mb-4 h-64 bg-green-100 overflow-hidden'>
+                {
+                    isLocationShown ?  <>
+                        <div
+                            id="map"
+                            ref={mapRef}
+                            className='h-full'
+                        ></div>
+                        <button
+                            className='absolute bottom-6 right-4 w-10 h-10 flex justify-center items-center bg-white rounded-full shadow z-10'
+                            onClick={focusLocationButtonHandler}
+                            aria-label='Focus on my location'
+                        >
+                            <MapPinIcon className='w-6 h-6 text-green-600'></MapPinIcon>
+                        </button>
+                    </>
+                    : <div
+                        className='grid place-items-center h-full'
+                    >
+                        <div className='flex flex-col items-center'>
+                            <EyeSlashIcon className='w-16 h-16 mb-1 text-green-900' />
+                            <span className='text-green-900 text-lg font-bold'>Your location is hidden</span>
+                        </div>
+                    </div>
+                }
+
+            </section>
+
+            <Tab.Group>
+                <Tab.List className="flex space-x-1 rounded-xl bg-green-300/20 p-1 mb-4">
+                    <Tab
+                        className={({ selected }) =>
+                            clsx(
+                            'w-full rounded-lg py-2.5 text-base font-semibold leading-5 text-green-700',
+                            'ring-white ring-opacity-60 ring-offset-2 ring-offset-green-400 focus:outline-none focus:ring-2',
+                            selected
+                                ? 'bg-white'
+                                : 'text-green-500 hover:bg-white/[0.12] hover:text-green-600'
+                            )
+                        }
+                    >Realtime</Tab>
+                    <Tab
+                        className={({ selected }) =>
+                            clsx(
+                            'w-full rounded-lg py-2.5 text-base font-semibold leading-5 text-green-700',
+                            'ring-white ring-opacity-60 ring-offset-2 ring-offset-green-400 focus:outline-none focus:ring-2',
+                            selected
+                                ? 'bg-white'
+                                : 'text-green-500 hover:bg-white/[0.12] hover:text-green-600'
+                            )
+                        }
+                    >Manual</Tab>
+                </Tab.List>
+                <Tab.Panels>
+                    <Tab.Panel>
+                    </Tab.Panel>
+                    <Tab.Panel>
+                        <Button fullWidth>Update location</Button>
+                    </Tab.Panel>
+                </Tab.Panels>
+            </Tab.Group>
+
+
+
+            {/* <div className='my-8'>
                 <h2 className='font-semibold text-lg'>Broadcast mode</h2>
                 <button
                     className='border py-2 px-4 rounded-md'
@@ -241,18 +323,17 @@ const HomePage = () => {
                 >
                     Manual
                 </button>
-            </div>
+            </div> */}
             <section>
-                <h2 className='font-semibold text-lg'>Your Location</h2>
-                <button
+                {/* <button
                     className='border py-2 px-4 rounded-md'
                     type="button"
                     disabled={!isLocationShown}
                     onClick={focusLocationButtonHandler}
                 >
                     Focus on my location
-                </button>
-                {!isRealTime && (
+                </button> */}
+                {/* {!isRealTime && (
                     <button
                         className='border py-2 px-4 rounded-md'
                         type="button"
@@ -261,8 +342,8 @@ const HomePage = () => {
                     >
                         Update Location
                     </button>
-                )}
-                <div
+                )} */}
+                {/* <div
                     hidden={!isLocationShown}
                     id="map"
                     ref={mapRef}
@@ -271,8 +352,8 @@ const HomePage = () => {
                         height: '16rem',
                         border: '1px solid black',
                     }}
-                ></div>
-                <div
+                ></div> */}
+                {/* <div
                     hidden={isLocationShown}
                     style={{
                         maxWidth: '24rem',
@@ -281,8 +362,8 @@ const HomePage = () => {
                     }}
                 >
                     Your location is hidden
-                </div>
-                <div>
+                </div> */}
+                {/* <div>
                     <button
                         className='border py-2 px-4 rounded-md'
                         type="button"
@@ -295,8 +376,10 @@ const HomePage = () => {
                         onClick={hideLocationButtonHandler}>
                         Hide my location
                     </button>
-                </div>
+                </div> */}
             </section>
+
+            <DashboardProductsCell userId={currentUser?.id} />
         </div>
     )
 }
