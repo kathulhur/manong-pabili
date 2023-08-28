@@ -41,16 +41,6 @@ export default async () => {
         // the same algorithm that dbAuth uses internally:
         //
 
-        const [hashedPassword, salt] = hashPassword('password')
-        const user = await db.user.create({
-            data: {
-                name: 'gregorio',
-                username: 'gorio',
-                hashedPassword,
-                salt,
-            },
-        })
-
         const products = [
             {
                 name: 'Product 1',
@@ -66,21 +56,38 @@ export default async () => {
             },
         ]
 
-        for (const product of products) {
-            await db.product.create({
+        for (let i = 0; i < 10; i++) {
+            const [hashedPassword, salt] = hashPassword(`password${i}`);
+            const user = await db.user.create({
                 data: {
-                    name: product.name,
-                    availability: product.availability,
-                    user: {
-                        connect: {
-                            id: user.id,
+                    name: `User ${i}`,
+                    username: `user${i}`,
+                    email: `user${i}@mail.com`,
+                    mobileNumber: "1234567890",
+                    latitude: 0,
+                    longitude: 0,
+                    role: "VENDOR",
+                    hashedPassword,
+                    salt,
+                },
+            });
+
+            for (const product of products) {
+                await db.product.create({
+                    data: {
+                        name: product.name,
+                        availability: product.availability,
+                        user: {
+                            connect: {
+                                id: user.id,
+                            },
                         },
                     },
-                },
-            })
+                });
+            }
         }
     } catch (error) {
-        console.warn('Please define your seed data.')
-        console.error(error)
+        console.warn('Please define your seed data.');
+        console.error(error);
     }
 }
