@@ -46,7 +46,7 @@ const VendorProfileModal = ({
               <Dialog.Panel className="w-full max-w-md transform overflow-hidden rounded-2xl bg-white p-6 text-left align-middle shadow transition-all">
                 <Dialog.Title
                   as="h3"
-                  className="mb-4 text-xl font-semibold text-slate-900"
+                  className="mb-4 text-2xl font-bold text-slate-900"
                 >My Profile</Dialog.Title>
 
                 {
@@ -72,6 +72,7 @@ const VendorProfileModal = ({
                     )
                   })
                 }
+
                 <div className="flex flex-col space-y-2 mt-8">
                   <Link
                     to="/vendor/account"
