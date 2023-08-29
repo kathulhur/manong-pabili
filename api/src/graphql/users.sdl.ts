@@ -20,10 +20,12 @@ export const schema = gql`
     count: Int!
   }
 
+
   type Query {
     users: [User!]! @requireAuth
     user(id: Int!): User @requireAuth
     vendorPage(page: Int): VendorPage @requireAuth
+    mapVendors: [User!]! @requireAuth
   }
 
   input CreateUserInput {
@@ -63,6 +65,11 @@ export const schema = gql`
     password: String!
   }
 
+  input HideVendorLocationInput {
+    channel: String!
+    event: String!
+  }
+
   type Mutation {
     createUser(input: CreateUserInput!): User! @requireAuth
     updateUser(id: Int!, input: UpdateUserInput!): User! @requireAuth
@@ -70,5 +77,6 @@ export const schema = gql`
       @requireAuth
     deleteUserAccount(id: Int!, input: DeleteUserAccountInput!): User! @requireAuth
     deleteUser(id: Int!): User! @requireAuth
+    hideVendorLocation(id: Int!, input: HideVendorLocationInput): User! @requireAuth
   }
 `;

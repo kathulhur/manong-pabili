@@ -8,6 +8,7 @@ import { db } from "src/lib/db";
 import { hashPassword } from "@redwoodjs/auth-dbauth-api";
 import { validate, validateWith, validateWithSync } from "@redwoodjs/api";
 import { UserInputError } from "@redwoodjs/graphql-server";
+import { pusher } from "src/functions/broadcast/broadcast";
 
 export const users: QueryResolvers["users"] = () => {
   return db.user.findMany();
@@ -18,6 +19,15 @@ export const user: QueryResolvers["user"] = ({ id }) => {
     where: { id },
   });
 };
+
+export const mapVendors: QueryResolvers["mapVendors"] = () => {
+  return db.user.findMany({
+    where: {
+      locationHidden: false,
+      role: "VENDOR"
+    }
+  })
+}
 
 export const createUser: MutationResolvers["createUser"] = ({ input }) => {
   return db.user.create({
@@ -113,4 +123,38 @@ export const deleteUserAccount: MutationResolvers['deleteUserAccount'] = async (
   return db.user.delete({
     where: { id },
   })
+}
+
+
+export const hideVendorLocation: MutationResolvers['hideVendorLocation'] = async ({ id, input }) => {
+
+  const { channel, event } = input
+  const user = await db.user.findUnique({ where: { id }});
+  validateWithSync(() => {
+    if (!user) {
+      throw "User not found"
+    }
+
+    if (user.role != "VENDOR") {
+      throw "User must be a vendor"
+    }
+
+    if (user.locationHidden) {
+      throw "Location already hidden"
+    }
+  })
+
+  pusher.trigger(channel, event, {
+    vendor: user,
+  })
+
+
+  return db.user.update({
+    where: { id },
+    data: {
+      locationHidden: true
+    }
+  })
+
+
 }

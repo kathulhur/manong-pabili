@@ -4,7 +4,7 @@ import { useCallback, useEffect, useState } from 'react'
 import tt from '@tomtom-international/web-sdk-maps'
 import Pusher from 'pusher-js'
 
-import { MetaTags } from '@redwoodjs/web'
+import { MetaTags, useMutation } from '@redwoodjs/web'
 
 import { useAuth } from 'src/auth'
 import DashboardProductsCell from 'src/components/DashboardProductsCell'
@@ -16,23 +16,23 @@ import { Switch, Tab } from '@headlessui/react'
 import { Bars2Icon, EyeSlashIcon, MapPinIcon } from '@heroicons/react/20/solid'
 import clsx from 'clsx'
 import Button from 'src/components/Button/Button'
+import { HideVendorLocationMutation, HideVendorLocationMutationVariables } from 'types/graphql'
+import { getCurrentPositionAsync } from 'src/hooks/useCoordinates'
+import usePusher from 'src/hooks/usePusher'
 
-async function getCurrentPositionAsync(options) {
-    return new Promise<GeolocationPosition>((resolve, reject) => {
-        navigator.geolocation.getCurrentPosition(
-            (position) => {
-                resolve(position)
-            },
-            (error) => {
-                reject(error)
-            },
-            options
-        )
-    })
-}
+
+const HIDE_VENDOR_LOCATION_MUTATION = gql`
+    mutation HideVendorLocationMutation($id: Int!, $input: HideVendorLocationInput!) {
+        hideVendorLocation(id: $id, input: $input) {
+            id
+        }
+    }
+`
 
 const HomePage = () => {
     const { currentUser } = useAuth()
+
+    const [hideVendorLocation] = useMutation<HideVendorLocationMutation, HideVendorLocationMutationVariables>(HIDE_VENDOR_LOCATION_MUTATION);
     const [isLocationShown, setIsLocationShown] = useState(false)
     const [isRealTime, setIsRealTime] = useState(false)
     const [markers, setMarkers] = useState<tt.Marker[]>([])
@@ -42,29 +42,24 @@ const HomePage = () => {
     const [isVendorProfileModalOpen, setIsVendorProfileModalOpen] = useState(
         false
     )
+    const pusher = usePusher()
 
     useEffect(() => {
-        console.log('Intializing pusher')
-        const pusher = new Pusher(process.env.PUSHER_APP_KEY, {
-            cluster: process.env.PUSHER_APP_CLUSTER,
-        })
-        const channel = pusher.subscribe(process.env.PUSHER_CHANNEL)
-        channel.bind('location-broadcast', ({vendor}) => {
-            const marker = createMarker(vendor)
-            // check if marker already exists, if it does, remove it, then add the new one
-            setMarkers([
-                ...markers.filter(
-                    (m) => m.getElement().id !== marker.getElement().id
-                ),
-                marker,
-            ])
-        })
+        if (pusher) {
+            const channel = pusher.subscribe(process.env.PUSHER_CHANNEL)
+            channel.bind('location-broadcast', ({vendor}) => {
+                const marker = createMarker(vendor)
+                // check if marker already exists, if it does, remove it, then add the new one
+                setMarkers([
+                    ...markers.filter(
+                        (m) => m.getElement().id !== marker.getElement().id
+                    ),
+                    marker,
+                ])
+            })
 
-        return () => {
-            console.log('disconnecting...')
-            pusher.disconnect()
         }
-    }, [])
+    }, [pusher])
 
 
     useEffect(() => {
@@ -97,6 +92,7 @@ const HomePage = () => {
         }
     }, [])
 
+
     const broadcastLocation = useCallback(async () => {
         try {
             const position = await getCurrentPositionAsync({
@@ -104,7 +100,9 @@ const HomePage = () => {
                 timeout: 20000,
                 maximumAge: 1000,
             })
+
             setPosition(position.coords)
+
             const response = await fetch(
                 'http://localhost:8910/.redwood/functions/broadcast',
                 {
@@ -179,8 +177,28 @@ const HomePage = () => {
         }
     }
 
-    const hideLocationButtonHandler = () => {
-        setIsLocationShown(false)
+    const hideLocationButtonHandler = async () => {
+        try {
+            await hideVendorLocation({
+                variables: {
+                    id: currentUser?.id,
+                    input: {
+                        channel: process.env.PUSHER_CHANNEL,
+                        event: "hide-location"
+                    }
+                },
+                onError: (err) => {
+                    console.log(err)
+                    alert('failed hiding vendor location')
+                },
+                onCompleted: () => {
+                    console.log('hiding location success')
+                }
+            })
+            setIsLocationShown(false)
+        } catch (err) {
+            console.log(err)
+        }
     }
 
     const realTimeModeButtonHandler = () => {

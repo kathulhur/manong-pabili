@@ -5,11 +5,12 @@ import Pusher from 'pusher-js'
 
 import { MetaTags, useQuery } from '@redwoodjs/web'
 import { User } from 'types/graphql'
-import { set } from '@redwoodjs/forms'
+import useCoordinates from 'src/hooks/useCoordinates'
+import usePusher from 'src/hooks/usePusher'
 
-const VENDORS_QUERY = gql`
-    query VendorsQuery {
-        users {
+const MAP_VENDORS_QUERY = gql`
+    query MapVendorsQuery {
+        mapVendors {
             id
             name
             email
@@ -39,44 +40,61 @@ export const createMarker = (vendor: User) => {
     const marker = new tt.Marker().setLngLat([vendor.longitude, vendor.latitude])
     marker.setPopup(
         new tt.Popup({ offset: 35 }).setHTML(buildPopupHtml({ name: vendor.name, products: vendor.products }))
-    )
+        )
     marker.getElement().id = String(vendor.id)
     return marker
 }
 
 const MapPage = () => {
+    const coordinates = useCoordinates();
     const [map, setMap] = useState<tt.Map>(null)
     const [markers, setMarkers] = useState<tt.Marker[]>([])
-    const {data}= useQuery(VENDORS_QUERY)
+    const {data}= useQuery(MAP_VENDORS_QUERY)
     const [vendors, setVendors] = useState<User[]>([])
+    const pusher = usePusher();
 
     useEffect(() => {
-        console.log("Intializing pusher")
-        const pusher = new Pusher(process.env.PUSHER_APP_KEY, {
-            cluster: process.env.PUSHER_APP_CLUSTER,
-        })
-
-        const channel = pusher.subscribe(process.env.PUSHER_CHANNEL)
-        channel.bind('location-broadcast', ({vendor}: {vendor: User}) => {
-            console.log("location-broadcast")
-            // check if marker already exists, if it does, update it, else add it as a new one
-            const marker = markers.find((m) => m.getElement().id === String(vendor.id))
-            if (marker) {
-                console.log('updating marker')
-                marker.setLngLat([vendor.longitude, vendor.latitude])
-            } else {
-                console.log('adding marker')
-                const marker = createMarker(vendor)
-                setMarkers([...markers, marker])
-            }
-
-        })
-
-        return () => {
-            console.log('disconnecting...')
-            pusher.disconnect()
+        console.log('map', map)
+        console.log('coordinates', coordinates)
+        if (map && coordinates) {
+            console.log('zooming')
+            map.setCenter([coordinates.longitude, coordinates.latitude])
+            map.zoomTo(15)
         }
-    }, [])
+    }, [map, coordinates])
+
+
+    useEffect(() => {
+        if (pusher) {
+            const channel = pusher.subscribe(process.env.PUSHER_CHANNEL)
+            channel.bind('location-broadcast', ({vendor}: {vendor: User}) => {
+                console.log("location-broadcast")
+                console.log('vendr', vendor)
+                // check if marker already exists, if it does, update it, else add it as a new one
+                const marker = markers.find((m) => m.getElement().id === String(vendor.id))
+                if (marker) {
+                    console.log('updating marker')
+                    marker.setLngLat([vendor.longitude, vendor.latitude])
+                } else {
+                    console.log('adding marker')
+                    const marker = createMarker(vendor)
+                    marker.addTo(map)
+                    setMarkers([...markers, marker])
+                }
+
+            })
+
+            channel.bind('hide-location', ({vendor}: {vendor: User}) => {
+                const marker = markers.find((m) => m.getElement().id === String(vendor.id))
+                if (marker) {
+                    marker.remove()
+                    setMarkers(markers.filter((m) => m.getElement().id === String(vendor.id)))
+                }
+
+            })
+        }
+
+    }, [pusher, map, markers])
 
 
     // initialize map
@@ -85,7 +103,7 @@ const MapPage = () => {
             const map = tt.map({
                 key: process.env.TOMTOM_API_KEY,
                 container: node,
-                center: [121.004995, 14.610395],
+                // center: [121.004995, 14.610395],
                 zoom: 12,
             })
             setMap(map)
