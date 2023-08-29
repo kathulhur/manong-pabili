@@ -269,7 +269,7 @@ const HomePage = () => {
                 </Switch>
             </div>
 
-            <section className='relative rounded-lg mb-4 h-64 bg-green-100 overflow-hidden'>
+            <section className='relative rounded-lg mb-4 h-64 bg-green-100/80 overflow-hidden'>
                 {
                     isLocationShown &&  <>
                         <div
@@ -332,7 +332,11 @@ const HomePage = () => {
                 </Tab.List>
                 <Tab.Panels className='mb-12'>
                     <Tab.Panel>
-                        <Button fullWidth onClick={updateLocationButtonHandler}>Update location</Button>
+                        <Button
+                            fullWidth
+                            onClick={updateLocationButtonHandler}
+                            disabled={!isLocationShown}
+                        >Update location</Button>
                     </Tab.Panel>
                 </Tab.Panels>
             </Tab.Group>
