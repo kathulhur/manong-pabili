@@ -49,7 +49,7 @@ export default function useCoordinates() {
       }
     }
     getCoordinates()
-  })
+  }, [])
 
   return coordinates;
 }

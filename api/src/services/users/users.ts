@@ -160,3 +160,29 @@ export const hideVendorLocation: MutationResolvers['hideVendorLocation'] = async
 
 
 }
+
+
+export const broadcastLocation: MutationResolvers['broadcastLocation']
+  = async ({id, input: {channel, event, latitude, longitude}}) => {
+
+    const user = await db.user.update({
+        where: { id: id },
+        data: {
+            longitude: longitude,
+            latitude: latitude,
+            lastLocationUpdate: new Date(),
+            locationHidden: false
+        },
+        include: {
+          products: true
+        }
+
+    })
+
+    pusher.trigger(channel, event, {
+      vendor: user,
+    })
+
+    return user
+
+}

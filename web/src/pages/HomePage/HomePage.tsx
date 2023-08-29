@@ -2,8 +2,6 @@ import '@tomtom-international/web-sdk-maps/dist/maps.css'
 import { useCallback, useEffect, useState } from 'react'
 
 import tt from '@tomtom-international/web-sdk-maps'
-import Pusher from 'pusher-js'
-
 import { MetaTags, useMutation } from '@redwoodjs/web'
 
 import { useAuth } from 'src/auth'
@@ -16,7 +14,13 @@ import { Switch, Tab } from '@headlessui/react'
 import { Bars2Icon, EyeSlashIcon, MapPinIcon } from '@heroicons/react/20/solid'
 import clsx from 'clsx'
 import Button from 'src/components/Button/Button'
-import { HideVendorLocationMutation, HideVendorLocationMutationVariables } from 'types/graphql'
+import {
+    HideVendorLocationMutation,
+    HideVendorLocationMutationVariables,
+    BroadcastLocationMutation,
+    BroadcastLocationMutationVariables
+} from 'types/graphql'
+
 import { getCurrentPositionAsync } from 'src/hooks/useCoordinates'
 import usePusher from 'src/hooks/usePusher'
 
@@ -25,6 +29,32 @@ const HIDE_VENDOR_LOCATION_MUTATION = gql`
     mutation HideVendorLocationMutation($id: Int!, $input: HideVendorLocationInput!) {
         hideVendorLocation(id: $id, input: $input) {
             id
+            name
+            username
+            latitude
+            longitude
+            products {
+                id
+                name
+            }
+            role
+        }
+    }
+`
+
+const BROADCAST_LOCATION_MUTATION = gql`
+    mutation BroadcastLocationMutation($id: Int!, $input: BroadcastLocationInput!) {
+        broadcastLocation(id: $id, input: $input) {
+            id
+            name
+            username
+            latitude
+            longitude
+            products {
+                id
+                name
+            }
+            role
         }
     }
 `
@@ -33,6 +63,8 @@ const HomePage = () => {
     const { currentUser } = useAuth()
 
     const [hideVendorLocation] = useMutation<HideVendorLocationMutation, HideVendorLocationMutationVariables>(HIDE_VENDOR_LOCATION_MUTATION);
+    const [broadcastLocation] = useMutation<BroadcastLocationMutation, BroadcastLocationMutationVariables>(BROADCAST_LOCATION_MUTATION);
+
     const [isLocationShown, setIsLocationShown] = useState(false)
     const [isRealTime, setIsRealTime] = useState(false)
     const [markers, setMarkers] = useState<tt.Marker[]>([])
@@ -48,6 +80,7 @@ const HomePage = () => {
     const locationBroadcastEventHandler = useCallback(({vendor}) => {
         const marker = createMarker(vendor)
         // check if marker already exists, if it does, remove it, then add the new one
+        console.log('hey')
         setMarkers([
             ...markers.filter(
                 (m) => m.getElement().id !== marker.getElement().id
@@ -101,8 +134,9 @@ const HomePage = () => {
     }, [])
 
 
-    const broadcastLocation = useCallback(async () => {
-        if (!currentUser || !map) return
+    const broadcastLocationHandler = useCallback(async () => {
+        if (!currentUser || !map ) return
+        if (!process.env.PUSHER_CHANNEL) throw new Error("PUSHER_CHANNEL ENV is undefined")
 
 
         try {
@@ -114,25 +148,25 @@ const HomePage = () => {
             map.setCenter([position.coords.longitude, position.coords.latitude])
             map.zoomTo(15)
 
-
-            const response = await fetch(
-                'http://localhost:8910/.redwood/functions/broadcast',
-                {
-                    method: 'POST',
-                    body: JSON.stringify({
+            await broadcastLocation({
+                variables: {
+                    id: currentUser.id,
+                    input: {
                         channel: process.env.PUSHER_CHANNEL,
-                        event: 'location-broadcast',
-                        vendor: {
-                            id: currentUser.id,
-                            username: currentUser.username,
-                            products: currentUser.products,
-                            longitude: position.coords.longitude,
-                            latitude: position.coords.latitude,
-                        }
-                    }),
+                        event: "location-broadcast",
+                        longitude: position.coords.longitude,
+                        latitude: position.coords.latitude,
+                    }
+                },
+                onError: (err) => {
+                    console.log(err)
+                    alert('failed broadcasting location')
+                },
+                onCompleted: () => {
+                    console.log('broadcasting location success')
                 }
-            )
-            const data = await response.json()
+            })
+
             setCoordinates(position.coords)
         } catch (err) {
             console.log(err)
@@ -154,19 +188,19 @@ const HomePage = () => {
                 )
             }
         }
-    }, [currentUser, map])
+    }, [currentUser, map, broadcastLocation])
 
     useEffect(() => {
         if (!isPageVisible || !isLocationShown || !isRealTime) return
         const intervalId = setInterval(() => {
-            broadcastLocation()
+            broadcastLocationHandler()
             console.log('realtime broadcast')
         }, 5000)
 
         return () => {
             clearInterval(intervalId)
         }
-    }, [isPageVisible, isRealTime, broadcastLocation, isLocationShown])
+    }, [isPageVisible, isRealTime, broadcastLocationHandler, isLocationShown])
 
 
 
@@ -229,7 +263,7 @@ const HomePage = () => {
 
     const updateLocationButtonHandler = () => {
         console.log('Update location')
-        broadcastLocation()
+        broadcastLocationHandler()
     }
 
 

@@ -19,6 +19,7 @@ const MAP_VENDORS_QUERY = gql`
                 id
                 name
             }
+            role
         }
     }
 `
@@ -35,7 +36,7 @@ function buildPopupHtml({ name, products }) {
 }
 
 
-export const createMarker = (vendor: User) => {
+export const createMarker = (vendor: MapVendorsQuery['mapVendors'][number]) => {
     const marker = new tt.Marker().setLngLat([vendor.longitude, vendor.latitude])
     marker.setPopup(
         new tt.Popup({ offset: 35 }).setHTML(buildPopupHtml({ name: vendor.name, products: vendor.products }))
@@ -51,6 +52,7 @@ const MapPage = () => {
     const { data }= useQuery<MapVendorsQuery>(MAP_VENDORS_QUERY)
     const [vendors, setVendors] = useState<MapVendorsQuery['mapVendors']>([])
     const [pusher, channel] = usePusher();
+
     useEffect(() => {
         console.log('map', map)
         console.log('coordinates', coordinates)
@@ -119,7 +121,7 @@ const MapPage = () => {
     // set vendors once the data is ready
     useEffect(() => {
         if (data) {
-            setVendors(data.mapVendors)
+            setVendors([...data.mapVendors])
         }
     }
     , [data])

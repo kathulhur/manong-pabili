@@ -70,6 +70,26 @@ export const schema = gql`
     event: String!
   }
 
+  input BroadcastLocationInput {
+    channel: String!
+    event: String!
+    latitude: Float!
+    longitude: Float!
+  }
+
+  fragment VendorFragment on User {
+    id
+    name
+    username
+    latitude
+    longitude
+    products {
+      id
+      name
+    }
+
+  }
+
   type Mutation {
     createUser(input: CreateUserInput!): User! @requireAuth
     updateUser(id: Int!, input: UpdateUserInput!): User! @requireAuth
@@ -77,6 +97,7 @@ export const schema = gql`
       @requireAuth
     deleteUserAccount(id: Int!, input: DeleteUserAccountInput!): User! @requireAuth
     deleteUser(id: Int!): User! @requireAuth
-    hideVendorLocation(id: Int!, input: HideVendorLocationInput): User! @requireAuth
+    hideVendorLocation(id: Int!, input: HideVendorLocationInput!): User! @requireAuth
+    broadcastLocation(id: Int!, input: BroadcastLocationInput!): User! @requireAuth
   }
 `;
