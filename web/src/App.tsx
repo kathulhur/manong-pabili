@@ -8,12 +8,14 @@ import './scaffold.css'
 import { AuthProvider, useAuth } from './auth'
 
 import './index.css'
+import { Toaster } from '@redwoodjs/web/toast'
 
 const App = () => (
     <FatalErrorBoundary page={FatalErrorPage}>
         <RedwoodProvider titleTemplate="%PageTitle | %AppTitle">
             <AuthProvider>
                 <RedwoodApolloProvider useAuth={useAuth}>
+                    <Toaster />
                     <Routes />
                 </RedwoodApolloProvider>
             </AuthProvider>

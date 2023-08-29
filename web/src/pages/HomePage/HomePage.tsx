@@ -232,11 +232,14 @@ const HomePage = () => {
             <MetaTags title="Home" description="Home page" />
             <div className='flex justify-between items-center mb-10'>
                 <h1 className='font-extrabold text-xl text-green-700'>Manong Pabili</h1>
-                <button type='button' onClick={() => setIsVendorProfileModalOpen(true)}>
+                <Button
+                    className='bg-slate-100'
+                    onClick={() => setIsVendorProfileModalOpen(true)}
+                >
                     <Bars2Icon
-                        className="h-7 w-7 text-gray-800 hover:text-gray-400"
+                        className="h-7 w-7 text-slate-800"
                     />
-                </button>
+                </Button>
                 <VendorProfileModal
                     isOpen={isVendorProfileModalOpen}
                     onClose={() => setIsVendorProfileModalOpen(false)}
@@ -244,7 +247,7 @@ const HomePage = () => {
             </div>
 
             <p className='mb-4 font-black text-2xl'>Good day, {currentUser?.username}</p>
-            <div className='mb-2 flex items-center justify-between'>
+            <div className='mb-4 flex items-center justify-between'>
                 <span className='text-lg font-semibold'>Show location</span>
                 <Switch
                     checked={isLocationShown}
@@ -290,13 +293,15 @@ const HomePage = () => {
 
             </section>
 
-            <Tab.Group onChange={(index) => {
-                switch(index) {
-                    case 0: return manualModeButtonHandler()
-                    case 1: return realTimeModeButtonHandler()
+            <Tab.Group
+                onChange={(index) => {
+                    switch(index) {
+                        case 0: return manualModeButtonHandler()
+                        case 1: return realTimeModeButtonHandler()
+                    }
                 }
-            }}>
-                <Tab.List className="flex space-x-1 rounded-xl bg-green-300/20 p-1 mb-4">
+            }>
+                <Tab.List className="flex space-x-1 rounded-lg bg-green-300/20 p-1 mb-4">
                     <Tab
                         className={({ selected }) =>
                             clsx(
@@ -320,7 +325,7 @@ const HomePage = () => {
                         }
                     >Realtime</Tab>
                 </Tab.List>
-                <Tab.Panels>
+                <Tab.Panels className='mb-12'>
                     <Tab.Panel>
                         <Button fullWidth onClick={updateLocationButtonHandler}>Update location</Button>
                     </Tab.Panel>

@@ -2,7 +2,7 @@ import { ButtonHTMLAttributes, ReactElement, ReactNode } from "react";
 import { clsx } from 'clsx';
 
 interface ButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
-  variant?: 'primary' | 'secondary';
+  variant?: 'primary' | 'outline' | 'subtle';
   icon?: ReactNode;
   fullWidth?: boolean;
   className?: string;
@@ -12,12 +12,14 @@ const Button = ({variant = 'primary', icon, fullWidth, className, children, ...p
 
   return (
     <button className={clsx(
-      'px-2 py-2 rounded-xl font-semibold',
+      'p-2 rounded-lg font-semibold hover:translate-y-[2px] hover:opacity-90 active:translate-y-[4px] ease-in-out transition',
       variant === 'primary' && 'bg-green-600 text-slate-50',
+      variant === 'outline' && 'border-2 border-solid border-green-600 text-green-600',
+      variant === 'subtle' && 'text-green-600',
       fullWidth && 'w-full',
       className,
     )} {...props}>
-      {icon && <span className="w-7 h-7">{icon}</span>}
+      {icon && <span className="w-6 h-6 text-slate-100">{icon}</span>}
       {children}
     </button>
   );
