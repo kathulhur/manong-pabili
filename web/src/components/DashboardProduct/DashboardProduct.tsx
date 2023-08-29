@@ -2,6 +2,8 @@ import { useMutation } from "@redwoodjs/web";
 import { DashboardProductsQuery } from "types/graphql";
 import { QUERY } from "../DashboardProductsCell";
 import { useAuth } from "src/auth";
+import Button from "../Button/Button";
+import { toast } from "@redwoodjs/web/toast";
 
 const UPDATE_PRODUCT_MUTATION = gql`
     mutation UpdateProductAvailabilityMutation(
@@ -26,7 +28,7 @@ const DashboardProduct = ({
             console.log(error)
         },
         onCompleted: () => {
-            alert('Product availability updated')
+            toast.success('Product availability updated')
             console.log('Product updated')
         },
         refetchQueries: [{ query: QUERY, variables: { userId: currentUser?.id } }],
@@ -53,16 +55,16 @@ const DashboardProduct = ({
     }
 
     return (
-        <div className="py-2">
+        <div>
             <div className="flex justify-between items-center">
-                <span>{product.name}</span>
-                <button
-                    className="border py-2 px-4 rounded-md"
+                <span className="font-semibold text-slate-700">{product.name}</span>
+                <Button
+                    variant="subtle"
                     type="button"
                     onClick={productAvailabilityButtonHandler}
                 >
                     {product.availability ? 'Available' : 'Unavailable'}
-                </button>
+                </Button>
             </div>
         </div>
     )

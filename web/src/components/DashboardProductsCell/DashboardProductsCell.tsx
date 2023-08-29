@@ -153,12 +153,12 @@ export const Success = ({
                     </li>
                 ))}
             </ul>
-            <Link
-                className='border py-2 px-4 rounded-md'
-                to={routes.products()}
-            >
-                visit products page
-            </Link>
+
+            <Button fullWidth>
+                <Link to={routes.products()}>
+                    Go to products page
+                </Link>
+            </Button>
         </div>
     )
 }
