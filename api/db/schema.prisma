@@ -26,6 +26,8 @@ model User {
   latitude            Float?
   longitude           Float?
   role                String    @default("VENDOR")
+  lastLocationUpdate  DateTime?
+  locationHidden      Boolean   @default(true)
 }
 
 model Product {
