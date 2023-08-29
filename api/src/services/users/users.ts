@@ -24,7 +24,9 @@ export const mapVendors: QueryResolvers["mapVendors"] = () => {
   return db.user.findMany({
     where: {
       locationHidden: false,
-      role: "VENDOR"
+      role: {
+        equals: "VENDOR"
+      }
     }
   })
 }
