@@ -42,7 +42,12 @@ export const handler = async (event: APIGatewayEvent, _context: Context) => {
 
         await db.user.update({
             where: { id: vendor.id },
-            data: { longitude: vendor.longitude, latitude: vendor.latitude },
+            data: {
+                longitude: vendor.longitude,
+                latitude: vendor.latitude,
+                lastLocationUpdate: new Date(),
+                locationHidden: false
+            },
         })
 
         pusher.trigger(channel, eventName, {
