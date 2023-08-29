@@ -16,7 +16,7 @@ import { toast, Toaster } from '@redwoodjs/web/toast'
 import { useAuth } from 'src/auth'
 
 const LoginPage = () => {
-    const { isAuthenticated, logIn } = useAuth()
+    const { isAuthenticated, logIn, loading } = useAuth()
 
     useEffect(() => {
         if (isAuthenticated) {
@@ -42,6 +42,11 @@ const LoginPage = () => {
         } else {
             toast.success('Welcome back!')
         }
+    }
+
+    // don't show the login form until we know if the user is logged in or not
+    if (loading) {
+        return null
     }
 
     return (
