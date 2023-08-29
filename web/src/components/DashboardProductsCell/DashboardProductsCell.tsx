@@ -154,11 +154,9 @@ export const Success = ({
                 ))}
             </ul>
 
-            <Button fullWidth>
-                <Link to={routes.products()}>
-                    Go to products page
-                </Link>
-            </Button>
+            <Link to={routes.products()}>
+                <Button fullWidth>Go to products page</Button>
+            </Link>
         </div>
     )
 }

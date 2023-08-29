@@ -231,9 +231,7 @@ const HomePage = () => {
 
 
     return (
-        <div
-            className='max-w-7xl mx-auto p-8'
-        >
+        <div className='max-w-7xl mx-auto p-8'>
             <MetaTags title="Home" description="Home page" />
             <div className='flex justify-between items-center mb-10'>
                 <h1 className='font-extrabold text-xl text-green-700'>Manong Pabili</h1>
@@ -259,7 +257,7 @@ const HomePage = () => {
                     onChange={isLocationShown ? hideLocationButtonHandler : showLocationButtonHandler}
                     className={`${isLocationShown ? 'bg-green-600' : 'bg-green-400'}
                     relative inline-flex h-[28px] w-[56px] shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none focus-visible:ring-2  focus-visible:ring-white focus-visible:ring-opacity-75`}
-                    >
+                >
                     <span className="sr-only">Show location</span>
                     <span
                         aria-hidden="true"
