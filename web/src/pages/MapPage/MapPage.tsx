@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useState } from 'react'
+import { useCallback, useEffect, useMemo, useState } from 'react'
 import '@tomtom-international/web-sdk-maps/dist/maps.css'
 import tt from '@tomtom-international/web-sdk-maps'
 import Pusher from 'pusher-js'
@@ -51,7 +51,7 @@ const MapPage = () => {
     const [markers, setMarkers] = useState<tt.Marker[]>([])
     const {data}= useQuery(MAP_VENDORS_QUERY)
     const [vendors, setVendors] = useState<User[]>([])
-    const pusher = usePusher();
+    const [pusher, channel] = usePusher();
 
     useEffect(() => {
         console.log('map', map)
@@ -65,11 +65,9 @@ const MapPage = () => {
 
 
     useEffect(() => {
-        if (pusher) {
-            const channel = pusher.subscribe(process.env.PUSHER_CHANNEL)
+        if (pusher && channel) {
             channel.bind('location-broadcast', ({vendor}: {vendor: User}) => {
                 console.log("location-broadcast")
-                console.log('vendr', vendor)
                 // check if marker already exists, if it does, update it, else add it as a new one
                 const marker = markers.find((m) => m.getElement().id === String(vendor.id))
                 if (marker) {
@@ -85,16 +83,26 @@ const MapPage = () => {
             })
 
             channel.bind('hide-location', ({vendor}: {vendor: User}) => {
+                console.log('hide-location')
                 const marker = markers.find((m) => m.getElement().id === String(vendor.id))
                 if (marker) {
                     marker.remove()
-                    setMarkers(markers.filter((m) => m.getElement().id === String(vendor.id)))
+                    setMarkers(markers.filter((m) => m.getElement().id !== String(vendor.id)))
                 }
 
             })
         }
 
-    }, [pusher, map, markers])
+        return () => {
+            if(pusher && channel) {
+                channel.unbind("location-broadcast")
+                channel.unbind("hide-location")
+            }
+        }
+
+    }, [pusher, channel, map, markers])
+
+
 
 
     // initialize map

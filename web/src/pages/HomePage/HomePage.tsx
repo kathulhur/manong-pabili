@@ -42,11 +42,10 @@ const HomePage = () => {
     const [isVendorProfileModalOpen, setIsVendorProfileModalOpen] = useState(
         false
     )
-    const pusher = usePusher()
+    const [pusher, channel] = usePusher()
 
     useEffect(() => {
-        if (pusher) {
-            const channel = pusher.subscribe(process.env.PUSHER_CHANNEL)
+        if (pusher && channel) {
             channel.bind('location-broadcast', ({vendor}) => {
                 const marker = createMarker(vendor)
                 // check if marker already exists, if it does, remove it, then add the new one
@@ -59,7 +58,13 @@ const HomePage = () => {
             })
 
         }
-    }, [pusher])
+
+        return () => {
+            if (channel) {
+                channel.unbind('location-broadcast')
+            }
+        }
+    }, [pusher, channel])
 
 
     useEffect(() => {
