@@ -25,7 +25,7 @@ export const schema = gql`
     users: [User!]! @requireAuth
     user(id: Int!): User @requireAuth
     vendorPage(page: Int): VendorPage @requireAuth
-    mapVendors: [User!]! @requireAuth
+    mapVendors: [User!]! @skipAuth
   }
 
   input CreateUserInput {

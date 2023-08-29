@@ -36,7 +36,7 @@ const HomePage = () => {
     const [isLocationShown, setIsLocationShown] = useState(false)
     const [isRealTime, setIsRealTime] = useState(false)
     const [markers, setMarkers] = useState<tt.Marker[]>([])
-    const [position, setPosition] = useState<GeolocationCoordinates>(null)
+    const [coordinates, setCoordinates] = useState<GeolocationCoordinates>(null)
     const [map, setMap] = useState<tt.Map>(null)
     const [isPageVisible, setIsPageVisible] = useState(true)
     const [isVendorProfileModalOpen, setIsVendorProfileModalOpen] = useState(
@@ -44,19 +44,22 @@ const HomePage = () => {
     )
     const [pusher, channel] = usePusher()
 
+
+    const locationBroadcastEventHandler = useCallback(({vendor}) => {
+        const marker = createMarker(vendor)
+        // check if marker already exists, if it does, remove it, then add the new one
+        setMarkers([
+            ...markers.filter(
+                (m) => m.getElement().id !== marker.getElement().id
+            ),
+            marker,
+        ])
+    }, [markers])
+
+
     useEffect(() => {
         if (pusher && channel) {
-            channel.bind('location-broadcast', ({vendor}) => {
-                const marker = createMarker(vendor)
-                // check if marker already exists, if it does, remove it, then add the new one
-                setMarkers([
-                    ...markers.filter(
-                        (m) => m.getElement().id !== marker.getElement().id
-                    ),
-                    marker,
-                ])
-            })
-
+            channel.bind('location-broadcast', locationBroadcastEventHandler)
         }
 
         return () => {
@@ -64,7 +67,7 @@ const HomePage = () => {
                 channel.unbind('location-broadcast')
             }
         }
-    }, [pusher, channel])
+    }, [pusher, locationBroadcastEventHandler])
 
 
     useEffect(() => {
@@ -99,14 +102,18 @@ const HomePage = () => {
 
 
     const broadcastLocation = useCallback(async () => {
+        if (!currentUser || !map) return
+
+
         try {
             const position = await getCurrentPositionAsync({
                 enableHighAccuracy: true,
                 timeout: 20000,
                 maximumAge: 1000,
             })
+            map.setCenter([position.coords.longitude, position.coords.latitude])
+            map.zoomTo(15)
 
-            setPosition(position.coords)
 
             const response = await fetch(
                 'http://localhost:8910/.redwood/functions/broadcast',
@@ -116,9 +123,9 @@ const HomePage = () => {
                         channel: process.env.PUSHER_CHANNEL,
                         event: 'location-broadcast',
                         vendor: {
-                            id: currentUser?.id,
-                            username: currentUser?.username,
-                            products: currentUser?.products,
+                            id: currentUser.id,
+                            username: currentUser.username,
+                            products: currentUser.products,
                             longitude: position.coords.longitude,
                             latitude: position.coords.latitude,
                         }
@@ -126,6 +133,7 @@ const HomePage = () => {
                 }
             )
             const data = await response.json()
+            setCoordinates(position.coords)
         } catch (err) {
             console.log(err)
             if (err.code === 1) {
@@ -146,13 +154,13 @@ const HomePage = () => {
                 )
             }
         }
-    }, [currentUser])
+    }, [currentUser, map])
 
     useEffect(() => {
         if (!isPageVisible || !isLocationShown || !isRealTime) return
         const intervalId = setInterval(() => {
             broadcastLocation()
-            console.log('hey')
+            console.log('realtime broadcast')
         }, 5000)
 
         return () => {
@@ -182,11 +190,14 @@ const HomePage = () => {
         }
     }
 
-    const hideLocationButtonHandler = async () => {
+    const hideLocationButtonHandler = useCallback(async () => {
+        if (!currentUser) return
+        if (!process.env.PUSHER_CHANNEL) throw new Error("PUSHER_CHANNEL ENV is undefined")
+
         try {
             await hideVendorLocation({
                 variables: {
-                    id: currentUser?.id,
+                    id: currentUser.id,
                     input: {
                         channel: process.env.PUSHER_CHANNEL,
                         event: "hide-location"
@@ -204,7 +215,7 @@ const HomePage = () => {
         } catch (err) {
             console.log(err)
         }
-    }
+    }, [currentUser])
 
     const realTimeModeButtonHandler = () => {
         setIsRealTime(true)
@@ -223,11 +234,11 @@ const HomePage = () => {
 
 
 
-    const focusLocationButtonHandler = () => {
-        if (!map) return
-        map.setCenter([position.longitude, position.latitude])
-        map.zoomTo(18)
-    }
+    const focusLocationButtonHandler = useCallback(() => {
+        if (!map || !coordinates) return
+        map.setCenter([coordinates.longitude, coordinates.latitude])
+        map.zoomTo(15)
+    }, [map, coordinates])
 
 
     return (
@@ -268,22 +279,23 @@ const HomePage = () => {
             </div>
 
             <section className='relative rounded-lg mb-4 h-64 bg-green-100/80 overflow-hidden'>
-                {
-                    isLocationShown &&  <>
-                        <div
-                            id="map"
-                            ref={mapRef}
-                            className='h-full'
-                        ></div>
-                        <button
-                            className='absolute bottom-6 right-4 w-10 h-10 flex justify-center items-center bg-white rounded-full shadow z-10'
-                            onClick={focusLocationButtonHandler}
-                            aria-label='Focus on my location'
-                        >
-                            <MapPinIcon className='w-6 h-6 text-green-600'></MapPinIcon>
-                        </button>
-                    </>
+
+                <div
+                    id="map"
+                    ref={mapRef}
+                    hidden={!isLocationShown}
+                    className='h-full'
+                ></div>
+                {isLocationShown &&
+                    <button
+                        className='absolute bottom-6 right-4 w-10 h-10 flex justify-center items-center bg-white rounded-full shadow z-10'
+                        onClick={focusLocationButtonHandler}
+                        aria-label='Focus on my location'
+                    >
+                        <MapPinIcon className='w-6 h-6 text-green-600'></MapPinIcon>
+                    </button>
                 }
+
                 { !isLocationShown && <div
                         className='grid place-items-center h-full'
                     >

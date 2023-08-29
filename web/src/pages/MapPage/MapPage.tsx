@@ -1,10 +1,9 @@
 import { useCallback, useEffect, useMemo, useState } from 'react'
 import '@tomtom-international/web-sdk-maps/dist/maps.css'
 import tt from '@tomtom-international/web-sdk-maps'
-import Pusher from 'pusher-js'
 
 import { MetaTags, useQuery } from '@redwoodjs/web'
-import { User } from 'types/graphql'
+import { MapVendorsQuery, User } from 'types/graphql'
 import useCoordinates from 'src/hooks/useCoordinates'
 import usePusher from 'src/hooks/usePusher'
 
@@ -49,10 +48,9 @@ const MapPage = () => {
     const coordinates = useCoordinates();
     const [map, setMap] = useState<tt.Map>(null)
     const [markers, setMarkers] = useState<tt.Marker[]>([])
-    const {data}= useQuery(MAP_VENDORS_QUERY)
-    const [vendors, setVendors] = useState<User[]>([])
+    const { data }= useQuery<MapVendorsQuery>(MAP_VENDORS_QUERY)
+    const [vendors, setVendors] = useState<MapVendorsQuery['mapVendors']>([])
     const [pusher, channel] = usePusher();
-
     useEffect(() => {
         console.log('map', map)
         console.log('coordinates', coordinates)
@@ -121,7 +119,7 @@ const MapPage = () => {
     // set vendors once the data is ready
     useEffect(() => {
         if (data) {
-            setVendors(data.users)
+            setVendors(data.mapVendors)
         }
     }
     , [data])
