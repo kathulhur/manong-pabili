@@ -19,11 +19,11 @@ const Routes = () => {
       <Route path="/signup" page={SignupPage} name="signup" />
       <Route path="/forgot-password" page={ForgotPasswordPage} name="forgotPassword" />
       <Route path="/reset-password" page={ResetPasswordPage} name="resetPassword" />
+        <Route path="/map" page={MapPage} name="map" />
       <Private unauthenticated="login">
         <Route path="/vendor" page={HomePage} name="home" />
         <Route path="/vendor/products" page={ProductsPage} name="products" />
         <Route path="/vendor/account" page={VendorAccountPage} name="vendorAccount" />
-        <Route path="/map" page={MapPage} name="map" />
         <Route path="/admin" page={AdminPage} name="admin" />
         <Route path="/admin/signup" page={AdminSignupPage} name="adminSignup" />
         <Route path="/admin/login" page={AdminLoginPage} name="adminLogin" />
