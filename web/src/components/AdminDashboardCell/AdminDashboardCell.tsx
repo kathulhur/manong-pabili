@@ -2,7 +2,9 @@ import type {
   FindAdminDashboardQuery,
   FindAdminDashboardQueryVariables,
   DeleteVendorMutation,
-  DeleteVendorMutationVariables
+  DeleteVendorMutationVariables,
+  VerifyVendorMutation,
+  VerifyVendorMutationVariables
 } from "types/graphql";
 import { type CellSuccessProps, type CellFailureProps, useMutation } from "@redwoodjs/web";
 import { useAuth } from "src/auth";
@@ -23,21 +25,33 @@ export const QUERY = gql`
       vendors {
         id,
         name,
+        verified,
         username,
         mobileNumber,
         roles,
         latitude,
         longitude,
+        lastLocationUpdate,
+        locationHidden
       }
       count
     }
   }
 `;
 
-export const DELETE_VENDOR_MUTATION = gql`
+const VERIFY_VENDOR_MUTATION = gql`
+  mutation VerifyVendorMutation($id: Int!, $input: UpdateUserInput!) {
+    verifyVendor: updateUser(id: $id, input: $input) {
+      id
+    }
+  }
+`
+
+const DELETE_VENDOR_MUTATION = gql`
   mutation DeleteVendorMutation($id: Int!) {
     deleteUser(id: $id) {
       id
+      verified
     }
   }
 `;
@@ -61,8 +75,10 @@ export const Success = ({
 
   const { currentUser } = useAuth()
   const logOut = useLogout();
+  const [verifyVendor] = useMutation<VerifyVendorMutation, VerifyVendorMutationVariables>(VERIFY_VENDOR_MUTATION)
   const [deleteVendor] = useMutation<DeleteVendorMutation, DeleteVendorMutationVariables>(DELETE_VENDOR_MUTATION)
   const [vendorUpdateModalOpen, setVendorUpdateModalOpen] = useState(false)
+
   const handleVendorDelete = async (id: number) => {
     try {
       await deleteVendor({ variables: { id },
@@ -79,6 +95,27 @@ export const Success = ({
     }
   }
 
+  const handleVerifyVendor = async (id: number, verified: boolean) => {
+    try {
+      await verifyVendor({ variables: {
+        id,
+        input: {
+          verified: !verified// toggle verified status
+        }
+       },
+        refetchQueries: [{ query: QUERY, variables: { page: 1 } }],
+        onError: (error) => {
+          alert(`Error verifying vendor ${id}: ${error.message}`)
+        },
+        onCompleted: () => {
+          alert("Vendor verified successfully")
+        }})
+    } catch (err) {
+      console.error(err)
+      alert(`Error verifying vendor ${id}: ${err.message}`)
+    }
+  }
+
 
   return <div>
     <button onClick={ logOut }>Logout</button>
@@ -87,11 +124,14 @@ export const Success = ({
         <thead>
           <tr>
             <td>ID</td>
+            <td>Verified</td>
             <td>Fullname</td>
             <td>Username</td>
             <td>Mobile Number</td>
             <td>Gender</td>
             <td>Coordinates</td>
+            <td>Last location update</td>
+            <td>Location hidden</td>
             <td>Role</td>
             <td>Products</td>
             <td>Actions</td>
@@ -101,14 +141,16 @@ export const Success = ({
           {vendors.map((vendor) => (
             <tr key={vendor.id}>
               <td>{vendor?.id}</td>
+              <td>{vendor?.verified ? "Yes" : "No"}</td>
               <td>{vendor?.name}</td>
               <td>{vendor?.username}</td>
               <td>{vendor?.mobileNumber}</td>
               <td>{"GENDER"}</td>
               <td>
-                <p>Latitude: {vendor.latitude}</p>
-                <p>Longitude: {vendor.longitude}</p>
+                <p>&#91;{vendor.latitude}, {vendor.longitude}&#93;</p>
               </td>
+              <td>{vendor?.lastLocationUpdate ? new Date(vendor.lastLocationUpdate).toLocaleString() : "None"}</td>
+              <td>{vendor?.locationHidden ? "Yes" : "No"}</td>
               <td>{vendor?.roles}</td>
               <td>
                 <Link to={"."}>View Products</Link>
@@ -116,6 +158,7 @@ export const Success = ({
               <td>
                 <div>
                   <button onClick={() => vendorUpdateModalOpen}>Update</button>
+                  <button onClick={() => handleVerifyVendor(vendor.id, vendor.verified)}>{vendor.verified ? "Unverify" : "Verify"}</button>
                   <button onClick={() => handleVendorDelete(vendor.id)}>Delete</button>
                 </div>
               </td>

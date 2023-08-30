@@ -5,8 +5,8 @@ import AdminDashboardCell from "src/components/AdminDashboardCell";
 
 
 const AdminPage = ({ page = 1}) => {
-  const { logOut, isAuthenticated, currentUser, loading} = useAuth()
-  console.log(currentUser)
+  const { isAuthenticated, currentUser, loading} = useAuth()
+
   if (loading) {
     return null
   }

@@ -12,6 +12,9 @@ export const schema = gql`
     products: [Product]!
     latitude: Float
     longitude: Float
+    verified: Boolean
+    lastLocationUpdate: DateTime
+    locationHidden: Boolean
     roles: String!
   }
 
@@ -39,6 +42,7 @@ export const schema = gql`
     resetTokenExpiresAt: DateTime
     latitude: Float
     longitude: Float
+    verified: Boolean
     roles: String!
   }
 
@@ -53,6 +57,7 @@ export const schema = gql`
     resetTokenExpiresAt: DateTime
     latitude: Float
     longitude: Float
+    verified: Boolean
     roles: String
   }
 

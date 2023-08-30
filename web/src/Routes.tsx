@@ -7,9 +7,10 @@
 // 'src/pages/HomePage/HomePage.js'         -> HomePage
 // 'src/pages/Admin/BooksPage/BooksPage.js' -> AdminBooksPage
 
-import { Router, Route, Private } from '@redwoodjs/router'
+import { Router, Route, Private, Set } from '@redwoodjs/router'
 
 import { useAuth } from './auth'
+import VerifiedVendorLayout from './layouts/VerifiedVendorLayout/VerifiedVendorLayout'
 
 const Routes = () => {
   return (
@@ -21,11 +22,13 @@ const Routes = () => {
       <Route path="/forgot-password" page={ForgotPasswordPage} name="forgotPassword" />
       <Route path="/reset-password" page={ResetPasswordPage} name="resetPassword" />
       <Route path="/map" page={MapPage} name="map" />
+      <Route notfound page={NotFoundPage} />
       <Private unauthenticated="forbidden" roles={"VENDOR"}>
-        <Route path="/vendor" page={HomePage} name="home" />
-        <Route path="/vendor/products" page={ProductsPage} name="products" />
-        <Route path="/vendor/account" page={VendorAccountPage} name="vendorAccount" />
-        <Route notfound page={NotFoundPage} />
+        <Set wrap={VerifiedVendorLayout}>
+          <Route path="/vendor" page={HomePage} name="home" />
+          <Route path="/vendor/products" page={ProductsPage} name="products" />
+          <Route path="/vendor/account" page={VendorAccountPage} name="vendorAccount" />
+        </Set>
       </Private>
       <Private unauthenticated='forbidden' roles={"ADMIN"}>
         <Route path="/admin" page={AdminPage} name="admin" />
