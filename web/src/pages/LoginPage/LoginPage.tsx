@@ -19,7 +19,7 @@ const LoginPage = () => {
     const { isAuthenticated, logIn, loading, currentUser } = useAuth()
 
     useEffect(() => {
-        if (isAuthenticated) {
+        if (isAuthenticated && currentUser) {
             if (currentUser.roles.includes('ADMIN')) {
                 navigate(routes.admin())
             } else if(currentUser.roles.includes('VENDOR')) {
