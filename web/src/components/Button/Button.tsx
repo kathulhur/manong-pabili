@@ -11,7 +11,7 @@ interface ButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
 const Button = ({ variant = 'primary', icon, fullWidth, className, children, ...props }: ButtonProps) => {
   return (
     <button className={clsx(
-      'p-2 rounded-lg font-semibold ease-in-out transition disabled:text-slate-500 disabled:bg-slate-200',
+      'p-2 rounded-lg font-semibold ease-in-out transition disabled:text-slate-500 disabled:bg-slate-200 disabled:cursor-not-allowed',
       !props.disabled && 'hover:translate-y-[2px] hover:opacity-90 active:translate-y-[4px]',
       variant === 'primary' && 'bg-green-600 text-slate-50',
       variant === 'secondary' && 'bg-slate-100 text-slate-500',
