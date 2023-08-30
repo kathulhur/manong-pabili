@@ -16,11 +16,15 @@ import { toast, Toaster } from '@redwoodjs/web/toast'
 import { useAuth } from 'src/auth'
 
 const LoginPage = () => {
-    const { isAuthenticated, logIn, loading } = useAuth()
+    const { isAuthenticated, logIn, loading, currentUser } = useAuth()
 
     useEffect(() => {
         if (isAuthenticated) {
-            navigate(routes.home())
+            if (currentUser.role === 'ADMIN') {
+                navigate(routes.admin())
+            } else if(currentUser.role === 'VENDOR') {
+                navigate(routes.home())
+            }
         }
     }, [isAuthenticated])
 
@@ -34,6 +38,8 @@ const LoginPage = () => {
             username: data.username,
             password: data.password,
         })
+
+        console.log(response)
 
         if (response.message) {
             toast(response.message)

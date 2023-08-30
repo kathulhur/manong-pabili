@@ -101,7 +101,11 @@ export const vendorPage: QueryResolvers['vendorPage'] = async ({ page = 1 }) => 
       where: {
         role: 'VENDOR',
       }}),
-      count: await db.user.count(),
+      count: await db.user.count({
+        where: {
+          role: 'VENDOR',
+        }
+      }),
   }
 }
 
