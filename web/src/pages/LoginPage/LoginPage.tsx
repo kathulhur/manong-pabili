@@ -26,12 +26,13 @@ const LoginPage = () => {
                 navigate(routes.home())
             }
         }
-    }, [isAuthenticated])
+    }, [isAuthenticated, currentUser])
 
     const usernameRef = useRef<HTMLInputElement>(null)
     useEffect(() => {
+        console.log(usernameRef.current)
         usernameRef.current?.focus()
-    }, [])
+    }, [loading, isAuthenticated])
 
     const onSubmit = async (data: Record<string, string>) => {
         const response = await logIn({
@@ -51,15 +52,11 @@ const LoginPage = () => {
     }
 
     // don't show the login form until we know if the user is logged in or not
-    if (loading) {
-        return null
-    }
-
 
     return (
         <>
             <MetaTags title="Login" />
-
+            { !loading && !isAuthenticated && (
             <main className="rw-main">
                 <Toaster
                     toastOptions={{ className: 'rw-toast', duration: 6000 }}
@@ -154,6 +151,7 @@ const LoginPage = () => {
                     </div>
                 </div>
             </main>
+            )}
         </>
     )
 }
