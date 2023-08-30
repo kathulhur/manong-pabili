@@ -1,45 +1,50 @@
-import { Dialog } from "@headlessui/react"
-import { useState } from "react"
 import { useAuth } from "src/auth"
-import { CreateProductInput } from "types/graphql"
-
+import { CreateProductInput, Product } from "types/graphql"
+import BaseModal from "./BaseModal"
+import Button from "../Button/Button"
+import { FieldError, Form, Label, TextField } from "@redwoodjs/forms"
 
 const CreateProductModal = ({
   isOpen,
   onClose,
   onSubmit,
 }: {
-    isOpen: boolean,
-    onClose: () => void,
-    onSubmit: (data: CreateProductInput) => void
-  }) => {
-    const [name, setName] = useState('')
-    const { currentUser } = useAuth()
+  isOpen: boolean,
+  onClose: () => void,
+  onSubmit: (data: CreateProductInput) => void
+}) => {
+  const { currentUser } = useAuth()
 
   return (
-    <Dialog
-        open={isOpen}
-        onClose={onClose}
+    <BaseModal
+      isOpen={isOpen}
+      onClose={onClose}
     >
-      <Dialog.Title>Add Product</Dialog.Title>
-      <Dialog.Panel>
+      <BaseModal.Title>Add Product</BaseModal.Title>
 
-      <form onSubmit={(e) => {
-        e.preventDefault()
-        onSubmit({ name, availability: false, userId: currentUser?.id})
-        setName('')
+      <Form onSubmit={(data: Product) => {
+        onSubmit({ ...data, availability: false, userId: currentUser?.id })
       }}>
-          <label>
-            <input
-                name="name"
-                value={name}
-                onChange={(e) => setName(e.target.value)}
-                />
-          </label>
-          <button type="button">Add Product</button>
-      </form>
-      </Dialog.Panel>
-    </Dialog>
+        <div className="flex flex-col">
+          <Label name="name" className="mb-2 text-slate-900">Product name</Label>
+          <TextField
+            name="name"
+            className="w-full border border-solid border-slate-200 rounded-lg px-4 py-2 focus:outline focus:outline-2 focus:outline-green-600"
+            validation={{
+              required: {
+                value: true,
+                message: 'Product name is required',
+              }
+            }}
+            />
+          <FieldError name="name" className="text-red-500 text-sm" />
+        </div>
+
+        <BaseModal.Footer>
+          <Button type="submit" fullWidth>Add Product</Button>
+        </BaseModal.Footer>
+      </Form>
+    </BaseModal>
   )
 }
 

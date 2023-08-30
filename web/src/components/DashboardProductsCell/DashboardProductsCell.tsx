@@ -9,7 +9,7 @@ import {
 import DashboardProduct from '../DashboardProduct/DashboardProduct'
 import CreateProductModal from '../Modals/CreateProductModal'
 import { useAuth } from 'src/auth'
-import { Toaster } from '@redwoodjs/web/dist/toast'
+import { toast } from '@redwoodjs/web/toast'
 import { PlusIcon } from '@heroicons/react/20/solid'
 import Button from '../Button/Button'
 
@@ -108,7 +108,7 @@ export const Success = ({
             console.log(error)
         },
         onCompleted: () => {
-            alert('Product created')
+            toast.success('Product created')
             setIsCreateProductModalOpen(false)
         },
         refetchQueries: [{ query: QUERY, variables: { userId: currentUser?.id } }],
