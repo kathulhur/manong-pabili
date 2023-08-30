@@ -10,7 +10,7 @@ const AdminLoginPage = () => {
 
 
   useEffect(() => {
-    if (isAuthenticated && currentUser && currentUser.role === "ADMIN") {
+    if (isAuthenticated && currentUser && currentUser.roles.includes("ADMIN")) {
       navigate(routes.admin())
     }
   }, [isAuthenticated, currentUser])

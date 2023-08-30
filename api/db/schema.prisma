@@ -25,7 +25,7 @@ model User {
   products            Product[]
   latitude            Float?
   longitude           Float?
-  role                String    @default("VENDOR")
+  roles               String    @default("VENDOR")
   lastLocationUpdate  DateTime?
   locationHidden      Boolean   @default(true)
 }

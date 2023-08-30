@@ -20,9 +20,9 @@ const LoginPage = () => {
 
     useEffect(() => {
         if (isAuthenticated) {
-            if (currentUser.role === 'ADMIN') {
+            if (currentUser.roles.includes('ADMIN')) {
                 navigate(routes.admin())
-            } else if(currentUser.role === 'VENDOR') {
+            } else if(currentUser.roles.includes('VENDOR')) {
                 navigate(routes.home())
             }
         }

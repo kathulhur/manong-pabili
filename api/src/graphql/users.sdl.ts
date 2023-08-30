@@ -12,7 +12,7 @@ export const schema = gql`
     products: [Product]!
     latitude: Float
     longitude: Float
-    role: String!
+    roles: String!
   }
 
   type VendorPage {
@@ -39,7 +39,7 @@ export const schema = gql`
     resetTokenExpiresAt: DateTime
     latitude: Float
     longitude: Float
-    role: String!
+    roles: String!
   }
 
   input UpdateUserInput {
@@ -53,7 +53,7 @@ export const schema = gql`
     resetTokenExpiresAt: DateTime
     latitude: Float
     longitude: Float
-    role: String
+    roles: String
   }
 
   input UpdateUserPasswordInput {

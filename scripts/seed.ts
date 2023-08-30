@@ -66,7 +66,7 @@ export default async () => {
                     mobileNumber: "1234567890",
                     latitude: 0,
                     longitude: 0,
-                    role: "VENDOR",
+                    roles: "VENDOR",
                     hashedPassword,
                     salt,
                 },

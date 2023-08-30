@@ -36,7 +36,7 @@ const SignupPage = () => {
             const response = await signUp({
                 name: data.name,
                 mobileNumber: data.mobileNumber,
-                role: "VENDOR",
+                roles: "VENDOR",
                 gender: data.gender,
                 username: data.username,
                 password: data.password,

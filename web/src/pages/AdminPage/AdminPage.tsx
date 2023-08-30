@@ -6,12 +6,12 @@ import AdminDashboardCell from "src/components/AdminDashboardCell";
 
 const AdminPage = ({ page = 1}) => {
   const { logOut, isAuthenticated, currentUser, loading} = useAuth()
-
+  console.log(currentUser)
   if (loading) {
     return null
   }
 
-  if (isAuthenticated && currentUser.role !== "ADMIN") {
+  if (isAuthenticated && currentUser && !currentUser.roles.includes("ADMIN")) {
     return <div>
       <p>Forbidden: Only admin can access this page.</p>
       <Link to={routes.index()}>Go to Home</Link>

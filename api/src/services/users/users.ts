@@ -24,7 +24,7 @@ export const mapVendors: QueryResolvers["mapVendors"] = () => {
   return db.user.findMany({
     where: {
       locationHidden: false,
-      role: {
+      roles: {
         equals: "VENDOR"
       }
     }
@@ -99,11 +99,15 @@ export const vendorPage: QueryResolvers['vendorPage'] = async ({ page = 1 }) => 
       take: VENDORS_PER_PAGE,
       skip: offset,
       where: {
-        role: 'VENDOR',
+        roles: {
+          contains: "VENDOR"
+        }
       }}),
       count: await db.user.count({
         where: {
-          role: 'VENDOR',
+          roles: {
+            contains: "VENDOR"
+          }
         }
       }),
   }
@@ -141,7 +145,7 @@ export const hideVendorLocation: MutationResolvers['hideVendorLocation'] = async
       throw "User not found"
     }
 
-    if (user.role != "VENDOR") {
+    if (!user.roles.includes("VENDOR")) {
       throw "User must be a vendor"
     }
 

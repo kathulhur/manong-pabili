@@ -19,7 +19,7 @@ const MAP_VENDORS_QUERY = gql`
                 id
                 name
             }
-            role
+            roles
         }
     }
 `

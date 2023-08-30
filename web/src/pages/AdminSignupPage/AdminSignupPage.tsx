@@ -14,7 +14,7 @@ const AdminSignupPage = () => {
   const { isAuthenticated, signUp, currentUser } = useAuth()
 
     useEffect(() => {
-        if (isAuthenticated && currentUser && currentUser.role === "ADMIN") {
+        if (isAuthenticated && currentUser && currentUser.roles === "ADMIN") {
             navigate(routes.admin())
         }
     }, [isAuthenticated, currentUser])
@@ -27,7 +27,7 @@ const AdminSignupPage = () => {
       mobileNumber,
       username,
       password,
-      role: "ADMIN",
+      roles: "ADMIN",
     })
 
     if (response.message) {

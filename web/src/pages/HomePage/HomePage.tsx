@@ -37,7 +37,7 @@ const HIDE_VENDOR_LOCATION_MUTATION = gql`
                 id
                 name
             }
-            role
+            roles
         }
     }
 `
@@ -54,7 +54,7 @@ const BROADCAST_LOCATION_MUTATION = gql`
                 id
                 name
             }
-            role
+            roles
         }
     }
 `

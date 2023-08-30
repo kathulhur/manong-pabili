@@ -24,7 +24,7 @@ export const QUERY = gql`
         name,
         username,
         mobileNumber,
-        role,
+        roles,
         latitude,
         longitude,
       }
@@ -98,12 +98,6 @@ export const Success = ({
         <tbody>
           {vendors.map((vendor) => (
             <tr key={vendor.id}>
-              <td>
-                <div>
-                  <button onClick={() => vendorUpdateModalOpen}>Update</button>
-                  <button onClick={() => handleVendorDelete(vendor.id)}>Delete</button>
-                </div>
-              </td>
               <td>{vendor?.id}</td>
               <td>{vendor?.name}</td>
               <td>{vendor?.username}</td>
@@ -113,9 +107,15 @@ export const Success = ({
                 <p>Latitude: {vendor.latitude}</p>
                 <p>Longitude: {vendor.longitude}</p>
               </td>
-              <td>{vendor?.role}</td>
+              <td>{vendor?.roles}</td>
               <td>
                 <Link to={"."}>View Products</Link>
+              </td>
+              <td>
+                <div>
+                  <button onClick={() => vendorUpdateModalOpen}>Update</button>
+                  <button onClick={() => handleVendorDelete(vendor.id)}>Delete</button>
+                </div>
               </td>
             </tr>
           ))}
