@@ -127,7 +127,7 @@ const HomePage = () => {
                 key: process.env.TOMTOM_API_KEY,
                 container: node,
                 center: [121.004995, 14.610395],
-                zoom: 12,
+                zoom: 15,
             })
             setMap(map)
         }
@@ -318,7 +318,7 @@ const HomePage = () => {
                     id="map"
                     ref={mapRef}
                     hidden={!isLocationShown}
-                    className='h-full'
+                    className='h-full w-full'
                 ></div>
                 {isLocationShown &&
                     <button
