@@ -9,6 +9,7 @@ import { useAuth } from "src/auth";
 import { Link } from "@redwoodjs/router";
 import Pagination from "../Pagination/Pagination";
 import { useState } from "react";
+import useLogout from "src/hooks/useLogout";
 
 export const beforeQuery = ({ page }) => {
   page = page ? parseInt(page, 10): 1
@@ -58,7 +59,8 @@ export const Success = ({
   FindAdminDashboardQueryVariables
 >) => {
 
-  const { logOut, currentUser } = useAuth()
+  const { currentUser } = useAuth()
+  const logOut = useLogout();
   const [deleteVendor] = useMutation<DeleteVendorMutation, DeleteVendorMutationVariables>(DELETE_VENDOR_MUTATION)
   const [vendorUpdateModalOpen, setVendorUpdateModalOpen] = useState(false)
   const handleVendorDelete = async (id: number) => {

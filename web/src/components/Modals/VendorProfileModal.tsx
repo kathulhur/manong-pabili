@@ -1,9 +1,10 @@
 import { Dialog, Transition } from "@headlessui/react";
-import { Link } from "@redwoodjs/router";
+import { Link, navigate, routes } from "@redwoodjs/router";
 import { useAuth } from "src/auth";
 import Button from "../Button/Button";
 import { Fragment } from "react";
 import BaseModal from "./BaseModal";
+import useLogout from "src/hooks/useLogout";
 
 const VendorProfileModal = ({
   isOpen,
@@ -12,7 +13,10 @@ const VendorProfileModal = ({
   isOpen: boolean;
   onClose: () => void;
 }) => {
-  const { currentUser, logOut } = useAuth();
+  const { currentUser } = useAuth();
+  const logOut = useLogout();
+
+
 
   return (
     <BaseModal
