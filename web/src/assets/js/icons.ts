@@ -13,7 +13,8 @@ const images = {
   meatball
 }
 
-type IconKeys = keyof typeof images
+export type IconKeys = keyof typeof images
+
 const icons: Record<IconKeys, HTMLImageElement> = {} as Record<IconKeys, HTMLImageElement>;
 
 for (const [key, value] of Object.entries(images)) {
