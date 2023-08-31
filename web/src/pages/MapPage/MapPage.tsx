@@ -138,7 +138,7 @@ const MapPage = () => {
             }
         }
 
-    }, [pusher, channel, map])
+    }, [pusher, channel, map, markers])
 
 
 
