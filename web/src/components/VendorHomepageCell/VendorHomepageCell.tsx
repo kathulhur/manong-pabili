@@ -17,11 +17,10 @@ import MarkerSelectModal from "../Modals/MarkerSelectModal";
 import { Switch, Tab } from "@headlessui/react";
 import clsx from "clsx";
 import DashboardProductsCell from "../DashboardProductsCell";
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { getCurrentPositionAsync } from "src/hooks/useCoordinates";
 import usePusher from "src/hooks/usePusher";
 import { createMarker } from "src/pages/MapPage/MapPage";
-import { useAuth } from "src/auth";
 import tt from "@tomtom-international/web-sdk-maps";
 
 export const beforeQuery = ({ userId }) => {
@@ -113,7 +112,6 @@ export const Success = ({
   const [markers, setMarkers] = useState<tt.Marker[]>([])
   const [coordinates, setCoordinates] = useState<GeolocationCoordinates>(null)
   const [map, setMap] = useState<tt.Map>(null)
-  const [isPageVisible, setIsPageVisible] = useState(true)
   const [isVendorProfileModalOpen, setIsVendorProfileModalOpen] = useState(
       false
       )
@@ -146,12 +144,13 @@ export const Success = ({
       }
   }, [pusher, locationBroadcastEventHandler])
 
+  const handleVisibilityChange = useCallback(() => {
+        if (document.hidden && isLocationShown && isRealTime) {
+            manualModeButtonHandler()
+        }
+  }, [isRealTime, isLocationShown])
 
   useEffect(() => {
-      const handleVisibilityChange = () => {
-          setIsPageVisible(!document.hidden)
-          console.log('visibility changed to ' + !document.hidden)
-      }
 
       // Add visibilitychange event listener when component mounts
       document.addEventListener('visibilitychange', handleVisibilityChange)
@@ -163,7 +162,7 @@ export const Success = ({
               handleVisibilityChange
           )
       }
-  }, [])
+  }, [handleVisibilityChange])
 
   const mapRef = useCallback((node) => {
       if (node !== null) {
@@ -235,7 +234,7 @@ export const Success = ({
   }, [vendor, map, broadcastLocation])
 
   useEffect(() => {
-      if (!isPageVisible || !isLocationShown || !isRealTime) return
+      if ( !isLocationShown || !isRealTime) return
       const intervalId = setInterval(() => {
           broadcastLocationHandler()
           console.log('realtime broadcast')
@@ -244,7 +243,7 @@ export const Success = ({
       return () => {
           clearInterval(intervalId)
       }
-  }, [isPageVisible, isRealTime, broadcastLocationHandler, isLocationShown])
+  }, [isRealTime, broadcastLocationHandler, isLocationShown])
 
 
 
@@ -335,7 +334,7 @@ export const Success = ({
               }
           })
       } catch (err) {
-
+        console.log(err)
       }
   }
 
@@ -402,7 +401,7 @@ export const Success = ({
               id="map"
               ref={mapRef}
               hidden={!isLocationShown}
-              className='h-full w-full'
+              className='h-full  max-w-full'
           ></div>
           {isLocationShown &&
               <button
@@ -427,6 +426,8 @@ export const Success = ({
       </section>
 
       <Tab.Group
+        as={'div'}
+        selectedIndex={isRealTime ? 1 : 0}
           onChange={(index) => {
               switch(index) {
                   case 0: return manualModeButtonHandler()

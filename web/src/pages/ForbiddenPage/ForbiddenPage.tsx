@@ -12,7 +12,6 @@ const ForbiddenPage = () => {
         navigate(routes.admin())
       } else if(currentUser.roles.includes('VENDOR')) {
         navigate(routes.home())
-        return null
       } else {
         navigate(routes.index())
       }
