@@ -6,6 +6,8 @@ import { MetaTags, useQuery } from '@redwoodjs/web'
 import { MapVendorsQuery, User } from 'types/graphql'
 import useCoordinates from 'src/hooks/useCoordinates'
 import usePusher from 'src/hooks/usePusher'
+import icons from 'src/assets/js/icons'
+
 
 const MAP_VENDORS_QUERY = gql`
     query MapVendorsQuery {
@@ -20,27 +22,35 @@ const MAP_VENDORS_QUERY = gql`
                 name
             }
             roles
+            markerUrl
         }
     }
 `
 
-function buildPopupHtml({ name, products }) {
+export function buildPopupHtml({ name, products }) {
     return `
     <div>
-      <h1>${name}</h1>
-      <ul>
-        ${products.map((product) => `<li>${product}</li>`).join('')}
-      </ul>
+      <h1 class='font-bold text-lg'>${name}</h1>
+        <ul>
+            ${products.map((product) => `<li class='text-sm'>${product.name}</li>`).join('')}
+        </ul>
     </div>
   `
 }
 
 
 export const createMarker = (vendor: MapVendorsQuery['mapVendors'][number]) => {
-    const marker = new tt.Marker().setLngLat([vendor.longitude, vendor.latitude])
+    let image = document.createElement('img')
+    image.src = vendor.markerUrl,
+    image.className = 'w-6 h-6'
+
+    const marker = new tt.Marker({
+        element: image
+    }).setLngLat([vendor.longitude, vendor.latitude])
+
     marker.setPopup(
         new tt.Popup({ offset: 35 }).setHTML(buildPopupHtml({ name: vendor.name, products: vendor.products }))
-        )
+    )
     marker.getElement().id = String(vendor.id)
     return marker
 }

@@ -16,6 +16,7 @@ export const schema = gql`
     lastLocationUpdate: DateTime
     locationHidden: Boolean
     roles: String!
+    markerUrl: String
   }
 
   type VendorPage {
@@ -44,6 +45,7 @@ export const schema = gql`
     longitude: Float
     verified: Boolean
     roles: String!
+    markerUrl: String
   }
 
   input UpdateUserInput {
@@ -59,6 +61,7 @@ export const schema = gql`
     longitude: Float
     verified: Boolean
     roles: String
+    markerUrl: String
   }
 
   input UpdateUserPasswordInput {

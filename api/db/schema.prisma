@@ -29,6 +29,7 @@ model User {
   lastLocationUpdate  DateTime?
   locationHidden      Boolean   @default(true)
   verified            Boolean   @default(false)
+  markerUrl           String?
 }
 
 model Product {

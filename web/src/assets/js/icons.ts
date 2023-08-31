@@ -3,24 +3,26 @@ import bbq_grill from '../images/bbq-grill.png'
 import coconut from '../images/coconut.png'
 import kiosk from '../images/kiosk.png'
 import meatball from '../images/meatball.png'
+import default_marker from '../images/default_marker.png'
 
 
-const images = {
+export const iconImages = {
   juices,
   bbq_grill,
   coconut,
   kiosk,
-  meatball
+  meatball,
+  default_marker
 }
 
-export type IconKeys = keyof typeof images
+export type IconKeys = keyof typeof iconImages
 
 const icons: Record<IconKeys, HTMLImageElement> = {} as Record<IconKeys, HTMLImageElement>;
 
-for (const [key, value] of Object.entries(images)) {
+for (const [key, value] of Object.entries(iconImages)) {
   let image = document.createElement('img')
   image.src = value
-  image.className = 'h-8 w-8'
+  image.className = 'object-scale-down'
 
   icons[key] = image
 }
