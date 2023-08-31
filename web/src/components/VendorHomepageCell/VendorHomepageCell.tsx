@@ -11,7 +11,7 @@ import type {
 
 import { type CellSuccessProps, type CellFailureProps, MetaTags, useMutation } from "@redwoodjs/web";
 import Button from "../Button/Button";
-import { Bars2Icon, EyeSlashIcon, MapPinIcon } from "@heroicons/react/20/solid";
+import { Bars2Icon, EyeSlashIcon, MapPinIcon, PencilSquareIcon } from "@heroicons/react/20/solid";
 import VendorProfileModal from "../Modals/VendorProfileModal";
 import MarkerSelectModal from "../Modals/MarkerSelectModal";
 import { Switch, Tab } from "@headlessui/react";
@@ -364,21 +364,20 @@ export const Success = ({
               onClose={() => setIsVendorProfileModalOpen(false)}
           />
       </div>
-      <div className='flex justify-between mb-8'>
-          <p className='mb-4 font-black text-2xl'>Good day, {vendor?.username}</p>
-          <div className='flex flex-col items-center space-y-4'>
-              <div className='rounded-full border-2 border-black p-4 w-20 h-20 flex items-center justify-center'>
-                  <img src={vendor?.markerUrl} alt="marker icon"/>
-              </div>
-              <button
-                  onClick={() => setIsMarkerSelectModalOpen(true)}
-                  className='px-4 py-2 bg-green-400 rounded-full text-white font-semibold'>Change marker</button>
-              <MarkerSelectModal
-                  isOpen={isMarkerSelectModalOpen}
-                  onClose={() => setIsMarkerSelectModalOpen(false)}
-                  onSubmit={updateVendorMarkerHandler}
-              />
+      <div className='flex items-center justify-between mb-8'>
+          <p className='font-black text-2xl'>Good day, {vendor?.username}</p>
+          <div
+            onClick={() => setIsMarkerSelectModalOpen(true)}
+            className='relative flex items-center justify-center rounded-full p-4 w-16 h-16 bg-green-100 hover:bg-green-200'
+          >
+            <PencilSquareIcon className="absolute -top-1 -right-1 w-7 h-7 p-1 rounded-full border-2 border-green-100 bg-white text-slate-500"/>
+            <img src={vendor?.markerUrl} alt="marker icon"/>
           </div>
+          <MarkerSelectModal
+            isOpen={isMarkerSelectModalOpen}
+            onClose={() => setIsMarkerSelectModalOpen(false)}
+            onSubmit={updateVendorMarkerHandler}
+          />
       </div>
       <div className='mb-4 flex items-center justify-between'>
           <span className='text-lg font-semibold'>Show location</span>

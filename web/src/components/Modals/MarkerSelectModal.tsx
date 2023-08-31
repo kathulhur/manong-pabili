@@ -38,10 +38,8 @@ const MarkerSelectModal = ({
               }}
 
             >
-
-
-                  <img src={url} alt="marker icon" className='object-scale-down'/>
-              </div>
+              <img src={url} alt="marker icon" className='object-scale-down'/>
+            </div>
           ))
           }
       </div>
