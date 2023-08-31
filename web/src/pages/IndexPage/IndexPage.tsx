@@ -12,8 +12,10 @@ const IndexPage = () => {
               navigate(routes.home())
           }
       }
-  }, [isAuthenticated])
+  }, [isAuthenticated, currentUser])
 
+  // current user gets set to undefined on app start (yarn rw dev)
+  //  but isAuthenticated is still true
   if (loading) {
     return <div>Loading...</div>;
   }

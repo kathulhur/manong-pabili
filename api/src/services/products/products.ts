@@ -18,6 +18,20 @@ export const productsByUser: QueryResolvers['productsByUser'] = ({
     })
 }
 
+export const vendorProducts: QueryResolvers['vendorProducts'] = () => {
+    return db.product.findMany({
+        where: {
+            availability: true,
+            user: {
+                roles: {
+                    contains: 'VENDOR',
+                },
+                verified: true
+            }
+        }
+    })
+}
+
 export const product: QueryResolvers['product'] = ({ id }) => {
     return db.product.findUnique({
         where: { id },

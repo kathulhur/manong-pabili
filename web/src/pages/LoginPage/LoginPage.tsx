@@ -52,7 +52,7 @@ const LoginPage = () => {
     }
 
     // don't show the login form until we know if the user is logged in or not
-
+    console.log(loading, isAuthenticated, currentUser)
     return (
         <>
             <MetaTags title="Login" />
