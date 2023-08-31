@@ -46,11 +46,11 @@ export const Empty = () => {
 
     const [createProduct] = useMutation(CREATE_PRODUCT_MUTATION, {
         onError: (error) => {
-            alert('Error creating product')
+            toast.error('Error creating product')
             console.log(error)
         },
         onCompleted: () => {
-            alert('Product created')
+            toast.success('Product created')
             setIsCreateProductModalOpen(false)
         },
         refetchQueries: [{ query: QUERY, variables: { userId: currentUser?.id } }],
@@ -69,25 +69,25 @@ export const Empty = () => {
         }
     }
 
-    return <>
-        <div>
-            <button
+    return (
+        <div className='text-center'>
+            <p className='mb-6'>You haven't added a product yet.<br/>Give it a try by adding one.</p>
+            <Button
                 type="button"
                 onClick={() =>
                     setIsCreateProductModalOpen(!isCreateProductModalOpen)
                 }
+                fullWidth
             >
                 Add Product
-            </button>
+            </Button>
             <CreateProductModal
                 isOpen={isCreateProductModalOpen}
                 onClose={() => setIsCreateProductModalOpen(false)}
                 onSubmit={onCreateProductModalSubmit}
             />
-            <p></p>Empty
-
         </div>
-    </>
+    )
 }
 
 export const Failure = ({ error }: CellFailureProps) => (
