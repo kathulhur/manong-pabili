@@ -327,6 +327,9 @@ export const Success = ({
                   setIsMarkerSelectModalOpen(false)
               },
               onCompleted: () => {
+                    if (isLocationShown) {
+                        broadcastLocationHandler()
+                    }
                   console.log('success')
                   setIsMarkerSelectModalOpen(false)
               }
