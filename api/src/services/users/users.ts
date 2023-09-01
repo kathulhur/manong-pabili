@@ -177,23 +177,49 @@ export const updateUserPassword: MutationResolvers['updateUserPassword'] =
 
 const VENDORS_PER_PAGE = 5;
 
-export const vendorPage: QueryResolvers['vendorPage'] = async ({ page = 1 }) => {
+export const vendorPage: QueryResolvers['vendorPage'] = async ({ page = 1, searchKey = "" }) => {
   const offset = (page - 1) * VENDORS_PER_PAGE;
-
+  // TODO: extract the filter logic
   return {
     vendors: await db.user.findMany({
       take: VENDORS_PER_PAGE,
       skip: offset,
       where: {
+        OR: [
+          {
+            name: {
+              contains: searchKey
+            }
+          },
+          {
+            username: {
+              contains: searchKey
+            }
+          }
+        ],
         roles: {
           contains: "VENDOR"
-        }
+        },
+        deleted: false
       }}),
       count: await db.user.count({
         where: {
           roles: {
-            contains: "VENDOR"
-          }
+            contains: "VENDOR",
+          },
+          OR: [
+            {
+              name: {
+                contains: searchKey
+              }
+            },
+            {
+              username: {
+                contains: searchKey
+              }
+            }
+          ],
+          deleted: false,
         }
       }),
   }

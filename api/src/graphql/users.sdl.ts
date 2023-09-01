@@ -31,7 +31,7 @@ export const schema = gql`
     users: [User!]! @requireAuth
     user(id: Int!): User @requireAuth
     vendor(id: Int!): User @requireAuth
-    vendorPage(page: Int): VendorPage @requireAuth
+    vendorPage(page: Int, searchKey: String): VendorPage @requireAuth
     mapVendors: [User!]! @skipAuth
     vendorProducts: [Product!]! @skipAuth
   }

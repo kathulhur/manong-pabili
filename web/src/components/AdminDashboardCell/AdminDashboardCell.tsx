@@ -13,15 +13,15 @@ import Pagination from "../Pagination/Pagination";
 import { useState } from "react";
 import useLogout from "src/hooks/useLogout";
 
-export const beforeQuery = ({ page }) => {
+export const beforeQuery = ({ page, searchKey }) => {
   page = page ? parseInt(page, 10): 1
 
-  return { variables: { page }}
+  return { variables: { page, searchKey }}
 }
 
 export const QUERY = gql`
-  query FindAdminDashboardQuery($page: Int) {
-    vendorPage(page: $page) {
+  query FindAdminDashboardQuery($page: Int, $searchKey: String) {
+    vendorPage(page: $page, searchKey: $searchKey) {
       vendors {
         id,
         name,
@@ -73,8 +73,6 @@ export const Success = ({
   FindAdminDashboardQueryVariables
 >) => {
 
-  const { currentUser } = useAuth()
-  const logOut = useLogout();
   const [verifyVendor] = useMutation<VerifyVendorMutation, VerifyVendorMutationVariables>(VERIFY_VENDOR_MUTATION)
   const [deleteVendor] = useMutation<DeleteVendorMutation, DeleteVendorMutationVariables>(DELETE_VENDOR_MUTATION)
   const [vendorUpdateModalOpen, setVendorUpdateModalOpen] = useState(false)
@@ -118,8 +116,6 @@ export const Success = ({
 
 
   return <div>
-    <button onClick={ logOut }>Logout</button>
-      <h1>Admin Panel</h1>
       <table>
         <thead>
           <tr>
