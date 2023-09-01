@@ -17,6 +17,8 @@ export const schema = gql`
     locationHidden: Boolean
     roles: String!
     markerUrl: String
+    deleted: Boolean
+    deletedAt: DateTime
   }
 
   type VendorPage {
@@ -28,6 +30,7 @@ export const schema = gql`
   type Query {
     users: [User!]! @requireAuth
     user(id: Int!): User @requireAuth
+    vendor(id: Int!): User @requireAuth
     vendorPage(page: Int): VendorPage @requireAuth
     mapVendors: [User!]! @skipAuth
     vendorProducts: [Product!]! @skipAuth
@@ -86,18 +89,11 @@ export const schema = gql`
     longitude: Float!
   }
 
-  fragment VendorFragment on User {
-    id
-    name
-    username
-    latitude
-    longitude
-    products {
-      id
-      name
-    }
-
+  input UpdateVendorMarkerInput {
+    markerUrl: String!
   }
+
+
 
   type Mutation {
     createUser(input: CreateUserInput!): User! @requireAuth
@@ -108,5 +104,6 @@ export const schema = gql`
     deleteUser(id: Int!): User! @requireAuth
     hideVendorLocation(id: Int!, input: HideVendorLocationInput!): User! @requireAuth
     broadcastLocation(id: Int!, input: BroadcastLocationInput!): User! @requireAuth
+    updateVendorMarker(id: Int!, input: UpdateVendorMarkerInput!): User! @requireAuth
   }
 `;

@@ -30,7 +30,7 @@ export const beforeQuery = ({ userId }) => {
 }
 export const QUERY = gql`
   query FindVendorHomepageQuery($id: Int!) {
-    vendor: user(id: $id) {
+    vendor(id: $id) {
       id
       name
       username
@@ -78,8 +78,8 @@ const BROADCAST_LOCATION_MUTATION = gql`
 `
 
 const UPDATE_VENDOR_MARKER = gql`
-    mutation UpdateVendorMarkerMutation($id: Int!, $input: UpdateUserInput!) {
-        updateVendorMarker: updateUser(id: $id, input: $input) {
+    mutation UpdateVendorMarkerMutation($id: Int!, $input: UpdateVendorMarkerInput!) {
+        updateVendorMarker(id: $id, input: $input) {
             id
         }
     }

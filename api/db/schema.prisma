@@ -30,6 +30,8 @@ model User {
   locationHidden      Boolean   @default(true)
   verified            Boolean   @default(false)
   markerUrl           String?
+  deleted             Boolean   @default(false)
+  deletedAt           DateTime?
 }
 
 model Product {

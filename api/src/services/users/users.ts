@@ -6,8 +6,7 @@ import type {
 
 import { db } from "src/lib/db";
 import { hashPassword } from "@redwoodjs/auth-dbauth-api";
-import { validate, validateWith, validateWithSync } from "@redwoodjs/api";
-import { UserInputError } from "@redwoodjs/graphql-server";
+import { validateWith, validateWithSync } from "@redwoodjs/api";
 import { pusher } from "src/functions/broadcast/broadcast";
 
 export const users: QueryResolvers["users"] = () => {
@@ -15,10 +14,41 @@ export const users: QueryResolvers["users"] = () => {
 };
 
 export const user: QueryResolvers["user"] = ({ id }) => {
+  console.log('user query')
   return db.user.findUnique({
     where: { id },
   });
 };
+
+export const vendor: QueryResolvers["vendor"] = ({ id }) => {
+  return db.user.findUnique({
+    where: {
+      id,
+      roles: {
+        contains: "VENDOR"
+      },
+      deleted: false
+    },
+    include: {
+      products: true
+    }
+  });
+}
+
+export const updateVendorMarker: MutationResolvers["updateVendorMarker"] = ({ id, input }) => {
+  const { markerUrl } = input;
+  return db.user.update({
+    where: {
+      id,
+      roles: {
+        contains: "VENDOR"
+      },
+    },
+    data: {
+      markerUrl
+    }
+  })
+}
 
 export const mapVendors: QueryResolvers["mapVendors"] = () => {
   return db.user.findMany({
@@ -130,8 +160,12 @@ export const deleteUserAccount: MutationResolvers['deleteUserAccount'] = async (
 
   })
 
-  return db.user.delete({
+  return db.user.update({
     where: { id },
+    data: {
+      deleted: true,
+      deletedAt: new Date()
+    }
   })
 }
 

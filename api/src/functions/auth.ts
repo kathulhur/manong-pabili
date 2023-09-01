@@ -52,6 +52,9 @@ export const handler = async (
         // by the `logIn()` function from `useAuth()` in the form of:
         // `{ message: 'Error message' }`
         handler: (user) => {
+            if (user.deleted) {
+                throw "User does not exist"
+            }
             return user
         },
 
@@ -113,7 +116,7 @@ export const handler = async (
             console.log('username:', username)
             validate(username, "Username", {
                 presence: true,
-                length: { min: 3, max: 20},
+                length: { min: 3, max: 20 },
             });
 
             return db.user.create({
