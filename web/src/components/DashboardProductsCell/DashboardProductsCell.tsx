@@ -104,7 +104,9 @@ export const Success = ({
 
     const [createProduct] = useMutation(CREATE_PRODUCT_MUTATION, {
         onError: (error) => {
-            alert('Error creating product')
+            error.graphQLErrors.map(({ message }) => {
+                toast.error(message)
+            })
             console.log(error)
         },
         onCompleted: () => {
@@ -122,9 +124,9 @@ export const Success = ({
                 }
             });
         } catch (error) {
-            console.log(error)
-            alert('Error creating product')
+            console.error(error)
         }
+
     }
 
     return (

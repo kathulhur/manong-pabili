@@ -5,6 +5,7 @@ import type {
 } from 'types/graphql'
 
 import { db } from 'src/lib/db'
+import { validate } from '@redwoodjs/api'
 
 export const products: QueryResolvers['products'] = () => {
     return db.product.findMany()
@@ -26,7 +27,9 @@ export const vendorProducts: QueryResolvers['vendorProducts'] = () => {
                 roles: {
                     contains: 'VENDOR',
                 },
-                verified: true
+                verified: true,
+                deleted: false,
+                locationHidden: false
             }
         }
     })
@@ -41,6 +44,14 @@ export const product: QueryResolvers['product'] = ({ id }) => {
 export const createProduct: MutationResolvers['createProduct'] = ({
     input,
 }) => {
+    const { name } = input
+
+    validate(name, "Name", {
+        length: { min: 3, max: 50 },
+        presence: true,
+    })
+
+
     return db.product.create({
         data: input,
     })
