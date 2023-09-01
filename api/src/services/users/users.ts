@@ -6,7 +6,7 @@ import type {
 
 import { db } from "src/lib/db";
 import { hashPassword } from "@redwoodjs/auth-dbauth-api";
-import { validateWith, validateWithSync } from "@redwoodjs/api";
+import { validate, validateWith, validateWithSync } from "@redwoodjs/api";
 import { pusher } from "src/functions/broadcast/broadcast";
 
 export const users: QueryResolvers["users"] = () => {
@@ -73,6 +73,62 @@ export const updateUser: MutationResolvers["updateUser"] = ({ id, input }) => {
     where: { id },
   });
 };
+
+export const updateUsername: MutationResolvers["updateUsername"] = ({ id, input }) => {
+  const { updatedUsername } = input;
+  validate(updatedUsername, 'Username', {
+    length: { min: 3, max: 256 },
+    presence: true,
+    format: {
+      message: "can only contain letters, numbers, and underscores",
+      pattern: /^[a-zA-Z0-9_]*$/
+    }
+  })
+
+  return db.user.update({
+    data: {
+      username: updatedUsername
+    },
+    where: { id },
+  });
+}
+
+export const updateMobileNumber: MutationResolvers["updateMobileNumber"] = ({ id, input }) => {
+  const { updatedMobileNumber } = input
+
+  validate(updatedMobileNumber, 'Mobile Number', {
+    presence: true,
+    format: {
+      message: "Mobile number must start with 0 or 63 followed by 10 digits",
+      pattern: /^(0|63)[0-9]{10}$/
+    }
+  })
+
+  return db.user.update({
+    data: {
+      mobileNumber: updatedMobileNumber
+    },
+    where: { id },
+  });
+
+}
+
+export const updateName: MutationResolvers["updateName"] = ({ id, input }) => {
+  const { updatedName } = input;
+
+  validate(updatedName, 'Name', {
+    length: { min: 3, max: 256 },
+    presence: true,
+
+  })
+
+  return db.user.update({
+    data: {
+      name: updatedName
+    },
+    where: { id },
+  });
+}
 
 export const deleteUser: MutationResolvers["deleteUser"] = ({ id }) => {
     return db.user.delete({

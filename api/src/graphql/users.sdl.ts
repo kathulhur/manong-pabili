@@ -93,11 +93,24 @@ export const schema = gql`
     markerUrl: String!
   }
 
+  input UpdateNameInput {
+    updatedName: String!
+  }
 
+  input UpdateUsernameInput {
+    updatedUsername: String!
+  }
+
+  input UpdateMobileNumberInput {
+    updatedMobileNumber: String!
+  }
 
   type Mutation {
     createUser(input: CreateUserInput!): User! @requireAuth
     updateUser(id: Int!, input: UpdateUserInput!): User! @requireAuth
+    updateName(id: Int!, input: UpdateNameInput!): User! @requireAuth
+    updateUsername(id: Int!, input: UpdateUsernameInput!): User! @requireAuth
+    updateMobileNumber(id: Int!, input: UpdateMobileNumberInput!): User! @requireAuth
     updateUserPassword(id: Int!, input: UpdateUserPasswordInput!): User!
       @requireAuth
     deleteUserAccount(id: Int!, input: DeleteUserAccountInput!): User! @requireAuth

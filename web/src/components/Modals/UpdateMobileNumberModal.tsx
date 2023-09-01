@@ -10,7 +10,7 @@ const UpdateMobileNumberModal = ({
 }: {
   isOpen: boolean;
   onClose: () => void;
-  onSubmit: (username: String) => void;
+  onSubmit: (mobileNumber: String) => void;
 }) => {
 
   const [mobileNumber, setMobileNumber] = useState('');
@@ -21,7 +21,7 @@ const UpdateMobileNumberModal = ({
       onClose={onClose}
       >
       <Dialog.Panel>
-        <Dialog.Title>Update Username</Dialog.Title>
+        <Dialog.Title>Update Mobile Number</Dialog.Title>
         <form
           onSubmit={(e) => {
             e.preventDefault();
@@ -30,9 +30,9 @@ const UpdateMobileNumberModal = ({
           }}
           >
           <label>
-            New Username
+            New Mobile Number
             <input
-              name="username"
+              name="mobileNumber"
               type="text"
               value={mobileNumber}
               onChange={(e) => setMobileNumber(e.target.value)}

@@ -39,7 +39,7 @@ export const QUERY = gql`
 
 const UPDATE_USERNAME_MUTATION = gql`
   mutation UpdateUsernameMutation($id: Int!, $username: String!) {
-    updateUser(id: $id, input: { username: $username }) {
+    updateUsername(id: $id, input: { updatedUsername: $username }) {
       id
       username
     }
@@ -48,7 +48,7 @@ const UPDATE_USERNAME_MUTATION = gql`
 
 const UPDATE_NAME_MUTATION = gql`
   mutation UpdateNameMutation($id: Int!, $name: String!) {
-    updateUser(id: $id, input: { name: $name }) {
+    updateName(id: $id, input: { updatedName: $name }) {
       id
       name
     }
@@ -57,7 +57,7 @@ const UPDATE_NAME_MUTATION = gql`
 
 const UPDATE_MOBILE_NUMBER_MUTATION = gql`
   mutation UpdateMobileNumberMutation($id: Int!, $mobileNumber: String!) {
-    updateUser(id: $id, input: { mobileNumber: $mobileNumber }) {
+    updateMobileNumber(id: $id, input: { updatedMobileNumber: $mobileNumber }) {
       id
       mobileNumber
     }
