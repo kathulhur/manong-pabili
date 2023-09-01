@@ -113,11 +113,35 @@ export const handler = async (
         // If this returns anything else, it will be returned by the
         // `signUp()` function in the form of: `{ message: 'String here' }`.
         handler: ({ username, hashedPassword, salt, userAttributes }) => {
-            console.log('username:', username)
+            console.log(userAttributes)
+            const { name, roles, mobileNumber, gender } = userAttributes
             validate(username, "Username", {
                 presence: true,
                 length: { min: 3, max: 20 },
             });
+
+            validate(name, "Name", {
+                presence: true,
+                length: { min: 3, max: 256 },
+            });
+
+            validate(roles, "Role", {
+                presence: true,
+                acceptance: { in: ["ADMIN", "VENDOR"] },
+            });
+
+            validate(gender, "Gender", {
+                presence: true,
+                acceptance: { in: ["Male", "Female"]}
+            })
+
+            validate(mobileNumber, "Mobile Number", {
+                presence: true,
+                format: {
+                    message: "Mobile number must start with 0 or 63 followed by 10 digits",
+                    pattern: /^(0|63)[0-9]{10}$/
+                }
+            })
 
             return db.user.create({
                 data: {
