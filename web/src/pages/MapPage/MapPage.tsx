@@ -15,6 +15,7 @@ const MAP_VENDORS_QUERY = gql`
         mapVendors {
             id
             name
+            username
             email
             latitude
             longitude
@@ -48,10 +49,11 @@ export const createMarker = (vendor: MapVendorsQuery['mapVendors'][number]) => {
     let image = document.createElement('img')
     image.src = vendor.markerUrl,
     image.className = 'w-6 h-6'
-
     const marker = new tt.Marker({
-        element: image
+        element: image,
     }).setLngLat([vendor.longitude, vendor.latitude])
+
+
 
     marker.setPopup(
         new tt.Popup({ offset: 35 }).setHTML(buildPopupHtml({ name: vendor.name, products: vendor.products }))

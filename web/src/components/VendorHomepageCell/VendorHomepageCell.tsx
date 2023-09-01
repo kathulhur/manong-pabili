@@ -31,12 +31,18 @@ export const beforeQuery = ({ userId }) => {
 export const QUERY = gql`
   query FindVendorHomepageQuery($id: Int!) {
     vendor(id: $id) {
-      id
-      name
-      username
-      mobileNumber
-      markerUrl
-
+        id
+        name
+        username
+        email
+        latitude
+        longitude
+        products {
+            id
+            name
+        }
+        roles
+        markerUrl
     }
   }
 `;
@@ -95,6 +101,12 @@ export const Failure = ({
   <div style={{ color: "red" }}>Error: {error?.message}</div>
 );
 
+enum BroadcastMode {
+    STATIC,
+    MANUAL,
+    REALTIME
+}
+
 export const Success = ({
   vendor,
 }: CellSuccessProps<
@@ -108,7 +120,8 @@ export const Success = ({
 
 
   const [isLocationShown, setIsLocationShown] = useState(false)
-  const [isRealTime, setIsRealTime] = useState(false)
+  const [broadcastMode, setBroadcastMode] = useState<BroadcastMode>(BroadcastMode.STATIC)
+  const [marker, setMarker] = useState<tt.Marker>(null)
   const [markers, setMarkers] = useState<tt.Marker[]>([])
   const [coordinates, setCoordinates] = useState<GeolocationCoordinates>(null)
   const [map, setMap] = useState<tt.Map>(null)
@@ -119,17 +132,56 @@ export const Success = ({
   const [pusher, channel] = usePusher()
 
 
-  const locationBroadcastEventHandler = useCallback(({vendor}) => {
-      const marker = createMarker(vendor)
-      // check if marker already exists, if it does, remove it, then add the new one
-      console.log('hey')
-      setMarkers([
-          ...markers.filter(
-              (m) => m.getElement().id !== marker.getElement().id
-          ),
-          marker,
-      ])
-  }, [markers])
+    useEffect(() => {
+        if (!coordinates) return
+        if (!map) return
+
+        if (marker) {
+            marker.remove()
+        }
+
+
+        const updatedMarker = createMarker(vendor)
+        updatedMarker.addTo(map)
+        if (broadcastMode === BroadcastMode.MANUAL) {
+            updatedMarker.setDraggable(true)
+            updatedMarker.on('dragend', () => {
+                const lngLat = updatedMarker.getLngLat()
+                console.log('dragend', lngLat)
+                broadcastLocation({
+                    variables: {
+                        id: vendor.id,
+                        input: {
+                            channel: process.env.PUSHER_CHANNEL,
+                            event: "location-broadcast",
+                            longitude: lngLat.lng,
+                            latitude: lngLat.lat,
+                        }
+                    },
+                    onError: (err) => {
+                        console.log(err)
+                        alert('failed broadcasting location')
+                    },
+                    onCompleted: () => {
+                        console.log('broadcasting location success')
+                    }
+                })
+            })
+        }
+        setMarker(updatedMarker)
+
+    }, [map, coordinates, broadcastMode])
+    const locationBroadcastEventHandler = useCallback(({vendor}) => {
+        // const marker = createMarker(vendor)
+
+        // // check if marker already exists, if it does, remove it, then add the new one
+        // setMarkers([
+        //     ...markers.filter(
+        //         (m) => m.getElement().id !== marker.getElement().id
+        //     ),
+        //     marker,
+        // ])
+    }, [markers])
 
 
   useEffect(() => {
@@ -145,10 +197,10 @@ export const Success = ({
   }, [pusher, locationBroadcastEventHandler])
 
   const handleVisibilityChange = useCallback(() => {
-        if (document.hidden && isLocationShown && isRealTime) {
-            manualModeButtonHandler()
+        if (document.hidden && isLocationShown && broadcastMode === BroadcastMode.REALTIME) {
+            staticModeButtonHandler()
         }
-  }, [isRealTime, isLocationShown])
+  }, [broadcastMode, isLocationShown])
 
   useEffect(() => {
 
@@ -233,8 +285,9 @@ export const Success = ({
       }
   }, [vendor, map, broadcastLocation])
 
+  // broadcast location every 5 seconds when location is shown and in realtime mode
   useEffect(() => {
-      if ( !isLocationShown || !isRealTime) return
+      if ( !isLocationShown || !(broadcastMode === BroadcastMode.REALTIME)) return
       const intervalId = setInterval(() => {
           broadcastLocationHandler()
           console.log('realtime broadcast')
@@ -243,10 +296,11 @@ export const Success = ({
       return () => {
           clearInterval(intervalId)
       }
-  }, [isRealTime, broadcastLocationHandler, isLocationShown])
+  }, [broadcastMode, broadcastLocationHandler, isLocationShown])
 
 
 
+  // re-render the map everytime the markers state changes
   useEffect(() => {
       if (!map) return
       markers.forEach((marker) => {
@@ -262,7 +316,7 @@ export const Success = ({
 
   const showLocationButtonHandler = () => {
       setIsLocationShown(true)
-      if (!isRealTime) {
+      if (broadcastMode === BroadcastMode.STATIC || broadcastMode === BroadcastMode.MANUAL) {
           updateLocationButtonHandler()
       }
   }
@@ -295,14 +349,22 @@ export const Success = ({
   }, [vendor])
 
   const realTimeModeButtonHandler = () => {
-      setIsRealTime(true)
+      setBroadcastMode(BroadcastMode.REALTIME)
       console.log('mode changed to real time')
   }
 
-  const manualModeButtonHandler = () => {
-      setIsRealTime(false)
-      console.log('mode changed to manual')
+  const staticModeButtonHandler = () => {
+      setBroadcastMode(BroadcastMode.STATIC)
+      broadcastLocationHandler()
+      console.log('mode changed to static')
   }
+
+  const manualModeButtonHandler = () => {
+        setBroadcastMode(BroadcastMode.MANUAL)
+        broadcastLocationHandler()
+        console.log('mode changed to manual')
+  }
+
 
   const updateLocationButtonHandler = () => {
       console.log('Update location')
@@ -427,15 +489,27 @@ export const Success = ({
 
       <Tab.Group
         as={'div'}
-        selectedIndex={isRealTime ? 1 : 0}
-          onChange={(index) => {
-              switch(index) {
-                  case 0: return manualModeButtonHandler()
-                  case 1: return realTimeModeButtonHandler()
-              }
-          }
+            selectedIndex={(broadcastMode === BroadcastMode.MANUAL ? 0 : broadcastMode === BroadcastMode.STATIC ? 1 : 2)}
+            onChange={(index) => {
+                switch(index) {
+                    case 0: return manualModeButtonHandler()
+                    case 1: return staticModeButtonHandler()
+                    case 2: return realTimeModeButtonHandler()
+                }
+            }
       }>
           <Tab.List className="flex space-x-1 rounded-lg bg-green-300/20 p-1 mb-4">
+                <Tab
+                    className={({ selected }) =>
+                        clsx(
+                        'w-full rounded-lg py-2.5 text-base font-semibold leading-5 text-green-700',
+                        'ring-white ring-opacity-60 ring-offset-2 ring-offset-green-400 focus:outline-none focus:ring-2',
+                        selected
+                            ? 'bg-white'
+                            : 'text-green-500 hover:bg-white/[0.12] hover:text-green-600'
+                        )
+                    }
+                >Manual</Tab>
               <Tab
                   className={({ selected }) =>
                       clsx(
@@ -446,7 +520,7 @@ export const Success = ({
                           : 'text-green-500 hover:bg-white/[0.12] hover:text-green-600'
                       )
                   }
-              >Manual</Tab>
+              >Static</Tab>
               <Tab
                   className={({ selected }) =>
                       clsx(
@@ -460,13 +534,14 @@ export const Success = ({
               >Realtime</Tab>
           </Tab.List>
           <Tab.Panels className='mb-12'>
-              <Tab.Panel>
-                  <Button
-                      fullWidth
-                      onClick={updateLocationButtonHandler}
-                      disabled={!isLocationShown}
-                  >Update location</Button>
-              </Tab.Panel>
+                <Tab.Panel></Tab.Panel>
+                <Tab.Panel>
+                    <Button
+                        fullWidth
+                        onClick={updateLocationButtonHandler}
+                        disabled={!isLocationShown}
+                    >Update location</Button>
+                </Tab.Panel>
           </Tab.Panels>
       </Tab.Group>
 
