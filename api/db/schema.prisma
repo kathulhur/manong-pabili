@@ -29,7 +29,7 @@ model User {
   lastLocationUpdate  DateTime?
   locationHidden      Boolean   @default(true)
   verified            Boolean   @default(false)
-  markerUrl           String?
+  markerUrl           String?   @default("/assets/images/default_marker.png")
   deleted             Boolean   @default(false)
   deletedAt           DateTime?
 }
