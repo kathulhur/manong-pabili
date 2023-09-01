@@ -63,12 +63,14 @@ export default async () => {
                     name: `User ${i}`,
                     username: `user${i}`,
                     email: `user${i}@mail.com`,
-                    mobileNumber: "1234567890",
+                    mobileNumber: "09123456789",
                     latitude: 0,
                     longitude: 0,
-                    roles: "VENDOR",
+                    roles: i == 0 ? "ADMIN" : "VENDOR",
                     hashedPassword,
+                    gender: "Male",
                     salt,
+                    verified: true
                 },
             });
 
