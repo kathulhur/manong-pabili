@@ -10,6 +10,7 @@ import { validate, validateWith, validateWithSync } from "@redwoodjs/api";
 import { pusher } from "src/functions/broadcast/broadcast";
 
 export const users: QueryResolvers["users"] = () => {
+  console.log('users');
   return db.user.findMany();
 };
 
