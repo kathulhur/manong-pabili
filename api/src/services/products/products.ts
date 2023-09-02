@@ -16,6 +16,7 @@ export const productsByUser: QueryResolvers['productsByUser'] = ({
 }) => {
     return db.product.findMany({
         where: { userId },
+        orderBy: { id: 'desc' },
     })
 }
 
