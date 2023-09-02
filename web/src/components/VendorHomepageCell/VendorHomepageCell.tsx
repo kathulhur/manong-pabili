@@ -22,6 +22,7 @@ import { getCurrentPositionAsync } from "src/hooks/useCoordinates";
 import usePusher from "src/hooks/usePusher";
 import { createMarker } from "src/pages/MapPage/MapPage";
 import tt from "@tomtom-international/web-sdk-maps";
+import { toast } from "@redwoodjs/web/dist/toast";
 
 export const beforeQuery = ({ userId }) => {
   return {
@@ -339,10 +340,10 @@ export const Success = ({
                   alert('failed hiding vendor location')
               },
               onCompleted: () => {
+                  setIsLocationShown(false)
                   console.log('hiding location success')
               }
           })
-          setIsLocationShown(false)
       } catch (err) {
           console.log(err)
       }
@@ -355,20 +356,24 @@ export const Success = ({
 
   const staticModeButtonHandler = () => {
       setBroadcastMode(BroadcastMode.STATIC)
-      broadcastLocationHandler()
+      if (isLocationShown) {
+          broadcastLocationHandler()
+      }
       console.log('mode changed to static')
   }
 
   const manualModeButtonHandler = () => {
         setBroadcastMode(BroadcastMode.MANUAL)
-        broadcastLocationHandler()
+        if (isLocationShown) {
+            broadcastLocationHandler()
+        }
         console.log('mode changed to manual')
   }
 
 
   const updateLocationButtonHandler = () => {
-      console.log('Update location')
-      broadcastLocationHandler()
+        console.log('Update location')
+        broadcastLocationHandler()
   }
 
   const updateVendorMarkerHandler = async (url: string) => {
@@ -385,13 +390,14 @@ export const Success = ({
               refetchQueries: [QUERY],
               onError: (err) => {
                   console.log(err)
+                    toast.error('Failed updating marker')
                   setIsMarkerSelectModalOpen(false)
               },
               onCompleted: () => {
                     if (isLocationShown) {
                         broadcastLocationHandler()
                     }
-                  console.log('success')
+                  toast.success('Marker updated')
                   setIsMarkerSelectModalOpen(false)
               }
           })
