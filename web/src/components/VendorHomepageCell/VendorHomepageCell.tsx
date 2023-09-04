@@ -417,13 +417,13 @@ export const Success = ({
     <div className='max-w-7xl mx-auto p-8'>
       <MetaTags title="Home" description="Home page" />
       <div className='flex justify-between items-center mb-10'>
-          <h1 className='font-extrabold text-xl text-green-700'>Manong Pabili</h1>
+          <h1 className='font-extrabold text-lg text-green-700'>Manong Pabili</h1>
           <Button
-              className='bg-slate-100'
+              className='bg-transparent hover:bg-slate-100'
               onClick={() => setIsVendorProfileModalOpen(true)}
           >
               <Bars2Icon
-                  className="h-7 w-7 text-slate-800"
+                  className="h-7 w-7 text-slate-900"
               />
           </Button>
           <VendorProfileModal
@@ -432,12 +432,12 @@ export const Success = ({
           />
       </div>
       <div className='flex items-center justify-between mb-8'>
-          <p className='font-black text-2xl'>Good day, {vendor?.username}</p>
+          <p className='font-black text-xl text-slate-900'>Good day, {vendor?.username}</p>
           <div
             onClick={() => setIsMarkerSelectModalOpen(true)}
-            className='relative flex items-center justify-center rounded-full p-4 w-16 h-16 bg-green-100 hover:bg-green-200'
+            className='relative flex items-center justify-center rounded-full p-3 w-12 h-12 bg-green-100 hover:bg-green-200'
           >
-            <PencilSquareIcon className="absolute -top-1 -right-1 w-7 h-7 p-1 rounded-full border-2 border-green-100 bg-white text-slate-500"/>
+            <PencilSquareIcon className="absolute -top-1 -right-1 w-6 h-6 p-1 rounded-full border-2 border-green-100 bg-white text-slate-700"/>
             <img src={vendor?.markerUrl} alt="marker icon"/>
           </div>
           <MarkerSelectModal
@@ -447,7 +447,7 @@ export const Success = ({
           />
       </div>
       <div className='mb-4 flex items-center justify-between'>
-          <span className='text-lg font-semibold'>Show location</span>
+          <span className='text-base font-semibold text-slate-900'>Show location</span>
           <Switch
               checked={isLocationShown}
               onChange={isLocationShown ? hideLocationButtonHandler : showLocationButtonHandler}
@@ -463,8 +463,7 @@ export const Success = ({
           </Switch>
       </div>
 
-      <section className='relative rounded-lg mb-4 h-64 bg-green-100/80 overflow-hidden'>
-
+      <section className='relative rounded-lg mb-4 h-48 bg-green-100/80 overflow-hidden'>
           <div
               id="map"
               ref={mapRef}
@@ -486,7 +485,7 @@ export const Success = ({
               >
                   <div className='flex flex-col items-center'>
                       <EyeSlashIcon className='w-16 h-16 mb-1 text-green-900' />
-                      <span className='text-green-900 text-lg font-bold'>Your location is hidden</span>
+                      <span className='text-green-900 font-bold'>Your location is hidden</span>
                   </div>
               </div>
           }
@@ -505,39 +504,21 @@ export const Success = ({
             }
       }>
           <Tab.List className="flex space-x-1 rounded-lg bg-green-300/20 p-1 mb-4">
-                <Tab
-                    className={({ selected }) =>
-                        clsx(
-                        'w-full rounded-lg py-2.5 text-base font-semibold leading-5 text-green-700',
-                        'ring-white ring-opacity-60 ring-offset-2 ring-offset-green-400 focus:outline-none focus:ring-2',
-                        selected
-                            ? 'bg-white'
-                            : 'text-green-500 hover:bg-white/[0.12] hover:text-green-600'
-                        )
-                    }
-                >Manual</Tab>
-              <Tab
-                  className={({ selected }) =>
-                      clsx(
-                      'w-full rounded-lg py-2.5 text-base font-semibold leading-5 text-green-700',
-                      'ring-white ring-opacity-60 ring-offset-2 ring-offset-green-400 focus:outline-none focus:ring-2',
-                      selected
-                          ? 'bg-white'
-                          : 'text-green-500 hover:bg-white/[0.12] hover:text-green-600'
-                      )
-                  }
-              >Static</Tab>
-              <Tab
-                  className={({ selected }) =>
-                      clsx(
-                      'w-full rounded-lg py-2.5 text-base font-semibold leading-5 text-green-700',
-                      'ring-white ring-opacity-60 ring-offset-2 ring-offset-green-400 focus:outline-none focus:ring-2',
-                      selected
-                          ? 'bg-white'
-                          : 'text-green-500 hover:bg-white/[0.12] hover:text-green-600'
-                      )
-                  }
-              >Realtime</Tab>
+            {['Manual', 'Static', 'Realtime'].map((tab) => {
+                return (
+                    <Tab
+                        className={({ selected }) =>
+                            clsx(
+                            'w-full rounded-lg py-2.5 text-sm font-semibold leading-5 text-green-700',
+                            'ring-white ring-opacity-60 ring-offset-2 ring-offset-green-400 focus:outline-none focus:ring-2',
+                            selected
+                                ? 'bg-white'
+                                : 'text-green-500 hover:bg-white/[0.12] hover:text-green-600'
+                            )
+                        }
+                    >{tab}</Tab>
+                )
+            })}
           </Tab.List>
           <Tab.Panels className='mb-12'>
                 <Tab.Panel></Tab.Panel>

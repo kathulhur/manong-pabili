@@ -26,7 +26,7 @@ const CreateProductModal = ({
         onSubmit({ ...data, availability: false, userId: currentUser?.id })
       }}>
         <div className="flex flex-col">
-          <Label name="name" className="mb-2 text-slate-900">Product name</Label>
+          <Label name="name" className="text-slate-900">Product name</Label>
           <TextField
             name="name"
             className="w-full border border-solid border-slate-200 rounded-lg px-4 py-2 focus:outline focus:outline-2 focus:outline-green-600"
