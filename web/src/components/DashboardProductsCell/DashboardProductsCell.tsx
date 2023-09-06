@@ -132,7 +132,7 @@ export const Success = ({
     return (
         <div className='my-8'>
             <div className='flex justify-between items-center'>
-                <h2 className='font-bold text-lg'>Products</h2>
+                <h2 className='font-bold text-slate-900'>Products</h2>
                 <Button
                     type="button"
                     aria-label='Add Product'
