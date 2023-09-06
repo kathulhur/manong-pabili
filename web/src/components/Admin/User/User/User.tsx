@@ -4,7 +4,11 @@ import { toast } from "@redwoodjs/web/toast";
 
 import { checkboxInputTag, timeTag } from "src/lib/formatters";
 
-import type { DeleteUserMutationVariables, FindUserById } from "types/graphql";
+import {
+  DeleteUserMutation,
+  DeleteUserMutationVariables,
+  FindUserById
+} from "types/graphql";
 
 const DELETE_USER_MUTATION = gql`
   mutation DeleteUserMutation($id: Int!) {
@@ -19,7 +23,7 @@ interface Props {
 }
 
 const User = ({ user }: Props) => {
-  const [deleteUser] = useMutation(DELETE_USER_MUTATION, {
+  const [deleteUser] = useMutation<DeleteUserMutation, DeleteUserMutationVariables>(DELETE_USER_MUTATION, {
     onCompleted: () => {
       toast.success("User deleted");
       navigate(routes.adminUsers());

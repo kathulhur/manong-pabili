@@ -44,6 +44,7 @@ export const QUERY = gql`
         }
         roles
         markerUrl
+        locationHidden
         featuredImages {
             id
             url
@@ -124,8 +125,8 @@ export const Success = ({
   const [broadcastLocation] = useMutation<BroadcastLocationMutation, BroadcastLocationMutationVariables>(BROADCAST_LOCATION_MUTATION);
   const [updateVendorMarker] = useMutation<UpdateVendorMarkerMutation, UpdateVendorMarkerMutationVariables>(UPDATE_VENDOR_MARKER)
     const mapRef = useRef<HTMLDivElement>(null)
-
-  const [isLocationShown, setIsLocationShown] = useState(false)
+  const [initialized, setInitialized] = useState(false)
+  const [isLocationShown, setIsLocationShown] = useState(!vendor?.locationHidden)
   const [broadcastMode, setBroadcastMode] = useState<BroadcastMode>(BroadcastMode.STATIC)
   const [marker, setMarker] = useState<tt.Marker>(null)
   const [markers, setMarkers] = useState<tt.Marker[]>([])
@@ -137,6 +138,15 @@ export const Success = ({
   const [isMarkerSelectModalOpen, setIsMarkerSelectModalOpen] = useState(false)
   const [pusher, channel] = usePusher()
 
+  //
+  useEffect(() => {
+    if(!initialized) {
+        if(isLocationShown && map && vendor) {
+            broadcastLocationHandler()
+            setInitialized(true)
+        }
+    }
+  }, [initialized, isLocationShown, map, vendor])
 
     useEffect(() => {
         if (!coordinates) return
@@ -520,6 +530,7 @@ export const Success = ({
             {['Manual', 'Static', 'Realtime'].map((tab) => {
                 return (
                     <Tab
+                        key={tab}
                         className={({ selected }) =>
                             clsx(
                             'w-full rounded-lg py-2.5 text-sm font-semibold leading-5 text-green-700',

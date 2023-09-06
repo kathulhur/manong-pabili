@@ -15,9 +15,8 @@ const DELETE_USER_MUTATION = gql`
   }
 `;
 
-const UsersList = ({ users, queryVariables }: {
-  users: FindUsers['userPage']['users'],
-  queryVariables: any
+const UsersList = ({ users }: {
+  users: FindUsers['userPage']['users']
 }) => {
   const [deleteUser] = useMutation(DELETE_USER_MUTATION, {
     onCompleted: () => {

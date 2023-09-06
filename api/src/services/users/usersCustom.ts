@@ -221,6 +221,8 @@ export const vendorPage: QueryResolvers['vendorPage'] = async ({ page = 1, searc
 }
 
 
+
+
 export const deleteUserAccount: MutationResolvers['deleteUserAccount'] = async ({ id, input }) => {
   const { password } = input;
 

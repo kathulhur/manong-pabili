@@ -3,7 +3,7 @@ import { useEffect } from "react";
 import { createMarker } from "src/pages/MapPage/MapPage";
 
 const Marker = ({map, vendor, onClick}) => {
-  console.log(map, vendor)
+  console.log('render marker', vendor?.id)
   useEffect(() => {
     if (!map || !vendor) return
     const marker = createMarker(vendor)
@@ -17,12 +17,7 @@ const Marker = ({map, vendor, onClick}) => {
     }
   }, [map, vendor])
 
-  return (
-    <div>
-      <h2>{"Marker"}</h2>
-      <p>{"Find me in ./web/src/components/Marker/Marker.tsx"}</p>
-    </div>
-  );
+  return null;
 };
 
 export default Marker;

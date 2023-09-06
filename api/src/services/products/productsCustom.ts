@@ -16,6 +16,23 @@ export const productsByUser: QueryResolvers['productsByUser'] = ({
   })
 }
 
+export const vendorProducts: QueryResolvers['vendorProducts'] = () => {
+  return db.product.findMany({
+      where: {
+        availability: true,
+        user: {
+          deleted: false,
+          roles: {
+            contains: "VENDOR"
+          },
+          verified: true,
+          locationHidden: false
+        }
+      },
+      orderBy: { id: 'desc' },
+  })
+}
+
 const PRODUCTS_PER_PAGE = 5
 
 export const productPage: QueryResolvers['productPage'] = async ({

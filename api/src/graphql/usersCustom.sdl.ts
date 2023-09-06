@@ -13,7 +13,6 @@ export const schema = gql`
     vendor(id: Int!): User @requireAuth
     vendorPage(page: Int, searchKey: String): VendorPage @requireAuth
     mapVendors: [User!]! @skipAuth
-    vendorProducts: [Product!]! @skipAuth
     userPage(page: Int): UserPage @requireAuth
 
   }

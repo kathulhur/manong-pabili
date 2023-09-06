@@ -57,10 +57,14 @@ export const Failure = ({ error }: CellFailureProps) => (
   <div className="rw-cell-error">{error?.message}</div>
 );
 
-export const Success = ({ userPage: { users, count }, queryResult: { variables } }: CellSuccessProps<FindUsers>) => {
+export interface UsersCellSuccessProps extends CellSuccessProps<FindUsers> {
+  paginate: (page: number) => string;
+}
+
+export const Success = ({ userPage: { users, count }, paginate }: UsersCellSuccessProps) => {
   return (
     <div>
-      <Users users={users} queryVariables={variables}/>
-      <Pagination count={count} paginate={routes.adminUsers}/>
+      <Users users={users}/>
+      <Pagination count={count} paginate={paginate}/>
     </div>);
 };

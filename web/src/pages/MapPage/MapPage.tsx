@@ -2,8 +2,9 @@ import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import '@tomtom-international/web-sdk-maps/dist/maps.css'
 import tt from '@tomtom-international/web-sdk-maps'
 
+import { useApolloClient } from '@apollo/client'
 import { MetaTags, useQuery } from '@redwoodjs/web'
-import { MapVendorsQuery, User } from 'types/graphql'
+import { MapVendorsQuery, VendorProductsQuery, User } from 'types/graphql'
 import useCoordinates from 'src/hooks/useCoordinates'
 import usePusher from 'src/hooks/usePusher'
 import icons from 'src/assets/js/icons'
@@ -11,6 +12,7 @@ import Select from 'react-select'
 import Marker from 'src/components/Marker/Marker'
 import { renderToString } from 'react-dom/server'
 import BaseModal from 'src/components/Modals/BaseModal'
+import { XMarkIcon } from '@heroicons/react/20/solid'
 
 const MAP_VENDORS_QUERY = gql`
     query MapVendorsQuery {
@@ -33,12 +35,19 @@ const MAP_VENDORS_QUERY = gql`
                 url
             }
         }
+    }
+`
+
+const VENDOR_PRODUCTS_QUERY = gql`
+    query VendorProductsQuery {
         vendorProducts {
             id
             name
         }
     }
 `
+
+
 
 export function buildPopupHtml({ name, products }) {
     return(
@@ -88,12 +97,14 @@ function searchMatches(query: string, target: string) {
 }
 
 const MapPage = () => {
+    const apolloClient = useApolloClient()
     const coordinates = useCoordinates();
     const [map, setMap] = useState<tt.Map>(null)
     const { data }= useQuery<MapVendorsQuery>(MAP_VENDORS_QUERY)
+    const { data: vendorProductsQueryData  }= useQuery<VendorProductsQuery>(VENDOR_PRODUCTS_QUERY)
     const [vendors, setVendors] = useState<MapVendorsQuery['mapVendors']>([])
     const [pusher, channel] = usePusher();
-    const [products, setProducts] = useState<MapVendorsQuery['vendorProducts']>([])
+    const [products, setProducts] = useState<VendorProductsQuery['vendorProducts']>([])
     const mapRef = useRef(null)
     const [selectedVendor, setSelectedVendor] = useState<MapVendorsQuery['mapVendors'][number]>(null)
 
@@ -146,29 +157,37 @@ const MapPage = () => {
 
     // initialize map
     useEffect(() => {
+        if(!mapRef.current) return
+        console.log('fdsfds')
         const map = tt.map({
             key: process.env.TOMTOM_API_KEY,
             container: 'map',
             // center: [121.004995, 14.610395],
-            zoom: 12,
+            zoom: 15,
         })
         setMap(map)
 
         return () => {
             map.remove()
         }
-    }, [])
+    }, [mapRef])
 
     // set vendors once the data is ready
     useEffect(() => {
-        console.log('data', data)
         if (data) {
             setVendors([...data.mapVendors])
-            setProducts([...data.vendorProducts])
         }
     }
     , [data])
 
+    useEffect(() => {
+        console.log(vendorProductsQueryData)
+        if (vendorProductsQueryData) {
+            setProducts([...vendorProductsQueryData.vendorProducts])
+        }
+    }, [vendorProductsQueryData])
+
+    console.log(vendorProductsQueryData)
     // handle product search; filter vendors by selected product
     const searchProductHandler = (selectedProduct: {value: number, label: string}) => {
         console.log('selected', selectedProduct)
@@ -182,7 +201,6 @@ const MapPage = () => {
             setVendors(data.mapVendors)
         }
     }
-
     return (
         <>
             <MetaTags title="Map" description="Map page" />
@@ -193,6 +211,12 @@ const MapPage = () => {
                 name={'products'}
                 isClearable={true}
                 onChange={searchProductHandler}
+                onMenuOpen={() => {
+                    apolloClient.refetchQueries({
+                        include: [VENDOR_PRODUCTS_QUERY],
+
+                    })
+                }}
                 options={products.map((product) => ({ value: product.id, label: product.name }))}
             />
             <div
@@ -213,6 +237,11 @@ const MapPage = () => {
 
                     >
                         <div id="abcd">
+                            <div className=' text-right'>
+                                <button onClick={() => setSelectedVendor(null)}>
+                                    <XMarkIcon className='w-6 h-6' />
+                                </button>
+                            </div>
                             <section className='mb-8'>
                                 <div className='flex flex-col items-center'>
                                     <div
@@ -231,7 +260,7 @@ const MapPage = () => {
                                 <ul className='list-disc pl-4'>
                                     {selectedVendor.products.map((product) => (
                                         <li key={product.id}>{product.name}</li>
-                                        ))}
+                                    ))}
                                 </ul>
                             </section>
                             <section className='mb-8'>
