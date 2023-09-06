@@ -32,6 +32,7 @@ model User {
   markerUrl           String?   @default("/assets/images/default_marker.png")
   deleted             Boolean   @default(false)
   deletedAt           DateTime?
+  featuredImages      Image[]
 }
 
 model Product {
@@ -40,4 +41,13 @@ model Product {
   availability Boolean
   user         User    @relation(fields: [userId], references: [id], onDelete: Cascade)
   userId       Int
+}
+
+
+model Image {
+  id      Int    @id @default(autoincrement())
+  title   String
+  url     String
+  user    User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId  Int
 }

@@ -44,6 +44,11 @@ export const QUERY = gql`
         }
         roles
         markerUrl
+        featuredImages {
+            id
+            url
+            title
+        }
     }
   }
 `;
@@ -118,7 +123,7 @@ export const Success = ({
   const [hideVendorLocation] = useMutation<HideVendorLocationMutation, HideVendorLocationMutationVariables>(HIDE_VENDOR_LOCATION_MUTATION);
   const [broadcastLocation] = useMutation<BroadcastLocationMutation, BroadcastLocationMutationVariables>(BROADCAST_LOCATION_MUTATION);
   const [updateVendorMarker] = useMutation<UpdateVendorMarkerMutation, UpdateVendorMarkerMutationVariables>(UPDATE_VENDOR_MARKER)
-
+    const mapRef = useRef<HTMLDivElement>(null)
 
   const [isLocationShown, setIsLocationShown] = useState(false)
   const [broadcastMode, setBroadcastMode] = useState<BroadcastMode>(BroadcastMode.STATIC)
@@ -217,20 +222,28 @@ export const Success = ({
       }
   }, [handleVisibilityChange])
 
-  const mapRef = useCallback((node) => {
-      if (node !== null) {
-          const map = tt.map({
-              key: process.env.TOMTOM_API_KEY,
-              container: node,
-              center: [121.004995, 14.610395],
-              zoom: 15,
-          })
-          setMap(map)
-      }
-  }, [])
+
+    useEffect(() => {
+        if(!mapRef || !mapRef.current) return
+
+        const map = tt.map({
+            key: process.env.TOMTOM_API_KEY,
+            container: 'map',
+            center: [121.004995, 14.610395],
+            zoom: 15,
+        })
+        setMap(map)
+
+        return () => {
+            if(map) {
+                map.remove()
+            }
+        }
+    }, [mapRef])
 
 
   const broadcastLocationHandler = useCallback(async () => {
+    console.log(map)
       if (!vendor || !map ) return
       if (!process.env.PUSHER_CHANNEL) throw new Error("PUSHER_CHANNEL ENV is undefined")
 
