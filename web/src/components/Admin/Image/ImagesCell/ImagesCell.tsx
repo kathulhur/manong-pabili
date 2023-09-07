@@ -60,20 +60,25 @@ export const Success = ({ imagePage: { images, count }, paginate, userId }: Imag
     <div>
         <div className="m-2 flex justify-between">
           <div className="text-xl font-semibold space-x-2">
-              <Link to={routes.adminUsers()} className="hover:underline hover:underline-offset-1">
-              Users
+          {!userId &&
+            <Link to={routes.adminImages()} className="hover:underline hover:underline-offset-1">
+              Images
+            </Link>
+          }
+          {userId && <>
+            <Link to={routes.adminUsers()} className="hover:underline hover:underline-offset-1">
+            Users
+            </Link>
+              <span>&gt;</span>
+              <Link to={routes.adminUser({ id: userId })} className="hover:underline hover:underline-offset-1">
+                { userId}
               </Link>
-              {userId && <>
-                <span>&gt;</span>
-                <Link to={routes.adminUser({ id: userId })} className="hover:underline hover:underline-offset-1">
-                  { userId }
-                </Link>
-                <span>&gt;</span>
-                <Link to={routes.adminImages()} className="hover:underline hover:underline-offset-1">
-                  Images
-                </Link>
-              </>
-              }
+              <span>&gt;</span>
+              <Link to={routes.adminImages()} className="hover:underline hover:underline-offset-1">
+                Images
+              </Link>
+            </>
+          }
           </div>
           { userId &&
             <Link to={routes.adminNewImage({ id: userId })} className="flex items-center font-semibold border px-4 py-2 rounded-md">

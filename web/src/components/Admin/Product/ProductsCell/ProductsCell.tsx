@@ -61,19 +61,27 @@ export const Success = ({ productPage: { products, count }, paginate, userId }: 
     <div>
       <div className="m-2 flex justify-between">
         <div className="text-xl font-semibold space-x-2">
-          <Link to={routes.adminUsers()} className="hover:underline hover:underline-offset-1">
-            Users
-          </Link>
-          { userId && <>
-            <span>&gt;</span>
-            <Link to={routes.adminUser({ id: userId })} className="hover:underline hover:underline-offset-1">
-              { userId }
-            </Link>
-            <span>&gt;</span>
+          {!userId &&
             <Link to={routes.adminProducts()} className="hover:underline hover:underline-offset-1">
               Products
             </Link>
-          </>
+          }
+          {userId && <>
+            <Link to={routes.adminImages()} className="hover:underline hover:underline-offset-1">
+              Images
+            </Link>
+            <Link to={routes.adminUsers()} className="hover:underline hover:underline-offset-1">
+            Users
+            </Link>
+            <span>&gt;</span>
+            <Link to={routes.adminUser({ id: userId })} className="hover:underline hover:underline-offset-1">
+              { userId}
+            </Link>
+            <span>&gt;</span>
+            <Link to={routes.adminImages()} className="hover:underline hover:underline-offset-1">
+              Images
+            </Link>
+            </>
           }
         </div>
         { userId &&
