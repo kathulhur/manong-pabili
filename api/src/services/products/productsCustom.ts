@@ -5,13 +5,15 @@ import type {
 } from 'types/graphql'
 
 import { db } from 'src/lib/db'
-import { validate } from '@redwoodjs/api'
 
 export const productsByUser: QueryResolvers['productsByUser'] = ({
   userId,
 }) => {
   return db.product.findMany({
-      where: { userId },
+      where: {
+        userId,
+        deleted: false
+      },
       orderBy: { id: 'desc' },
   })
 }

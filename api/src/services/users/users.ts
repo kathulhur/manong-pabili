@@ -24,7 +24,10 @@ export const createUser: MutationResolvers["createUser"] = ({ input }) => {
 
 export const updateUser: MutationResolvers["updateUser"] = ({ id, input }) => {
   return db.user.update({
-    data: input,
+    data: {
+      ...input,
+      updatedAt: new Date(),
+    },
     where: { id },
   });
 };

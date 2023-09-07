@@ -23,6 +23,7 @@ import usePusher from "src/hooks/usePusher";
 import { createMarker } from "src/pages/MapPage/MapPage";
 import tt from "@tomtom-international/web-sdk-maps";
 import { toast } from "@redwoodjs/web/dist/toast";
+import Marker from "../Marker/Marker";
 
 export const beforeQuery = ({ userId }) => {
   return {
@@ -94,6 +95,7 @@ const UPDATE_VENDOR_MARKER = gql`
     mutation UpdateVendorMarkerMutation($id: Int!, $input: UpdateVendorMarkerInput!) {
         updateVendorMarker(id: $id, input: $input) {
             id
+            markerUrl
         }
     }
 `
@@ -129,14 +131,12 @@ export const Success = ({
   const [isLocationShown, setIsLocationShown] = useState(!vendor?.locationHidden)
   const [broadcastMode, setBroadcastMode] = useState<BroadcastMode>(BroadcastMode.STATIC)
   const [marker, setMarker] = useState<tt.Marker>(null)
-  const [markers, setMarkers] = useState<tt.Marker[]>([])
   const [coordinates, setCoordinates] = useState<GeolocationCoordinates>(null)
   const [map, setMap] = useState<tt.Map>(null)
   const [isVendorProfileModalOpen, setIsVendorProfileModalOpen] = useState(
       false
       )
   const [isMarkerSelectModalOpen, setIsMarkerSelectModalOpen] = useState(false)
-  const [pusher, channel] = usePusher()
 
   //
   useEffect(() => {
@@ -163,7 +163,6 @@ export const Success = ({
             updatedMarker.setDraggable(true)
             updatedMarker.on('dragend', () => {
                 const lngLat = updatedMarker.getLngLat()
-                console.log('dragend', lngLat)
                 broadcastLocation({
                     variables: {
                         id: vendor.id,
@@ -176,10 +175,10 @@ export const Success = ({
                     },
                     onError: (err) => {
                         console.log(err)
-                        alert('failed broadcasting location')
+                        toast.error('failed broadcasting location')
                     },
                     onCompleted: () => {
-                        console.log('broadcasting location success')
+                        toast.success('Location broadcasted')
                     }
                 })
             })
@@ -187,30 +186,7 @@ export const Success = ({
         setMarker(updatedMarker)
 
     }, [map, coordinates, broadcastMode])
-    const locationBroadcastEventHandler = useCallback(({vendor}) => {
-        // const marker = createMarker(vendor)
 
-        // // check if marker already exists, if it does, remove it, then add the new one
-        // setMarkers([
-        //     ...markers.filter(
-        //         (m) => m.getElement().id !== marker.getElement().id
-        //     ),
-        //     marker,
-        // ])
-    }, [markers])
-
-
-  useEffect(() => {
-      if (pusher && channel) {
-          channel.bind('location-broadcast', locationBroadcastEventHandler)
-      }
-
-      return () => {
-          if (channel) {
-              channel.unbind('location-broadcast')
-          }
-      }
-  }, [pusher, locationBroadcastEventHandler])
 
   const handleVisibilityChange = useCallback(() => {
         if (document.hidden && isLocationShown && broadcastMode === BroadcastMode.REALTIME) {
@@ -279,10 +255,10 @@ export const Success = ({
               },
               onError: (err) => {
                   console.log(err)
-                  alert('failed broadcasting location')
+                  toast.error('failed broadcasting location')
               },
               onCompleted: () => {
-                  console.log('broadcasting location success')
+                  toast.success('Location broadcasted')
               }
           })
 
@@ -314,7 +290,6 @@ export const Success = ({
       if ( !isLocationShown || !(broadcastMode === BroadcastMode.REALTIME)) return
       const intervalId = setInterval(() => {
           broadcastLocationHandler()
-          console.log('realtime broadcast')
       }, 5000)
 
       return () => {
@@ -322,21 +297,6 @@ export const Success = ({
       }
   }, [broadcastMode, broadcastLocationHandler, isLocationShown])
 
-
-
-  // re-render the map everytime the markers state changes
-  useEffect(() => {
-      if (!map) return
-      markers.forEach((marker) => {
-          marker.addTo(map)
-      })
-
-      return () => {
-          markers.forEach((marker) => {
-              marker.remove()
-          })
-      }
-  }, [map, markers])
 
   const showLocationButtonHandler = () => {
       setIsLocationShown(true)
@@ -360,11 +320,10 @@ export const Success = ({
               },
               onError: (err) => {
                   console.log(err)
-                  alert('failed hiding vendor location')
+                  toast.error('failed hiding vendor location')
               },
               onCompleted: () => {
                   setIsLocationShown(false)
-                  console.log('hiding location success')
               }
           })
       } catch (err) {
@@ -374,7 +333,6 @@ export const Success = ({
 
   const realTimeModeButtonHandler = () => {
       setBroadcastMode(BroadcastMode.REALTIME)
-      console.log('mode changed to real time')
   }
 
   const staticModeButtonHandler = () => {
@@ -382,7 +340,6 @@ export const Success = ({
       if (isLocationShown) {
           broadcastLocationHandler()
       }
-      console.log('mode changed to static')
   }
 
   const manualModeButtonHandler = () => {
@@ -390,17 +347,14 @@ export const Success = ({
         if (isLocationShown) {
             broadcastLocationHandler()
         }
-        console.log('mode changed to manual')
   }
 
 
   const updateLocationButtonHandler = () => {
-        console.log('Update location')
         broadcastLocationHandler()
   }
 
   const updateVendorMarkerHandler = async (url: string) => {
-      console.log('update marker')
       try {
           await updateVendorMarker({
               variables: {
@@ -410,7 +364,6 @@ export const Success = ({
                   }
 
               },
-              refetchQueries: [QUERY],
               onError: (err) => {
                   console.log(err)
                     toast.error('Failed updating marker')
@@ -433,7 +386,7 @@ export const Success = ({
   const focusLocationButtonHandler = useCallback(() => {
       if (!map || !coordinates) return
       map.setCenter([coordinates.longitude, coordinates.latitude])
-      map.zoomTo(15)
+      map.zoomTo(18)
   }, [map, coordinates])
 
   return (
@@ -493,6 +446,7 @@ export const Success = ({
               hidden={!isLocationShown}
               className='h-full  max-w-full'
           ></div>
+          {!isLocationShown && vendor && map && <Marker vendor={vendor} map={map} />}
           {isLocationShown &&
               <button
                   className='absolute bottom-6 right-4 w-10 h-10 flex justify-center items-center bg-white rounded-full shadow z-10'

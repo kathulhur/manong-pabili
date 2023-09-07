@@ -7,7 +7,6 @@ const ForbiddenPage = () => {
   const { isAuthenticated, loading, currentUser } = useAuth();
 
 
-  console.log(loading, isAuthenticated, currentUser)
   return (
     <>
       <MetaTags title="Forbidden" description="Forbidden page" />

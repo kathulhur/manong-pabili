@@ -42,8 +42,6 @@ const SignupPage = () => {
                 password: data.password,
             })
 
-            console.log(response)
-
             if (response.message) {
                 toast(response.message)
             } else if (response.error) {

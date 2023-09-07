@@ -13,6 +13,10 @@ export const schema = gql`
         productPage(page: Int, filter: ProductPageFilterInput): ProductPage @requireAuth
     }
 
+    type Mutation {
+        softDeleteProduct(id: Int!): Product @requireAuth
+    }
+
 
 
 `

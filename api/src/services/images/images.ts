@@ -27,7 +27,10 @@ export const updateImage: MutationResolvers["updateImage"] = ({
   input,
 }) => {
   return db.image.update({
-    data: input,
+    data: {
+      ...input,
+      updatedAt: new Date(),
+    },
     where: { id },
   });
 };

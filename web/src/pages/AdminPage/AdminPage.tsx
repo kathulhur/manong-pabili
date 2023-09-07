@@ -1,12 +1,7 @@
 import { Link, navigate, routes, useParams } from "@redwoodjs/router";
 import { MetaTags } from "@redwoodjs/web";
-import { useState } from "react";
 import { useAuth } from "src/auth";
-import ImagesCell from "src/components/Admin/Image/ImagesCell";
-import ProductsCell from "src/components/Admin/Product/ProductsCell";
-import UsersCell from "src/components/Admin/User/UsersCell";
 import useLogout from "src/hooks/useLogout";
-import ScaffoldLayout from "src/layouts/ScaffoldLayout/ScaffoldLayout";
 
 const AdminPage = () => {
   const { isAuthenticated, loading } = useAuth()
@@ -38,8 +33,6 @@ const AdminPage = () => {
           </li>
         </ul>
       </div>
-
-
     </>
   );
 };

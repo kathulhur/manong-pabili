@@ -6,7 +6,6 @@ const Map = ({ coordinates, vendors }) => {
   const [map, setMap] = useState<tt.Map>(null)
   useEffect(() => {
       if (map && coordinates) {
-          console.log('zooming')
           map.setCenter([coordinates.longitude, coordinates.latitude])
           map.zoomTo(15)
       }

@@ -113,10 +113,7 @@ const MapPage = () => {
 
     // zoom to current location
     useEffect(() => {
-        console.log('map', map)
-        console.log('coordinates', coordinates)
         if (map && coordinates) {
-            console.log('zooming')
             map.setCenter([coordinates.longitude, coordinates.latitude])
             map.zoomTo(15)
         }
@@ -126,16 +123,13 @@ const MapPage = () => {
     // bind pusher events
     useEffect(() => {
         if (pusher && channel) {
-            console.log('binding')
             channel.bind('location-broadcast', ({vendor}: {vendor: MapVendorsQuery['mapVendors'][number]}) => {
-                console.log("location-broadcast")
                 // check if marker already exists, if it does, update it, else add it as a new one
                 setVendors(vendors.filter((v) => v.id !== vendor.id).concat(vendor))
 
             })
 
             channel.bind('hide-location', ({vendor}: {vendor: User}) => {
-                console.log('hide-location')
                 // remove marker
                 setVendors(vendors.filter((v) => v.id !== vendor.id))
 
@@ -144,7 +138,6 @@ const MapPage = () => {
 
         return () => {
             if(pusher && channel) {
-                console.log('unbinding')
                 channel.unbind("location-broadcast")
                 channel.unbind("hide-location")
             }
@@ -158,7 +151,6 @@ const MapPage = () => {
     // initialize map
     useEffect(() => {
         if(!mapRef.current) return
-        console.log('fdsfds')
         const map = tt.map({
             key: process.env.TOMTOM_API_KEY,
             container: 'map',
@@ -168,7 +160,9 @@ const MapPage = () => {
         setMap(map)
 
         return () => {
-            map.remove()
+            if(map) {
+                map.remove()
+            }
         }
     }, [mapRef])
 
@@ -181,21 +175,17 @@ const MapPage = () => {
     , [data])
 
     useEffect(() => {
-        console.log(vendorProductsQueryData)
         if (vendorProductsQueryData) {
             setProducts([...vendorProductsQueryData.vendorProducts])
         }
     }, [vendorProductsQueryData])
 
-    console.log(vendorProductsQueryData)
     // handle product search; filter vendors by selected product
     const searchProductHandler = (selectedProduct: {value: number, label: string}) => {
-        console.log('selected', selectedProduct)
         if (selectedProduct) {
             const filteredVendors = data.mapVendors.filter((vendor) => {
                 return vendor.products.find((product) => searchMatches(product.name, selectedProduct.label))
             })
-            console.log('filtered', filteredVendors)
             setVendors(filteredVendors)
         } else {
             setVendors(data.mapVendors)

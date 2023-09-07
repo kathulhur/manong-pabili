@@ -31,7 +31,6 @@ const LoginPage = () => {
 
     const usernameRef = useRef<HTMLInputElement>(null)
     useEffect(() => {
-        console.log(usernameRef.current)
         usernameRef.current?.focus()
     }, [loading, isAuthenticated])
 
@@ -40,8 +39,6 @@ const LoginPage = () => {
             username: data.username,
             password: data.password,
         })
-
-        console.log(response)
 
         if (response.message) {
             toast(response.message)

@@ -30,6 +30,8 @@ import { Form, FormError } from "@redwoodjs/forms";
 import { useAuth } from "src/auth";
 import ImageForm, { ImageFormProps } from "../ImageForm/ImageForm";
 import { toast } from "@redwoodjs/web/dist/toast";
+import { PlusIcon, XMarkIcon } from "@heroicons/react/20/solid";
+import FeaturedImage from "../FeaturedImage/FeaturedImage";
 
 
 export const QUERY = gql`
@@ -95,6 +97,9 @@ const UPLOAD_IMAGE_MUTATION = gql`
   mutation UploadImageMutation($input: CreateImageInput!) {
     createImage(input: $input) {
       id
+      title
+      url
+      userId
     }
   }
 `;
@@ -148,13 +153,12 @@ export const Success = ({
           id: vendorAccount?.id,
           username,
         },
-        refetchQueries: [QUERY],
         onCompleted: () => {
           setIsUpdateUsernameModalOpen(false);
-          alert('Username updated successfully');
+          toast.success('Username updated successfully');
         },
         onError: (err) => {
-          alert(err);
+          toast.error(err.message);
         },
 
       });
@@ -171,13 +175,12 @@ export const Success = ({
           id: vendorAccount?.id,
           name,
         },
-        refetchQueries: [QUERY],
         onCompleted: () => {
           setIsUpdateNameModalOpen(false);
-          alert('Name updated successfully');
+          toast.success('Name updated successfully');
         },
         onError: (err) => {
-          alert(err.message);
+          toast.error(err.message);
         },
 
       });
@@ -193,13 +196,12 @@ export const Success = ({
           id: vendorAccount?.id,
           mobileNumber,
         },
-        refetchQueries: [QUERY],
         onCompleted: () => {
           setIsUpdateMobileNumberModalOpen(false);
-          alert('Mobile Number updated successfully');
+          toast.success('Mobile Number updated successfully');
         },
         onError: (err) => {
-          alert(err.message);
+          toast.error(err.message);
         },
 
       });
@@ -216,16 +218,15 @@ export const Success = ({
           newPassword,
           oldPassword
         },
-        refetchQueries: [QUERY],
         onError: (err) => {
           err.graphQLErrors.forEach((error) => {
-            alert(error.message);
+            toast.error(error.message);
           })
 
         },
         onCompleted: () => {
           setIsChangePasswordModalOpen(false);
-          alert('Password updated successfully');
+          toast.success('Password updated successfully');
 
         }
       });
@@ -243,22 +244,21 @@ export const Success = ({
           id: vendorAccount.id,
           password
         },
-        refetchQueries: [QUERY],
         onCompleted: () => {
           setIsDeleteAccountModalOpen(false);
-          alert('Account deleted successfully');
+          toast.success('Account deleted successfully');
           logOut();
         },
         onError: (err) => {
           err.graphQLErrors.forEach((error) => {
-            alert(error.message);
+            toast.error(error.message);
           })
         },
 
       });
 
     } catch (err) {
-      alert(err.message)
+      toast.error(err.message)
     }
 
   }
@@ -278,15 +278,37 @@ export const Success = ({
             userId: vendorAccount?.id
           }
         },
-        refetchQueries: [QUERY],
         onCompleted: () => {
           toast.success('Image uploaded successfully');
+          setIsUploadFeatureImageModalOpen(false);
         },
         onError: (err) => {
           console.log(err);
           toast.error('Image upload failed');
         },
-
+        update: (cache, { data }) => {
+          const newImage = data?.createImage
+          if (newImage) {
+            cache.modify({
+              id: cache.identify({ __typename: 'User', id: vendorAccount.id }), // Identify the vendor object
+              fields: {
+                featuredImages: (existingImagesRefs = [], { readField }) => {
+                  const newImageRef = cache.writeFragment({
+                    data: newImage,
+                    fragment: gql`
+                      fragment NewImage on Image {
+                        id
+                        title
+                        url
+                      }
+                    `,
+                  });
+                  return [...existingImagesRefs, newImageRef];
+                },
+              },
+            });
+          }
+        }
       });
     } catch (err) {
       alert(err.message)
@@ -295,20 +317,36 @@ export const Success = ({
 
   const deleteImageHandler = async (id: number) => {
     try {
-      await deleteImage({
-        variables: {
-          id
-        },
-        refetchQueries: [QUERY],
-        onCompleted: () => {
-          toast.success('Image deleted successfully');
-        },
-        onError: (err) => {
-          console.log(err);
-          toast.error('Image delete failed');
-        },
+      if (confirm('Are you sure you want to delete this image?') === true) {
+        await deleteImage({
+          variables: {
+            id
+          },
+          onCompleted: () => {
+            toast.success('Image deleted successfully');
+          },
+          onError: (err) => {
+            console.log(err);
+            toast.error('Image delete failed');
+          },
+          update: (cache, { data }) => {
+            const deletedImageId = data?.deleteImage?.id
+            if (deletedImageId) {
+              cache.modify({
+                id: cache.identify({ __typename: 'User', id: vendorAccount.id }), // Identify the vendor object
+                fields: {
+                  featuredImages: (existingImagesRefs, { readField }) => {
+                    return existingImagesRefs.filter(
+                      (imageRef) => deletedImageId !== readField('id', imageRef)
+                    )
+                  },
+                },
+              })
+            }
+          }
 
-      });
+        });
+      }
     } catch (err) {
       alert(err.message)
     }
@@ -378,6 +416,7 @@ export const Success = ({
           Update
         </button>
         <UpdateMobileNumberModal
+          defaultValue={vendorAccount?.mobileNumber}
           isOpen={isUpdateMobileNumberModalOpen}
           onClose={() => setIsUpdateMobileNumberModalOpen(false)}
           onSubmit={onSubmitMobileNumber}
@@ -387,31 +426,33 @@ export const Success = ({
       <div>
         <div className="flex justify-between mb-4">
           <div>
-            <h2>Featured Images</h2>
-            <p>This shows up in the popover when user clicks on your map marker</p>
-            <p>Note: You can only upload up to two photos</p>
+            <h2 className="text-lg font-semibold">Featured Images</h2>
+            <div className="text-sm">
+              <p>{'('}This shows up in the popover when user clicks on your map marker{')'}</p>
+              <p>Note: You can only upload up to two photos</p>
+            </div>
           </div>
           <button
             className="border py-2 px-4 rounded-md disabled:opacity-50"
             onClick={() => setIsUploadFeatureImageModalOpen(true)}
             disabled={vendorAccount?.featuredImages?.length == 2}
           >
-            Add Featured Image
+            <div className="flex items-center space-x-4">
+              <PlusIcon className="w-4 h-4" />
+              <span>
+                Add Featured Image
+              </span>
+            </div>
           </button>
         </div>
         <div className="flex space-x-8">
           {vendorAccount?.featuredImages?.map((image) => (
-            <div key={image.id} className="space-x-4 items-center">
-              <img src={image.url} alt={image.title} className=" object-scale-down" />
-              <div className="flex justify-between">
-                <p>{image.title}</p>
-                <button
-                  className="border py-2 px-4 rounded-md"
-                  onClick={() => deleteImageHandler(image.id)}
-                  disabled={imageDeleteLoading}
-                >Delete</button>
-              </div>
-            </div>
+            <FeaturedImage
+              key={image.id}
+              image={image}
+              imageDeleteLoading={imageDeleteLoading}
+              deleteImageHandler={deleteImageHandler}
+            />
           ))}
         { vendorAccount?.featuredImages.length < 2 &&
           <ImageForm

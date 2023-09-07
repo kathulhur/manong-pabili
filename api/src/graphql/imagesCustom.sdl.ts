@@ -11,5 +11,6 @@ export const schema = gql`
 
   type Query {
     imagePage(page: Int, filter: ImagePageFilterInput): ImagePage! @requireAuth
+    vendorImages(userId: Int!): [Image!]! @requireAuth
   }
 `;

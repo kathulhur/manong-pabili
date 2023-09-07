@@ -17,11 +17,19 @@ export const vendor: QueryResolvers["vendor"] = ({ id }) => {
       roles: {
         contains: "VENDOR"
       },
-      deleted: false
+      deleted: false,
     },
     include: {
-      products: true,
-      featuredImages: true
+      products: {
+        where: {
+          deleted: false
+        }
+      },
+      featuredImages: {
+        where: {
+          deleted: false
+        }
+      }
     }
   });
 }
@@ -69,7 +77,11 @@ export const mapVendors: QueryResolvers["mapVendors"] = () => {
       verified: true,
     },
     include: {
-      featuredImages: true
+      featuredImages: {
+        where: {
+          deleted: false
+        }
+      }
     }
   })
 }
@@ -88,7 +100,8 @@ export const updateUsername: MutationResolvers["updateUsername"] = ({ id, input 
 
   return db.user.update({
     data: {
-      username: updatedUsername
+      username: updatedUsername,
+      updatedAt: new Date()
     },
     where: { id },
   });
@@ -107,7 +120,8 @@ export const updateMobileNumber: MutationResolvers["updateMobileNumber"] = ({ id
 
   return db.user.update({
     data: {
-      mobileNumber: updatedMobileNumber
+      mobileNumber: updatedMobileNumber,
+      updatedAt: new Date()
     },
     where: { id },
   });
@@ -125,7 +139,8 @@ export const updateName: MutationResolvers["updateName"] = ({ id, input }) => {
 
   return db.user.update({
     data: {
-      name: updatedName
+      name: updatedName,
+      updatedAt: new Date()
     },
     where: { id },
   });
@@ -164,6 +179,7 @@ export const updateUserPassword: MutationResolvers['updateUserPassword'] =
       data: {
         hashedPassword,
         salt,
+        updatedAt: new Date()
       },
       where: { id },
     });

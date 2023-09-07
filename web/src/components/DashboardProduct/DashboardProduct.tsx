@@ -12,6 +12,7 @@ const UPDATE_PRODUCT_MUTATION = gql`
     ) {
         updateProduct(id: $id, input: $input) {
             id
+            availability
         }
     }
 `
@@ -24,14 +25,12 @@ const DashboardProduct = ({
     const { currentUser } = useAuth()
     const [updateProduct] = useMutation(UPDATE_PRODUCT_MUTATION, {
         onError: (error) => {
-            alert('Error updating product availability')
+            toast.error('Error updating product availability')
             console.log(error)
         },
         onCompleted: () => {
             toast.success('Product availability updated')
-            console.log('Product updated')
         },
-        refetchQueries: [{ query: QUERY, variables: { userId: currentUser?.id } }],
     })
 
     const updateProductAvailability = (id: number, availability: boolean) => {

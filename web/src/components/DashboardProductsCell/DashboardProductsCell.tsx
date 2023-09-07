@@ -28,6 +28,8 @@ const CREATE_PRODUCT_MUTATION = gql`
     mutation CreateProductMutation($input: CreateProductInput!) {
         createProduct(input: $input) {
             id
+            name
+            availability
         }
     }
 `
@@ -47,13 +49,33 @@ export const Empty = () => {
     const [createProduct] = useMutation(CREATE_PRODUCT_MUTATION, {
         onError: (error) => {
             toast.error('Error creating product')
-            console.log(error)
+            console.error(error)
         },
         onCompleted: () => {
             toast.success('Product created')
             setIsCreateProductModalOpen(false)
         },
-        refetchQueries: [{ query: QUERY, variables: { userId: currentUser?.id } }],
+        update: (cache, { data: { createProduct: newProduct } }) => {
+            if (newProduct) {
+                cache.modify({
+                    fields: {
+                        productsByUser: (existingDashboardProducts = []) => {
+                            const newProductRef = cache.writeFragment({
+                                data: newProduct,
+                                fragment: gql`
+                                    fragment NewProduct on Product {
+                                        id
+                                        name
+                                        availability
+                                    }
+                                `,
+                            });
+                            return [newProductRef, ...existingDashboardProducts];
+                        },
+                    },
+                });
+            }
+        }
     })
 
     const onCreateProductModalSubmit = async (input: CreateProductInput) => {
@@ -64,7 +86,7 @@ export const Empty = () => {
                 }
             });
         } catch (error) {
-            console.log(error)
+            console.error(error)
             alert('Error creating product')
         }
     }
@@ -98,7 +120,6 @@ export const Failure = ({ error }: CellFailureProps) => (
 export const Success = ({
     dashboardProducts,
 }: CellSuccessProps<DashboardProductsQuery>) => {
-    const { currentUser } = useAuth()
     const [isCreateProductModalOpen, setIsCreateProductModalOpen] =
         useState(false)
 
@@ -107,13 +128,32 @@ export const Success = ({
             error.graphQLErrors.map(({ message }) => {
                 toast.error(message)
             })
-            console.log(error)
         },
         onCompleted: () => {
             toast.success('Product created')
             setIsCreateProductModalOpen(false)
         },
-        refetchQueries: [{ query: QUERY, variables: { userId: currentUser?.id } }],
+        update: (cache, { data: { createProduct: newProduct } }) => {
+            if (newProduct) {
+                cache.modify({
+                    fields: {
+                        productsByUser: (existingDashboardProducts = []) => {
+                            const newProductRef = cache.writeFragment({
+                                data: newProduct,
+                                fragment: gql`
+                                    fragment NewProduct on Product {
+                                        id
+                                        name
+                                        availability
+                                    }
+                                `,
+                            });
+                            return [newProductRef, ...existingDashboardProducts];
+                        },
+                    },
+                });
+            }
+        }
     })
 
     const onCreateProductModalSubmit = async (input: CreateProductInput) => {
@@ -157,7 +197,7 @@ export const Success = ({
             </ul>
 
             <Link to={routes.products()}>
-                <Button fullWidth>Go to products page</Button>
+                <Button fullWidth>Manage products</Button>
             </Link>
         </div>
     )

@@ -9,6 +9,7 @@ import Product from '../Product/Product'
 import { useState } from 'react'
 import { useAuth } from 'src/auth'
 import CreateProductModal from '../Modals/CreateProductModal'
+import { toast } from '@redwoodjs/web/dist/toast'
 
 export const QUERY = gql`
     query ProductsQuery($userId: Int!) {
@@ -25,6 +26,8 @@ const CREATE_PRODUCT_MUTATION = gql`
     mutation CreateProductMutation($input: CreateProductInput!) {
         createProduct(input: $input) {
             id
+            name
+            availability
         }
     }
 `
@@ -41,20 +44,40 @@ export const Failure = ({ error }: CellFailureProps) => (
 export const Success = ({
     productsByUser,
 }: CellSuccessProps<ProductsQuery>) => {
-    const { currentUser } = useAuth()
     const [isCreateProductModalOpen, setIsCreateProductModalOpen] =
         useState(false)
 
     const [createProduct] = useMutation<CreateProductMutation, CreateProductMutationVariables>(CREATE_PRODUCT_MUTATION, {
         onError: (error) => {
-            alert('Error creating product')
+            toast.error('Error creating product')
             console.log(error)
         },
         onCompleted: () => {
-            alert('Product created')
+            toast.success('Product created')
             setIsCreateProductModalOpen(false)
         },
-        refetchQueries: [{ query: QUERY, variables: { userId: currentUser?.id } }],
+        update: (cache, { data }) => {
+            const newProduct = data?.createProduct
+            if (newProduct) {
+                cache.modify({
+                    fields: {
+                        productsByUser: (existingProductsRefs = [], { readField }) => {
+                            const newProductRef = cache.writeFragment({
+                                data: newProduct,
+                                fragment: gql`
+                                    fragment NewProduct on Product {
+                                        id
+                                        name
+                                        availability
+                                    }
+                                `,
+                            })
+                            return [newProductRef, ...existingProductsRefs]
+                        },
+                    },
+                })
+            }
+        }
     })
 
     const onCreateProductModalSubmit = async (input: CreateProductInput) => {
@@ -66,7 +89,6 @@ export const Success = ({
             });
         } catch (error) {
             console.log(error)
-            alert('Error creating product')
         }
     }
     return (
@@ -101,89 +123,3 @@ export const Success = ({
     </div>
     )
 }
-
-
-// const SingleProduct = ({
-//     product,
-// }: {
-//     product: ProductsQuery['productsByUser'][number]
-// }) => {
-//     const { currentUser } = useAuth()
-
-//     const [updateProduct] = useMutation(UPDATE_PRODUCT_MUTATION, {
-//         onError: (error) => {
-//             toast.error('Error updating product availability')
-//             console.log(error)
-//         },
-//         onCompleted: () => {
-//             toast.success('Product availability updated')
-//             console.log('Product updated')
-//         },
-//         refetchQueries: [
-//             { query: QUERY, variables: { userId: currentUser.id } },
-//         ],
-//     })
-
-//     const [deleteProduct] = useMutation(DELETE_PRODUCT_MUTATION, {
-//         onError: (error) => {
-//             toast.error('Error deleting product')
-//             console.log(error)
-//         },
-//         onCompleted: () => {
-//             toast.success('Product deleted')
-//             console.log('Product deleted')
-//         },
-//         refetchQueries: [
-//             { query: QUERY, variables: { userId: currentUser.id } },
-//         ],
-//     })
-
-//     const deleteProductHandler = () => {
-//         try {
-//             deleteProduct({
-//                 variables: {
-//                     id: product.id,
-//                 },
-//             })
-//         } catch (error) {
-//             console.log(error)
-//         }
-//     }
-
-//     const updateProductAvailability = (id: number, availability: boolean) => {
-//         updateProduct({
-//             variables: {
-//                 id,
-//                 input: {
-//                     availability: !availability,
-//                 },
-//             },
-//         })
-//     }
-
-//     const productAvailabilityButtonHandler = () => {
-//         try {
-//             updateProductAvailability(product.id, product.availability)
-//         } catch (error) {
-//             console.log(error)
-//         }
-//     }
-//     return (
-//         <li key={product.id}>
-//             <div>
-//                 <span>{product.name}</span>
-//                 <button
-//                     type="button"
-//                     onClick={productAvailabilityButtonHandler}
-//                 >
-//                     {product.availability ? 'Available' : 'Unavailable'}
-//                 </button>
-
-//                 <button type="button" onClick={deleteProductHandler}>
-//                     {' '}
-//                     X{' '}
-//                 </button>
-//             </div>
-//         </li>
-//     )
-// }

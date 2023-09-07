@@ -13,9 +13,7 @@ export default function usePusher() {
     const channel = pusher.subscribe(process.env.PUSHER_CHANNEL)
     setPusher(pusher)
     setChannel(channel)
-    console.log('pusher initialized')
     return () => {
-        console.log('pusher disconnecting...')
         pusher.disconnect()
     }
 

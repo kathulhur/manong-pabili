@@ -33,7 +33,6 @@ const MarkerSelectModal = ({
               tabIndex={0}
               key={url}
               onClick={() => {
-                console.log('hey')
                 onSubmit(url)
               }}
 

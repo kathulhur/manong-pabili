@@ -4,16 +4,18 @@ import { useState } from "react";
 
 
 const UpdateMobileNumberModal = ({
+  defaultValue,
   isOpen,
   onClose,
   onSubmit
 }: {
+  defaultValue: string;
   isOpen: boolean;
   onClose: () => void;
   onSubmit: (mobileNumber: String) => void;
 }) => {
 
-  const [mobileNumber, setMobileNumber] = useState('');
+  const [mobileNumber, setMobileNumber] = useState(defaultValue);
 
   return <>
   <Dialog

@@ -4,7 +4,6 @@ import VendorHomePageCell from 'src/components/VendorHomepageCell'
 
 const HomePage = () => {
     const { currentUser } = useAuth()
-    console.log(currentUser)
     return currentUser && <VendorHomePageCell userId={currentUser.id} />
 
 }
