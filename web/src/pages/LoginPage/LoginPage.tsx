@@ -14,6 +14,7 @@ import { MetaTags } from '@redwoodjs/web'
 import { toast, Toaster } from '@redwoodjs/web/toast'
 
 import { useAuth } from 'src/auth'
+import Button from 'src/components/Button/Button'
 
 const LoginPage = () => {
     const { isAuthenticated, logIn, loading, currentUser } = useAuth()
@@ -30,7 +31,6 @@ const LoginPage = () => {
 
     const usernameRef = useRef<HTMLInputElement>(null)
     useEffect(() => {
-        console.log(usernameRef.current)
         usernameRef.current?.focus()
     }, [loading, isAuthenticated])
 
@@ -39,8 +39,6 @@ const LoginPage = () => {
             username: data.username,
             password: data.password,
         })
-
-        console.log(response)
 
         if (response.message) {
             toast(response.message)
@@ -57,19 +55,18 @@ const LoginPage = () => {
         <>
             <MetaTags title="Login" />
             { !loading && !isAuthenticated && (
-            <main className="rw-main">
+            <main>
                 <Toaster
-                    toastOptions={{ className: 'rw-toast', duration: 6000 }}
+                    toastOptions={{ duration: 6000 }}
                 />
-                <div className="rw-scaffold rw-login-container">
-                    <div className="rw-segment">
-                        <header className="rw-segment-header">
-                            <h2 className="rw-heading rw-heading-secondary">
-                                Login
-                            </h2>
+                <div className='rw-scaffold rw-login-container'>
+                    <div className='rw-segment'>
+                        <header>
+                            <h1 className='mb-4 font-bold text-xl text-green-700 text-center'>Manong Pabili</h1>
+                            <h2 className="font-semibold">Login</h2>
                         </header>
 
-                        <div className="rw-segment-main">
+                        <div>
                             <div className="rw-form-wrapper">
                                 <Form
                                     onSubmit={onSubmit}
@@ -120,10 +117,10 @@ const LoginPage = () => {
                                         }}
                                     />
 
-                                    <div className="rw-forgot-link">
+                                    <div className='text-right'>
                                         <Link
                                             to={routes.forgotPassword()}
-                                            className="rw-forgot-link"
+                                            className="text-slate-500"
                                         >
                                             Forgot Password?
                                         </Link>
@@ -135,19 +132,19 @@ const LoginPage = () => {
                                     />
 
                                     <div className="rw-button-group">
-                                        <Submit className="rw-button rw-button-blue">
+                                        <Button type='submit' fullWidth>
                                             Login
-                                        </Submit>
+                                        </Button>
                                     </div>
                                 </Form>
                             </div>
                         </div>
-                    </div>
-                    <div className="rw-login-link">
-                        <span>Don&apos;t have an account?</span>{' '}
-                        <Link to={routes.signup()} className="rw-link">
-                            Sign up!
-                        </Link>
+                        <div className='rw-login-link'>
+                            <span>Don&apos;t have an account?</span>{' '}
+                            <Link to={routes.signup()} className="rw-link">
+                                Sign up!
+                            </Link>
+                        </div>
                     </div>
                 </div>
             </main>

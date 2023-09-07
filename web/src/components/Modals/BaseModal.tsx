@@ -55,7 +55,7 @@ BaseModal.Title = ({ children }: { children: string; }) => {
   return (
     <Dialog.Title
       as="h3"
-      className="mb-4 text-2xl font-bold text-slate-900"
+      className="mb-4 text-lg font-bold text-slate-900"
     >{children}</Dialog.Title>
   )
 }

@@ -6,24 +6,6 @@ import { useAuth } from "src/auth";
 const ForbiddenPage = () => {
   const { isAuthenticated, loading, currentUser } = useAuth();
 
-  useEffect(() => {
-    if (isAuthenticated && currentUser) {
-      if (currentUser.roles.includes('ADMIN')) {
-        navigate(routes.admin())
-      } else if(currentUser.roles.includes('VENDOR')) {
-        navigate(routes.home())
-      } else {
-        navigate(routes.index())
-      }
-    }
-
-  }, [isAuthenticated, currentUser])
-
-
-  if (loading) {
-    return null
-  }
-
 
   return (
     <>
@@ -31,7 +13,17 @@ const ForbiddenPage = () => {
 
       <h1>You don't have permission to visit this page</h1>
       <p>
-        <Link to={routes.index()}>Go home</Link>
+        {
+          !loading && isAuthenticated && <>
+            {
+               currentUser && (<>
+                  {currentUser.roles.includes('ADMIN') && <Link to={routes.index()}>Go back to admin dashboard</Link>}
+                  {currentUser.roles.includes('VENDOR') && <Link to={routes.index()}>Go back to vendor homepage</Link>}
+              </>)
+            }
+          </>
+        }
+        { !loading && !isAuthenticated && <Link to={routes.index()}>Go back to index homepage</Link>}
       </p>
 
     </>

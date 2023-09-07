@@ -2,6 +2,7 @@ import { useState } from 'react'
 import { ProductsQuery, UpdateProductAvailabilityMutationVariables } from 'types/graphql'
 import { useMutation } from '@redwoodjs/web'
 import { QUERY as PRODUCTS_CELL_QUERY } from '../ProductsCell'
+import { toast } from '@redwoodjs/web/dist/toast'
 
 const UPDATE_PRODUCT_MUTATION = gql`
     mutation UpdateProductAvailabilityMutation(
@@ -10,13 +11,14 @@ const UPDATE_PRODUCT_MUTATION = gql`
     ) {
         updateProduct(id: $id, input: $input) {
             id
+            availability
         }
     }
 `
 
 const DELETE_PRODUCT_MUTATION = gql`
     mutation DeleteProductMutation($id: Int!) {
-        deleteProduct(id: $id) {
+        deleteProduct: softDeleteProduct(id: $id) {
             id
         }
     }
@@ -28,60 +30,73 @@ const Product = ({
 }: {
   product: ProductsQuery['productsByUser'][0]
 }) => {
-  const [isProductAvailable, setIsProductAvailable] = useState(
-    product.availability
-  )
   const [updateProduct] = useMutation(UPDATE_PRODUCT_MUTATION, {
-        refetchQueries: [PRODUCTS_CELL_QUERY],
         onError: (error) => {
-            alert('Error updating product availability')
+            toast.error('Error updating product availability')
             console.log(error)
         },
         onCompleted: () => {
-            alert('Product availability updated')
-            console.log('Product updated')
+            toast.success('Product availability updated')
         },
   })
 
   const [deleteProduct] = useMutation(DELETE_PRODUCT_MUTATION, {
-        refetchQueries: [PRODUCTS_CELL_QUERY],
         onError: (error) => {
-            alert('Error deleting product')
             console.log(error)
+            toast.error('Error deleting product')
         },
         onCompleted: () => {
-            alert('Product deleted')
-            console.log('Product deleted')
+            toast.success('Product deleted')
         },
+        update: (cache, { data }) => {
+            const deletedProductId = data?.deleteProduct?.id
+            if (deletedProductId) {
+                cache.modify({
+                    fields: {
+                        productsByUser: (existingProductsRefs, { readField }) => {
+                            return existingProductsRefs.filter(
+                                (productRef) => deletedProductId !== readField('id', productRef)
+                            )
+                        },
+                    },
+                })
+            }
+        }
   })
 
   const deleteProductHandler = async () => {
         try {
-            await deleteProduct({
-                variables: {
-                    id: product.id,
-                },
-            })
+            if(confirm('Are you sure you want to delete this product?')) {
+                await deleteProduct({
+                    variables: {
+                        id: product.id,
+                    },
+                })
+            }
         } catch (error) {
-            alert('Error deleting product')
+            toast.error('Error deleting product')
             console.log(error)
         }
   }
 
   const updateProductAvailability = async (input: UpdateProductAvailabilityMutationVariables) => {
         await updateProduct({
-            variables: input
+            variables: input,
+            onError: (error) => {
+                toast.error('Error updating product availability')
+                console.log(error)
+            },
+
         })
   }
 
   const productAvailabilityButtonHandler = () => {
       try {
             updateProductAvailability({id: product.id, input: {
-                availability: product.availability
+                availability: !product.availability
             }})
-            setIsProductAvailable(!isProductAvailable)
         } catch (error) {
-            alert('Error updating product availability')
+            toast.error('Error updating product availability')
             console.log(error)
         }
   }
@@ -95,7 +110,7 @@ const Product = ({
                     type="button"
                     onClick={productAvailabilityButtonHandler}
                     >
-                    {isProductAvailable ? 'Available' : 'Unavailable'}
+                    {product.availability ? 'Available' : 'Unavailable'}
                 </button>
 
                 <button

@@ -19,20 +19,33 @@ import type {
   UpdateUserPasswordMutation,
   UpdateUserPasswordMutationVariables,
   DeleteAccountMutation,
-  DeleteAccountMutationVariables
+  DeleteAccountMutationVariables,
+  UploadImageMutation,
+  UploadImageMutationVariables,
+  DeleteImageMutation,
+  DeleteImageMutationVariables
 } from "types/graphql";
 import type { CellSuccessProps, CellFailureProps } from "@redwoodjs/web";
 import { Form, FormError } from "@redwoodjs/forms";
 import { useAuth } from "src/auth";
+import ImageForm, { ImageFormProps } from "../ImageForm/ImageForm";
+import { toast } from "@redwoodjs/web/dist/toast";
+import { PlusIcon, XMarkIcon } from "@heroicons/react/20/solid";
+import FeaturedImage from "../FeaturedImage/FeaturedImage";
 
 
 export const QUERY = gql`
   query FindVendorAccountQuery($userId: Int!) {
-    vendorAccount: user(id: $userId) {
+    vendorAccount: vendor(id: $userId) {
       id
       username
       name
       mobileNumber
+      featuredImages {
+        id
+        title
+        url
+      }
     }
   }
 `;
@@ -80,6 +93,25 @@ const DELETE_ACCOUNT_MUTATION = gql`
   }
 `;
 
+const UPLOAD_IMAGE_MUTATION = gql`
+  mutation UploadImageMutation($input: CreateImageInput!) {
+    createImage(input: $input) {
+      id
+      title
+      url
+      userId
+    }
+  }
+`;
+
+const DELETE_IMAGE_MUTATION = gql`
+  mutation DeleteImageMutation($id: Int!) {
+    deleteImage(id: $id) {
+      id
+    }
+  }
+`;
+
 
 
 export const Loading = () => <div>Loading...</div>;
@@ -105,12 +137,15 @@ export const Success = ({
   const [updateUserPasswordMutation, { error }] = useMutation<UpdateUserPasswordMutation, UpdateUserPasswordMutationVariables>(CHANGE_PASSWORD_MUTATION);
   const [deleteUserAccount] = useMutation<DeleteAccountMutation, DeleteAccountMutationVariables>(DELETE_ACCOUNT_MUTATION);
 
+  const [uploadImage, { loading: imageUploading, error: imageUploadError }] = useMutation<UploadImageMutation, UploadImageMutationVariables>(UPLOAD_IMAGE_MUTATION);
+  const [deleteImage, { loading: imageDeleteLoading }] = useMutation<DeleteImageMutation, DeleteImageMutationVariables>(DELETE_IMAGE_MUTATION);
+
   const [isUpdateUsernameModalOpen, setIsUpdateUsernameModalOpen] = useState(false);
   const [isUpdateNameModalOpen, setIsUpdateNameModalOpen] = useState(false);
   const [isUpdateMobileNumberModalOpen, setIsUpdateMobileNumberModalOpen] = useState(false);
   const [isChangePasswordModalOpen, setIsChangePasswordModalOpen] = useState(false);
   const [isDeleteAccountModalOpen, setIsDeleteAccountModalOpen] = useState(false);
-
+  const [isUploadFeatureImageModalOpen, setIsUploadFeatureImageModalOpen] = useState(false);
   const onSubmitUsername = async (username: string) => {
     try {
       await updateUsername({
@@ -118,13 +153,12 @@ export const Success = ({
           id: vendorAccount?.id,
           username,
         },
-        refetchQueries: [QUERY],
         onCompleted: () => {
           setIsUpdateUsernameModalOpen(false);
-          alert('Username updated successfully');
+          toast.success('Username updated successfully');
         },
         onError: (err) => {
-          alert(err);
+          toast.error(err.message);
         },
 
       });
@@ -141,13 +175,12 @@ export const Success = ({
           id: vendorAccount?.id,
           name,
         },
-        refetchQueries: [QUERY],
         onCompleted: () => {
           setIsUpdateNameModalOpen(false);
-          alert('Name updated successfully');
+          toast.success('Name updated successfully');
         },
         onError: (err) => {
-          alert(err.message);
+          toast.error(err.message);
         },
 
       });
@@ -163,13 +196,12 @@ export const Success = ({
           id: vendorAccount?.id,
           mobileNumber,
         },
-        refetchQueries: [QUERY],
         onCompleted: () => {
           setIsUpdateMobileNumberModalOpen(false);
-          alert('Mobile Number updated successfully');
+          toast.success('Mobile Number updated successfully');
         },
         onError: (err) => {
-          alert(err.message);
+          toast.error(err.message);
         },
 
       });
@@ -186,16 +218,15 @@ export const Success = ({
           newPassword,
           oldPassword
         },
-        refetchQueries: [QUERY],
         onError: (err) => {
           err.graphQLErrors.forEach((error) => {
-            alert(error.message);
+            toast.error(error.message);
           })
 
         },
         onCompleted: () => {
           setIsChangePasswordModalOpen(false);
-          alert('Password updated successfully');
+          toast.success('Password updated successfully');
 
         }
       });
@@ -213,25 +244,114 @@ export const Success = ({
           id: vendorAccount.id,
           password
         },
-        refetchQueries: [QUERY],
         onCompleted: () => {
           setIsDeleteAccountModalOpen(false);
-          alert('Account deleted successfully');
+          toast.success('Account deleted successfully');
           logOut();
         },
         onError: (err) => {
           err.graphQLErrors.forEach((error) => {
-            alert(error.message);
+            toast.error(error.message);
           })
         },
 
       });
 
     } catch (err) {
-      alert(err.message)
+      toast.error(err.message)
     }
 
   }
+
+
+  const uploadImageHandler: ImageFormProps['onSave'] = async (data) => {
+    if (vendorAccount.featuredImages.length == 2) {
+      toast.error('You can only upload up to two photos. Please delete one of your existing photos to upload a new one');
+      return;
+    }
+    try {
+      await uploadImage({
+        variables: {
+          input: {
+            title: data.title,
+            url: data.url,
+            userId: vendorAccount?.id
+          }
+        },
+        onCompleted: () => {
+          toast.success('Image uploaded successfully');
+          setIsUploadFeatureImageModalOpen(false);
+        },
+        onError: (err) => {
+          console.log(err);
+          toast.error('Image upload failed');
+        },
+        update: (cache, { data }) => {
+          const newImage = data?.createImage
+          if (newImage) {
+            cache.modify({
+              id: cache.identify({ __typename: 'User', id: vendorAccount.id }), // Identify the vendor object
+              fields: {
+                featuredImages: (existingImagesRefs = [], { readField }) => {
+                  const newImageRef = cache.writeFragment({
+                    data: newImage,
+                    fragment: gql`
+                      fragment NewImage on Image {
+                        id
+                        title
+                        url
+                      }
+                    `,
+                  });
+                  return [...existingImagesRefs, newImageRef];
+                },
+              },
+            });
+          }
+        }
+      });
+    } catch (err) {
+      alert(err.message)
+    }
+  }
+
+  const deleteImageHandler = async (id: number) => {
+    try {
+      if (confirm('Are you sure you want to delete this image?') === true) {
+        await deleteImage({
+          variables: {
+            id
+          },
+          onCompleted: () => {
+            toast.success('Image deleted successfully');
+          },
+          onError: (err) => {
+            console.log(err);
+            toast.error('Image delete failed');
+          },
+          update: (cache, { data }) => {
+            const deletedImageId = data?.deleteImage?.id
+            if (deletedImageId) {
+              cache.modify({
+                id: cache.identify({ __typename: 'User', id: vendorAccount.id }), // Identify the vendor object
+                fields: {
+                  featuredImages: (existingImagesRefs, { readField }) => {
+                    return existingImagesRefs.filter(
+                      (imageRef) => deletedImageId !== readField('id', imageRef)
+                    )
+                  },
+                },
+              })
+            }
+          }
+
+        });
+      }
+    } catch (err) {
+      alert(err.message)
+    }
+  }
+
 
 
 
@@ -296,11 +416,59 @@ export const Success = ({
           Update
         </button>
         <UpdateMobileNumberModal
+          defaultValue={vendorAccount?.mobileNumber}
           isOpen={isUpdateMobileNumberModalOpen}
           onClose={() => setIsUpdateMobileNumberModalOpen(false)}
           onSubmit={onSubmitMobileNumber}
         />
       </div>
+
+      <div>
+        <div className="flex justify-between mb-4">
+          <div>
+            <h2 className="text-lg font-semibold">Featured Images</h2>
+            <div className="text-sm">
+              <p>{'('}This shows up in the popover when user clicks on your map marker{')'}</p>
+              <p>Note: You can only upload up to two photos</p>
+            </div>
+          </div>
+          <button
+            className="border py-2 px-4 rounded-md disabled:opacity-50"
+            onClick={() => setIsUploadFeatureImageModalOpen(true)}
+            disabled={vendorAccount?.featuredImages?.length == 2}
+          >
+            <div className="flex items-center space-x-4">
+              <PlusIcon className="w-4 h-4" />
+              <span>
+                Add Featured Image
+              </span>
+            </div>
+          </button>
+        </div>
+        <div className="flex space-x-8">
+          {vendorAccount?.featuredImages?.map((image) => (
+            <FeaturedImage
+              key={image.id}
+              image={image}
+              imageDeleteLoading={imageDeleteLoading}
+              deleteImageHandler={deleteImageHandler}
+            />
+          ))}
+        { vendorAccount?.featuredImages.length < 2 &&
+          <ImageForm
+            onSave={uploadImageHandler}
+            error={imageUploadError}
+            image={null}
+            loading={imageUploading}
+            isOpen={isUploadFeatureImageModalOpen}
+            onClose={() => setIsUploadFeatureImageModalOpen(false)}
+          />
+        }
+        </div>
+      </div>
+
+
+
       <div className="">
         <button className="w-full border py-2 px-4 rounded-md"
           onClick={() => setIsChangePasswordModalOpen(true)}

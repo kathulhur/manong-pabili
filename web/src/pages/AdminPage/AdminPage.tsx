@@ -1,43 +1,38 @@
-import { Form, Label, Submit, TextField } from "@redwoodjs/forms";
-import { Link, navigate, routes } from "@redwoodjs/router";
+import { Link, navigate, routes, useParams } from "@redwoodjs/router";
 import { MetaTags } from "@redwoodjs/web";
-import { useState } from "react";
 import { useAuth } from "src/auth";
-import AdminDashboardCell from "src/components/AdminDashboardCell";
 import useLogout from "src/hooks/useLogout";
 
-const AdminPage = ({ page = 1}) => {
-  const { isAuthenticated, currentUser, loading } = useAuth()
+const AdminPage = () => {
+  const { isAuthenticated, loading } = useAuth()
   const logOut = useLogout()
-  const [searchKey, setSearchKey] = useState("")
+
   if (loading) {
-    return null
+    return "loading..."
   }
 
-  if (isAuthenticated && currentUser && !currentUser.roles.includes("ADMIN")) {
-    return <div>
-      <p>Forbidden: Only admin can access this page.</p>
-      <Link to={routes.index()}>Go to Home</Link>
-    </div>
+  if (!isAuthenticated) {
+    navigate(routes.adminLogin())
+    return null
   }
 
   return (
     <>
       <MetaTags title="Admin" description="Admin page" />
-      <button onClick={ logOut }>Logout</button>
-      <h1>Admin Panel</h1>
-      <Form
-        onSubmit={({ search }) => setSearchKey(search)}
-      >
-        <Label name="search" />
-        <TextField
-          name="search"
-          placeholder="Search"
-          defaultValue=""
-        />
-        <Submit>Search</Submit>
-      </Form>
-      <AdminDashboardCell page={page} searchKey={searchKey}/>
+      <div className="mt-16 px-8">
+        <h1 className="text-2xl font-bold">AdminPage</h1>
+        <ul className="space-y-4 text-lg font-semibold mt-8">
+          <li>
+            <Link to={routes.adminUsers()}>Users &gt;</Link>
+          </li>
+          <li>
+            <Link to={routes.adminProducts()}>Products &gt;</Link>
+          </li>
+          <li>
+            <Link to={routes.adminImages()}>Images &gt;</Link>
+          </li>
+        </ul>
+      </div>
     </>
   );
 };

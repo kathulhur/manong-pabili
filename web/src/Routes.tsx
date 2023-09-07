@@ -9,8 +9,11 @@
 
 import { Router, Route, Private, Set } from '@redwoodjs/router'
 
+import ScaffoldLayout from 'src/layouts/ScaffoldLayout'
+
 import { useAuth } from './auth'
 import VerifiedVendorLayout from './layouts/VerifiedVendorLayout/VerifiedVendorLayout'
+import AdminNavLayout from './layouts/AdminNavLayout/AdminNavLayout'
 
 const Routes = () => {
   return (
@@ -22,6 +25,8 @@ const Routes = () => {
       <Route path="/forgot-password" page={ForgotPasswordPage} name="forgotPassword" />
       <Route path="/reset-password" page={ResetPasswordPage} name="resetPassword" />
       <Route path="/map" page={MapPage} name="map" />
+      <Route path="/admin/login" page={AdminLoginPage} name="adminLogin" />
+      <Route path="/admin/signup" page={AdminSignupPage} name="adminSignup" />
       <Route notfound page={NotFoundPage} />
       <Private unauthenticated="forbidden" roles={"VENDOR"}>
         <Set wrap={VerifiedVendorLayout}>
@@ -30,10 +35,25 @@ const Routes = () => {
           <Route path="/vendor/account" page={VendorAccountPage} name="vendorAccount" />
         </Set>
       </Private>
+
       <Private unauthenticated='forbidden' roles={"ADMIN"}>
-        <Route path="/admin" page={AdminPage} name="admin" />
-        <Route path="/admin/signup" page={AdminSignupPage} name="adminSignup" />
-        <Route path="/admin/login" page={AdminLoginPage} name="adminLogin" />
+        <Set wrap={AdminNavLayout}>
+            <Route path="/admin/users/new" page={AdminUserNewUserPage} name="adminNewUser" />
+            <Route path="/admin/users/{id:Int}/edit" page={AdminUserEditUserPage} name="adminEditUser" />
+            <Route path="/admin/users/{id:Int}" page={AdminUserUserPage} name="adminUser" />
+            <Route path="/admin/users" page={AdminUserUsersPage} name="adminUsers" />
+            <Route path="/admin/users/{id:Int}/products" page={AdminUserUserProductsPage} name="userProducts" />
+            <Route path="/admin/users/{id:Int}/images" page={AdminUserUserImagesPage} name="userImages" />
+            <Route path="/admin/products/new" page={AdminProductNewProductPage} name="adminNewProduct" />
+            <Route path="/admin/products/{id:Int}/edit" page={AdminProductEditProductPage} name="adminEditProduct" />
+            <Route path="/admin/products/{id:Int}" page={AdminProductProductPage} name="adminProduct" />
+            <Route path="/admin/products" page={AdminProductProductsPage} name="adminProducts" />
+            <Route path="/admin/images/new" page={AdminImageNewImagePage} name="adminNewImage" />
+            <Route path="/admin/images/{id:Int}/edit" page={AdminImageEditImagePage} name="adminEditImage" />
+            <Route path="/admin/images/{id:Int}" page={AdminImageImagePage} name="adminImage" />
+            <Route path="/admin/images" page={AdminImageImagesPage} name="adminImages" />
+            <Route path="/admin" page={AdminPage} name="admin"/>
+        </Set>
       </Private>
     </Router>
   )

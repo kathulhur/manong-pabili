@@ -20,6 +20,8 @@
     "@tomtom-international/web-sdk-maps": "^6.23.0",
     "@types/react-modal": "^3.16.0",
     "clsx": "^2.0.0",
+    "filestack-react": "^4.0.1",
+    "humanize-string": "2.1.0",
     "prop-types": "15.8.1",
     "pusher-js": "^8.3.0",
     "react": "18.2.0",

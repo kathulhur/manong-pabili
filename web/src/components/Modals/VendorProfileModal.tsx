@@ -42,8 +42,8 @@ const VendorProfileModal = ({
         ].map(({ title, value }) => {
           return (
             <div key={value} className="mb-4">
-              <h2 className="text-slate-800">{title}</h2>
-              <p className="font-semibold text-slate-900 text-lg">{value || '-'}</p>
+              <h2 className="text-sm text-slate-700">{title}</h2>
+              <p className="font-semibold text-slate-900">{value || '-'}</p>
             </div>
           )
         })
