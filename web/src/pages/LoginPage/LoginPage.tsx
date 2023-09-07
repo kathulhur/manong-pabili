@@ -59,8 +59,8 @@ const LoginPage = () => {
                 <Toaster
                     toastOptions={{ duration: 6000 }}
                 />
-                <div className='mx-auto max-w-lg p-4'>
-                    <div className='mt-24 bg-slate-50 p-4 rounded-lg'>
+                <div className='rw-scaffold rw-login-container'>
+                    <div className='rw-segment'>
                         <header>
                             <h1 className='mb-4 font-bold text-xl text-green-700 text-center'>Manong Pabili</h1>
                             <h2 className="font-semibold">Login</h2>
@@ -81,7 +81,7 @@ const LoginPage = () => {
                                     </Label>
                                     <TextField
                                         name="username"
-                                        className="w-full px-4 py-2 bg-transparent rounded-md border-2 border-slate-200 focus:outline-none focus:ring-2 focus:ring-green-700"
+                                        className="rw-input"
                                         errorClassName="rw-input rw-input-error"
                                         ref={usernameRef}
                                         validation={{
@@ -106,7 +106,7 @@ const LoginPage = () => {
                                     </Label>
                                     <PasswordField
                                         name="password"
-                                        className="w-full px-4 py-2 bg-transparent rounded-md border-2 border-slate-200 focus:outline-none focus:ring-2 focus:ring-green-700"
+                                        className="rw-input"
                                         errorClassName="rw-input rw-input-error"
                                         autoComplete="current-password"
                                         validation={{
@@ -139,9 +139,9 @@ const LoginPage = () => {
                                 </Form>
                             </div>
                         </div>
-                        <div className='mt-4 text-center text-sm'>
+                        <div className='rw-login-link'>
                             <span>Don&apos;t have an account?</span>{' '}
-                            <Link to={routes.signup()} className="text-green-700">
+                            <Link to={routes.signup()} className="rw-link">
                                 Sign up!
                             </Link>
                         </div>

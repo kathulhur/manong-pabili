@@ -85,9 +85,17 @@ const IndexPage = () => {
               <p className="text-slate-700 mb-4">Vendors can static, manual, or realtime made to fit their situation</p>
             </div>
           </section>
-
-
         </div>
+
+        <footer className="relative w-full">
+          <div className="absolute inset-0 bg-gradient-to-r from-green-300 to-green-400/80"></div>
+          <div className='relative max-w-7xl mx-auto px-8 py-6'>
+            <div className="flex items-center justify-between">
+              <span className="text-sm text-slate-900">2023. Manong Pabili.</span>
+              <a href="" target="_blank" className="text-sm text-slate-900 rw-link">Github Repository</a>
+            </div>
+          </div>
+        </footer>
     </>
   );
 };
