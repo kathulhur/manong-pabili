@@ -51,12 +51,43 @@ export const Failure = ({ error }: CellFailureProps) => (
 );
 
 interface SuccessProps extends CellSuccessProps<FindProducts> {
-  paginate: PaginationProps['paginate']
+  paginate: PaginationProps['paginate'],
+  userId: number
 }
 
-export const Success = ({ productPage: { products, count }, paginate }: SuccessProps) => {
+
+export const Success = ({ productPage: { products, count }, paginate, userId }: SuccessProps) => {
   return (
     <div>
+      <div className="m-2 flex justify-between">
+        <div className="text-xl font-semibold space-x-2">
+          <Link to={routes.adminUsers()} className="hover:underline hover:underline-offset-1">
+            Users
+          </Link>
+          { userId && <>
+            <span>&gt;</span>
+            <Link to={routes.adminUser({ id: userId })} className="hover:underline hover:underline-offset-1">
+              { userId }
+            </Link>
+            <span>&gt;</span>
+            <Link to={routes.adminProducts()} className="hover:underline hover:underline-offset-1">
+              Products
+            </Link>
+          </>
+          }
+        </div>
+        { userId &&
+          <Link to={routes.adminNewProduct({ id: userId })} className="flex items-center font-semibold border px-4 py-2 rounded-md">
+              <div className="rw-button-icon">+</div> Add Product
+          </Link>
+        }
+        { !userId &&
+          <Link to={routes.adminNewProduct()} className="flex items-center font-semibold border px-4 py-2 rounded-md">
+              <div className="rw-button-icon">+</div> Add Product
+          </Link>
+        }
+      </div>
+
       <Products products={products}/>
       <Pagination count={count} paginate={paginate} />
     </div>);

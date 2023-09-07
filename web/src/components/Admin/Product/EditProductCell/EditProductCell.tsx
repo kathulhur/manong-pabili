@@ -1,6 +1,6 @@
 import type { EditProductById, UpdateProductInput } from "types/graphql";
 
-import { navigate, routes } from "@redwoodjs/router";
+import { Link, navigate, routes } from "@redwoodjs/router";
 import type { CellSuccessProps, CellFailureProps } from "@redwoodjs/web";
 import { useMutation } from "@redwoodjs/web";
 import { toast } from "@redwoodjs/web/toast";
@@ -56,6 +56,26 @@ export const Success = ({ product }: CellSuccessProps<EditProductById>) => {
   };
 
   return (
+    <>
+    <div className="m-2">
+      <div className="text-xl font-semibold space-x-2">
+        <Link to={routes.adminUsers()} className="hover:underline hover:underline-offset-1">
+          Users
+        </Link>
+        <span>&gt;</span>
+        <Link to={routes.adminProducts()} className="hover:underline hover:underline-offset-1">
+          Products
+        </Link>
+        <span>&gt;</span>
+        <Link to={routes.adminProduct({ id: product.id })} className="hover:underline hover:underline-offset-1">
+          { product.name }
+        </Link>
+        <span>&gt;</span>
+        <Link to={routes.adminEditProduct({ id: product.id })} className="hover:underline hover:underline-offset-1">
+          Edit
+        </Link>
+      </div>
+    </div>
     <div className="rw-segment">
       <header className="rw-segment-header">
         <h2 className="rw-heading rw-heading-secondary">
@@ -71,5 +91,6 @@ export const Success = ({ product }: CellSuccessProps<EditProductById>) => {
         />
       </div>
     </div>
+    </>
   );
 };

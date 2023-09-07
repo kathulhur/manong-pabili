@@ -51,12 +51,41 @@ export const Failure = ({ error }: CellFailureProps) => (
 );
 
 export interface ImagesCellProps extends CellSuccessProps<FindImages>{
-  paginate: PaginationProps["paginate"]
+  paginate: PaginationProps["paginate"],
+  userId: number
 }
 
-export const Success = ({ imagePage: { images, count }, paginate }: ImagesCellProps) => {
+export const Success = ({ imagePage: { images, count }, paginate, userId }: ImagesCellProps) => {
   return (
     <div>
+        <div className="m-2 flex justify-between">
+          <div className="text-xl font-semibold space-x-2">
+              <Link to={routes.adminUsers()} className="hover:underline hover:underline-offset-1">
+              Users
+              </Link>
+              {userId && <>
+                <span>&gt;</span>
+                <Link to={routes.adminUser({ id: userId })} className="hover:underline hover:underline-offset-1">
+                  { userId }
+                </Link>
+                <span>&gt;</span>
+                <Link to={routes.adminImages()} className="hover:underline hover:underline-offset-1">
+                  Images
+                </Link>
+              </>
+              }
+          </div>
+          { userId &&
+            <Link to={routes.adminNewImage({ id: userId })} className="flex items-center font-semibold border px-4 py-2 rounded-md">
+                <div className="rw-button-icon">+</div> Add Image
+            </Link>
+          }
+          { !userId &&
+            <Link to={routes.adminNewImage()} className="flex items-center font-semibold border px-4 py-2 rounded-md">
+                <div className="rw-button-icon">+</div> Add Image
+            </Link>
+          }
+        </div>
       <Images images={images} />
       <Pagination count={count} paginate={paginate}/>
     </div>

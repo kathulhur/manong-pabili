@@ -1,3 +1,4 @@
+import { Link, routes } from "@redwoodjs/router";
 import UserCell from "src/components/Admin/User/UserCell";
 
 type UserPageProps = {
@@ -5,7 +6,9 @@ type UserPageProps = {
 };
 
 const UserPage = ({ id }: UserPageProps) => {
-  return <UserCell id={id} />;
+  return (<>
+    <UserCell id={id} />
+  </>);
 };
 
 export default UserPage;

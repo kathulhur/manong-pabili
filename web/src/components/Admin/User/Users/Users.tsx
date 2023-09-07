@@ -126,14 +126,14 @@ const UsersList = ({ users }: {
                     Delete
                   </button>
                   <Link
-                    to={routes.userProducts({ page: 1, userId: user.id })}
+                    to={routes.userProducts({ page: 1, id: user.id })}
                     title={"Edit user " + user.id}
                     className="rw-button rw-button-small rw-button-blue"
                   >
                     view products
                   </Link>
                   <Link
-                    to={routes.userImages({ page: 1, userId: user.id })}
+                    to={routes.userImages({ page: 1, id: user.id })}
                     title={"Edit user " + user.id}
                     className="rw-button rw-button-small rw-button-blue"
                   >

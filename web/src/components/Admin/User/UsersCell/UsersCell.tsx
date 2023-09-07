@@ -64,6 +64,16 @@ export interface UsersCellSuccessProps extends CellSuccessProps<FindUsers> {
 export const Success = ({ userPage: { users, count }, paginate }: UsersCellSuccessProps) => {
   return (
     <div>
+      <div className="m-2 flex justify-between">
+        <div className="text-xl font-semibold">
+          <Link to={routes.adminUsers()} className="hover:underline hover:underline-offset-1 ">
+            Users
+          </Link>
+        </div>
+        <Link to={routes.adminNewUser()} className="flex items-center font-semibold border px-4 py-2 rounded-md">
+          <div className="rw-button-icon">+</div> New User
+        </Link>
+      </div>
       <Users users={users}/>
       <Pagination count={count} paginate={paginate}/>
     </div>);

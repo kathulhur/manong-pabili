@@ -3,6 +3,7 @@ import type { FindUserById } from "types/graphql";
 import type { CellSuccessProps, CellFailureProps } from "@redwoodjs/web";
 
 import User from "src/components/Admin/User/User";
+import { Link, routes } from "@redwoodjs/router";
 
 export const QUERY = gql`
   query FindUserById($id: Int!) {
@@ -39,5 +40,24 @@ export const Failure = ({ error }: CellFailureProps) => (
 );
 
 export const Success = ({ user }: CellSuccessProps<FindUserById>) => {
-  return <User user={user} />;
+
+  return (
+    <>
+      <div className="m-2 flex justify-between">
+        <div className="text-xl font-semibold space-x-2">
+          <Link to={routes.adminUsers()} className="hover:underline hover:underline-offset-1">
+            Users
+          </Link>
+          <span>&gt;</span>
+          <Link to={routes.adminUser({ id: user.id })} className="hover:underline hover:underline-offset-1">
+            { user.name }
+          </Link>
+        </div>
+        <Link to={routes.adminUser({ id: user.id })} className="flex items-center font-semibold border px-4 py-2 rounded-md">
+          <div className="rw-button-icon">+</div> Add Product
+        </Link>
+      </div>
+      <User user={user} />
+    </>
+  );
 };
