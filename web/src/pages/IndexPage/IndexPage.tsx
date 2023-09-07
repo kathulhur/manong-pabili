@@ -40,8 +40,9 @@ const IndexPage = () => {
         </header>
       </div>
 
-        <section className="w-full bg-green-400/25">
-          <div className='max-w-7xl mx-auto px-8 pt-20 pb-32'>
+        <section className="relative w-full bg-cover bg-center bg-[url('/img/taho-vendor.jpg')]">
+          <div className="absolute inset-0 bg-gradient-to-r from-green-300 to-green-400/80"></div>
+          <div className='relative max-w-7xl mx-auto px-8 pt-20 pb-32'>
             <h2 className="text-3xl font-bold text-slate-900 mb-8">Missed that taho<br/>vendor?</h2>
             <p className="text-slate-700 mb-4">Don't worry, manong could be<br/>nearby.</p>
             <Button>See moving vendors</Button>
