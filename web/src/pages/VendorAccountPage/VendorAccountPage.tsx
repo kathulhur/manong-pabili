@@ -1,5 +1,7 @@
+import { ChevronLeftIcon } from "@heroicons/react/20/solid";
 import { Link, navigate, routes } from "@redwoodjs/router";
 import { useAuth } from "src/auth";
+import Button from "src/components/Button/Button";
 import VendorAccountCell from "src/components/VendorAccountCell";
 
 const VendorAccountPage = () => {
@@ -7,16 +9,18 @@ const VendorAccountPage = () => {
 
 
   return (
-  <div className="max-w-7xl mx-auto p-8">
-    <div className="p-8 space-y-8">
-      <Link
-          className="border py-2 px-4 rounded-md "
-          to={routes.home()}
+  <div className="max-w-2xl mx-auto p-8 space-y-8">
+    <Link
+        to={routes.home()}
+      >
+        <Button
+          icon={<ChevronLeftIcon />}
+          variant="subtle"
         >
-          &lt;  Vendor Dashboard
-      </Link>
-      <VendorAccountCell userId={currentUser?.id} />
-    </div>
+          Vendor Dashboard
+        </Button>
+    </Link>
+    <VendorAccountCell userId={currentUser?.id} />
   </div>
   );
 
