@@ -15,6 +15,7 @@ import { MetaTags } from '@redwoodjs/web'
 import { toast, Toaster } from '@redwoodjs/web/toast'
 
 import { useAuth } from 'src/auth'
+import Button from 'src/components/Button/Button'
 
 const SignupPage = () => {
     const { isAuthenticated, signUp } = useAuth()
@@ -66,13 +67,12 @@ const SignupPage = () => {
                 />
                 <div className="rw-scaffold rw-login-container">
                     <div className="rw-segment">
-                        <header className="rw-segment-header">
-                            <h2 className="rw-heading rw-heading-secondary">
-                                Signup
-                            </h2>
+                        <header>
+                            <h1 className='mb-4 font-bold text-xl text-green-700 text-center'>Manong Pabili</h1>
+                            <h2 className="font-semibold">Sign up</h2>
                         </header>
 
-                        <div className="rw-segment-main">
+                        <div>
                             <div className="rw-form-wrapper">
                                 <Form
                                     onSubmit={onSubmit}
@@ -83,7 +83,7 @@ const SignupPage = () => {
                                             name="name"
                                             className="rw-label"
                                             errorClassName="rw-label rw-label-error"
-                                        />
+                                        >Name</Label>
                                         <TextField
                                             name="name"
                                             className="rw-input"
@@ -102,34 +102,37 @@ const SignupPage = () => {
                                         />
 
                                         {/* Gender */}
-                                        <div>
-
-                                        <Label name="Male" htmlFor='male'
-                                            className="rw-label"
-                                            errorClassName="rw-label rw-label-error"
-                                            />
-                                        <RadioField
-                                            required
-                                            id='male'
-                                            name='gender'
-                                            className="rw-input"
-                                            errorClassName="rw-input rw-input-error"
-                                            value='Male'
-                                            />
-                                        <Label name="Female" htmlFor='female'
-                                            className="rw-label"
-                                            errorClassName="rw-label rw-label-error"
-                                            />
-                                        <RadioField
-                                            required
-                                            id='female'
-                                            value='Female'
-                                            name='gender'
-                                            className="rw-input"
-                                            errorClassName="rw-input rw-input-error"
-                                        />
-                                        </div>
-
+                                        <fieldset>
+                                            <legend className='rw-label'>Gender</legend>
+                                            <div className='flex items-center'>
+                                                <RadioField
+                                                    required
+                                                    id='male'
+                                                    name='gender'
+                                                    className="rw-input"
+                                                    errorClassName="rw-input rw-input-error"
+                                                    value='Male'
+                                                    />
+                                                <Label name="Male" htmlFor='male'
+                                                    className="rw-label mt-0"
+                                                    errorClassName="rw-label rw-label-error"
+                                                />
+                                            </div>
+                                            <div className='flex items-center'>
+                                                <RadioField
+                                                    required
+                                                    id='female'
+                                                    value='Female'
+                                                    name='gender'
+                                                    className="rw-input"
+                                                    errorClassName="rw-input rw-input-error"
+                                                    />
+                                                <Label name="Female" htmlFor='female'
+                                                    className="rw-label mt-0"
+                                                    errorClassName="rw-label rw-label-error"
+                                                />
+                                            </div>
+                                        </fieldset>
                                     </div>
 
                                     {/* Contact Number */}
@@ -155,71 +158,66 @@ const SignupPage = () => {
                                         className="rw-field-error"
                                     />
 
-                                    <div className='mt-8'>
-                                        <h2 className='font-semibold text-lg'>Login Credentials</h2>
-                                        {/* Username */}
-                                        <Label
-                                            name="Username"
-                                            htmlFor='username'
-                                            className="rw-label"
-                                            errorClassName="rw-label rw-label-error"
-                                        />
-                                        <TextField
-                                            name="username"
-                                            className="rw-input"
-                                            errorClassName="rw-input rw-input-error"
-                                            validation={{
-                                                required: {
-                                                    value: true,
-                                                    message: 'Username is required',
-                                                },
-                                            }}
-                                        />
-                                        <FieldError
-                                            name="username"
-                                            className="rw-field-error"
-                                        />
+                                    <Label
+                                        name="Username"
+                                        htmlFor='username'
+                                        className="rw-label"
+                                        errorClassName="rw-label rw-label-error"
+                                    />
+                                    <TextField
+                                        name="username"
+                                        className="rw-input"
+                                        errorClassName="rw-input rw-input-error"
+                                        validation={{
+                                            required: {
+                                                value: true,
+                                                message: 'Username is required',
+                                            },
+                                        }}
+                                    />
+                                    <FieldError
+                                        name="username"
+                                        className="rw-field-error"
+                                    />
 
-                                        {/* Password */}
-                                        <Label
-                                            name="password"
-                                            className="rw-label"
-                                            errorClassName="rw-label rw-label-error"
-                                            >
-                                            Password
-                                        </Label>
-                                        <PasswordField
-                                            name="password"
-                                            className="rw-input"
-                                            errorClassName="rw-input rw-input-error"
-                                            autoComplete="current-password"
-                                            validation={{
-                                                required: {
-                                                    value: true,
-                                                    message: 'Password is required',
-                                                },
-                                            }}
-                                            />
-                                        <FieldError
-                                            name="password"
-                                            className="rw-field-error"
-                                            />
+                                    <Label
+                                        name="password"
+                                        className="rw-label"
+                                        errorClassName="rw-label rw-label-error"
+                                        >
+                                        Password
+                                    </Label>
+                                    <PasswordField
+                                        name="password"
+                                        className="rw-input"
+                                        errorClassName="rw-input rw-input-error"
+                                        autoComplete="current-password"
+                                        validation={{
+                                            required: {
+                                                value: true,
+                                                message: 'Password is required',
+                                            },
+                                        }}
+                                        />
+                                    <FieldError
+                                        name="password"
+                                        className="rw-field-error"
+                                    />
 
-                                        <div className="rw-button-group">
-                                            <Submit className="rw-button rw-button-blue">
-                                                Sign Up
-                                            </Submit>
-                                        </div>
+                                    <div className="rw-button-group">
+                                        <Button type='submit' fullWidth>
+                                            Sign Up
+                                        </Button>
                                     </div>
                                 </Form>
                             </div>
                         </div>
-                    </div>
-                    <div className="rw-login-link">
-                        <span>Already have an account?</span>{' '}
-                        <Link to={routes.login()} className="rw-link">
-                            Log in!
-                        </Link>
+                        <div className="rw-login-link">
+                            <span>Already have an account?</span>{' '}
+                            <Link to={routes.login()} className="rw-link">
+                                Log in!
+                            </Link>
+                        </div>
                     </div>
                 </div>
             </main>
