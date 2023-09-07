@@ -30,6 +30,7 @@ import { Form, FormError } from "@redwoodjs/forms";
 import { useAuth } from "src/auth";
 import ImageForm, { ImageFormProps } from "../ImageForm/ImageForm";
 import { toast } from "@redwoodjs/web/dist/toast";
+import Button from "../Button/Button";
 
 
 export const QUERY = gql`
@@ -318,27 +319,19 @@ export const Success = ({
 
 
   return (
-    <div className="space-y-16">
-      <p></p>
-      <h2
-        className="text-2xl font-bold"
-      >
-        Your Profile
-      </h2>
+    <div className="space-y-8">
+      <h2 className="text-2xl font-bold">Your Profile</h2>
 
-
-      <div
-        className="flex space-x-8 justify-between items-center mt-4"
-      >
+      <div className="flex space-x-8 justify-between items-center mt-4">
         <div>
           <h2 className="text-sm">Username</h2>
-          <p className="text-xl font-bold">{vendorAccount?.username}</p>
+          <p className="text-lg font-semibold">{vendorAccount?.username}</p>
         </div>
-        <button
-          className="border py-2 px-4 rounded-md"
+        <Button
+          variant="secondary"
           onClick={() => setIsUpdateUsernameModalOpen(true)}>
-          Update
-        </button>
+          Edit
+        </Button>
         <UpdateUsernameModal
           isOpen={isUpdateUsernameModalOpen}
           onClose={() => setIsUpdateUsernameModalOpen(false)}
@@ -350,14 +343,14 @@ export const Success = ({
       >
         <div>
           <h2 className="text-sm">Fullname</h2>
-          <p className="text-xl font-bold">{vendorAccount?.name}</p>
+          <p className="text-lg font-semibold">{vendorAccount?.name}</p>
         </div>
-        <button
-          className="border py-2 px-4 rounded-md"
+        <Button
+          variant="secondary"
           onClick={() => setIsUpdateNameModalOpen(true)}
         >
-          Update
-        </button>
+          Edit
+        </Button>
         <UpdateNameModal
           isOpen={isUpdateNameModalOpen}
           onClose={() => setIsUpdateNameModalOpen(false)}
@@ -369,14 +362,14 @@ export const Success = ({
       >
         <div>
           <h2 className="text-sm">Mobile Number</h2>
-          <p className="text-xl font-bold">{vendorAccount?.mobileNumber}</p>
+          <p className="text-lg font-semibold">{vendorAccount?.mobileNumber}</p>
         </div>
-        <button
-          className="border py-2 px-4 rounded-md"
+        <Button
+          variant="secondary"
           onClick={() => setIsUpdateMobileNumberModalOpen(true)}
         >
-          Update
-        </button>
+          Edit
+        </Button>
         <UpdateMobileNumberModal
           isOpen={isUpdateMobileNumberModalOpen}
           onClose={() => setIsUpdateMobileNumberModalOpen(false)}
@@ -385,19 +378,19 @@ export const Success = ({
       </div>
 
       <div>
-        <div className="flex justify-between mb-4">
+        <div className="flex flex-col justify-between space-y-2 mb-4">
           <div>
-            <h2>Featured Images</h2>
+            <h2 className="font-semibold mb-2">Featured Images</h2>
             <p>This shows up in the popover when user clicks on your map marker</p>
             <p>Note: You can only upload up to two photos</p>
           </div>
-          <button
-            className="border py-2 px-4 rounded-md disabled:opacity-50"
+          <Button
+            variant="secondary"
             onClick={() => setIsUploadFeatureImageModalOpen(true)}
             disabled={vendorAccount?.featuredImages?.length == 2}
           >
             Add Featured Image
-          </button>
+          </Button>
         </div>
         <div className="flex space-x-8">
           {vendorAccount?.featuredImages?.map((image) => (
@@ -426,14 +419,16 @@ export const Success = ({
         </div>
       </div>
 
+      <hr />
 
-
-      <div className="">
-        <button className="w-full border py-2 px-4 rounded-md"
+      <div>
+        <h2 className="mb-4 font-semibold">Account Password</h2>
+        <Button
+          variant="secondary"
           onClick={() => setIsChangePasswordModalOpen(true)}
         >
           Change Password
-        </button>
+        </Button>
         <ChangePasswordModal
           isOpen={isChangePasswordModalOpen}
           onClose={() => setIsChangePasswordModalOpen(false)}
@@ -441,15 +436,16 @@ export const Success = ({
         />
       </div>
 
-      <div className="mt-32">
-        <p>
-          Danger Zone
-        </p>
-        <button className="w-full border py-2 px-4 rounded-md"
+      <hr/>
+
+      <div className="p-4 border border-dashed border-red-700 rounded-lg">
+        <h2 className="mb-4 font-semibold text-red-700">Danger Zone</h2>
+        <Button
+          variant="danger"
           onClick={() => setIsDeleteAccountModalOpen(true)}
         >
           Delete Account
-        </button>
+        </Button>
         <DeleteAccountModal
           isOpen={isDeleteAccountModalOpen}
           onClose={() => setIsDeleteAccountModalOpen(false)}
