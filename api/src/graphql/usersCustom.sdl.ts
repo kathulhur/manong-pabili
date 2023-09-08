@@ -39,6 +39,7 @@ export const schema = gql`
     event: String!
     latitude: Float!
     longitude: Float!
+    locationBroadcastMode: LocationBroadcastMode!
   }
 
   input UpdateVendorMarkerInput {

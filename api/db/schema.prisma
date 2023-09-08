@@ -27,6 +27,7 @@ model User {
   longitude           Float?
   roles               String    @default("VENDOR")
   lastLocationUpdate  DateTime?
+  locationBroadcastMode        LocationBroadcastMode @default(STATIC)
   locationHidden      Boolean   @default(true)
   verified            Boolean   @default(false)
   markerUrl           String?   @default("/assets/images/default_marker.png")
@@ -35,6 +36,13 @@ model User {
   createdAt           DateTime  @default(now())
   updatedAt           DateTime?  @updatedAt
   featuredImages      Image[]
+}
+
+enum LocationBroadcastMode {
+  STATIC
+  MANUAL
+  REALTIME
+
 }
 
 model Product {

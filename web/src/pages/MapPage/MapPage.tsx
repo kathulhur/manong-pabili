@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import '@tomtom-international/web-sdk-maps/dist/maps.css'
 import tt from '@tomtom-international/web-sdk-maps'
-
+import { timeTag } from "src/lib/formatters";
 import { useApolloClient } from '@apollo/client'
 import { MetaTags, useQuery } from '@redwoodjs/web'
 import { MapVendorsQuery, VendorProductsQuery, User } from 'types/graphql'
@@ -23,6 +23,9 @@ const MAP_VENDORS_QUERY = gql`
             email
             latitude
             longitude
+            lastLocationUpdate
+            lastLocationUpdate
+            locationHidden
             products {
                 id
                 name
@@ -64,23 +67,6 @@ export function buildPopupHtml({ name, products }) {
 }
 
 
-export const createMarker = (vendor: MapVendorsQuery['mapVendors'][number]) => {
-    let image = document.createElement('img')
-    image.src = vendor.markerUrl,
-    image.className = 'w-6 h-6'
-    const marker = new tt.Marker({
-        element: image,
-        click: () => alert('hey')
-    }).setLngLat([vendor.longitude, vendor.latitude])
-
-
-
-    // marker.setPopup(
-    //     new tt.Popup({ offset: 35 }).setHTML(renderToString(buildPopupHtml({ name: vendor.name, products: vendor.products })))
-    // )
-    marker.getElement().id = String(vendor.id)
-    return marker
-}
 
 function removeSpacesAndHyphens(str: string) {
     return str.replace(/[\s-]/g, '');
@@ -95,6 +81,27 @@ function searchMatches(query: string, target: string) {
 
     return sanitizedTarget.includes(sanitizedQuery);
 }
+
+export const formatDatetime = (dateTime?: string) => {
+    let output: string | JSX.Element = "";
+
+    if (dateTime) {
+      output = (
+        <time dateTime={dateTime} title={dateTime}>
+          {new Date(dateTime).toLocaleDateString(undefined, {
+            weekday: "long",
+            year: "numeric",
+            month: "long",
+            day: "numeric",
+            hour: "numeric",
+            minute: "numeric",
+          })}
+        </time>
+      );
+    }
+
+    return output;
+};
 
 const MapPage = () => {
     const apolloClient = useApolloClient()
@@ -240,7 +247,6 @@ const MapPage = () => {
                                         <img src={selectedVendor?.markerUrl} alt="marker icon"/>
                                     </div>
                                     <h2 className='font-bold text-lg'>{selectedVendor.name}</h2>
-
                                 </div>
                             </section>
 
@@ -264,6 +270,11 @@ const MapPage = () => {
                                     ))}
                                 </div>
                             </section>
+
+                            <footer className='mt-2'>
+                                    <h3 className='text-sm font-semibold'>Last location update</h3>
+                                    {formatDatetime(selectedVendor.lastLocationUpdate)}
+                            </footer>
                         </div>
                     </BaseModal>
                 )}

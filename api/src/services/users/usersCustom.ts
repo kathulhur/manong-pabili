@@ -296,7 +296,7 @@ export const hideVendorLocation: MutationResolvers['hideVendorLocation'] = async
 
 
 export const broadcastLocation: MutationResolvers['broadcastLocation']
-  = async ({id, input: {channel, event, latitude, longitude}}) => {
+  = async ({id, input: {channel, event, latitude, longitude, locationBroadcastMode}}) => {
 
     const user = await db.user.update({
         where: { id: id },
@@ -304,7 +304,8 @@ export const broadcastLocation: MutationResolvers['broadcastLocation']
             longitude: longitude,
             latitude: latitude,
             lastLocationUpdate: new Date(),
-            locationHidden: false
+            locationHidden: false,
+            locationBroadcastMode
         },
         include: {
           products: true,

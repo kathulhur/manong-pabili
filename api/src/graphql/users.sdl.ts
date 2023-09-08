@@ -19,10 +19,17 @@ export const schema = gql`
     verified: Boolean!
     markerUrl: String
     createdAt: DateTime
+    locationBroadcastMode: LocationBroadcastMode
     deleted: Boolean!
     deletedAt: DateTime
     updatedAt: DateTime
     featuredImages: [Image]!
+  }
+
+  enum LocationBroadcastMode {
+    STATIC
+    MANUAL
+    REALTIME
   }
 
   type Query {

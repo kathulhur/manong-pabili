@@ -20,10 +20,12 @@ import DashboardProductsCell from "../DashboardProductsCell";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { getCurrentPositionAsync } from "src/hooks/useCoordinates";
 import usePusher from "src/hooks/usePusher";
-import { createMarker } from "src/pages/MapPage/MapPage";
-import tt from "@tomtom-international/web-sdk-maps";
+import { createMarker } from "../Marker/Marker";
+import tt, { LngLatLike } from "@tomtom-international/web-sdk-maps";
 import { toast } from "@redwoodjs/web/dist/toast";
 import Marker from "../Marker/Marker";
+import { get } from "@redwoodjs/forms";
+import { LocationBroadcastMode } from "@prisma/client";
 
 export const beforeQuery = ({ userId }) => {
   return {
@@ -39,6 +41,7 @@ export const QUERY = gql`
         email
         latitude
         longitude
+        locationBroadcastMode
         products {
             id
             name
@@ -87,6 +90,7 @@ const BROADCAST_LOCATION_MUTATION = gql`
             }
             roles
             markerUrl
+            locationBroadcastMode
         }
     }
 `
@@ -110,10 +114,38 @@ export const Failure = ({
   <div style={{ color: "red" }}>Error: {error?.message}</div>
 );
 
-enum BroadcastMode {
-    STATIC,
-    MANUAL,
-    REALTIME
+
+const getCoordinates = async () => {
+    try {
+        const { coords } = await getCurrentPositionAsync({
+            enableHighAccuracy: true,
+            timeout: 5000,
+            maximumAge: 10000,
+        })
+        return {
+            latitude: coords.latitude,
+            longitude: coords.longitude
+        }
+    } catch (err) {
+        console.log(err)
+        if (err.code === 1) {
+            alert(
+                'You have denied access to your location. Please enable your browser location settings.'
+            )
+        }
+
+        if (err.code === 2) {
+            alert(
+                'Please turn on your device location settings and try again. '
+            )
+        }
+
+        if (err.code === 3) {
+            alert(
+                'Location request timed out. Please try again or try moving to a location with better signal.'
+            )
+        }
+    }
 }
 
 export const Success = ({
@@ -123,72 +155,37 @@ export const Success = ({
   FindVendorHomepageQueryVariables
 >) => {
 
-  const [hideVendorLocation] = useMutation<HideVendorLocationMutation, HideVendorLocationMutationVariables>(HIDE_VENDOR_LOCATION_MUTATION);
-  const [broadcastLocation, { loading: broadcastingLocation}] = useMutation<BroadcastLocationMutation, BroadcastLocationMutationVariables>(BROADCAST_LOCATION_MUTATION);
-  const [updateVendorMarker] = useMutation<UpdateVendorMarkerMutation, UpdateVendorMarkerMutationVariables>(UPDATE_VENDOR_MARKER)
-    const mapRef = useRef<HTMLDivElement>(null)
-  const [initialized, setInitialized] = useState(false)
-  const [isLocationShown, setIsLocationShown] = useState(!vendor?.locationHidden)
-  const [broadcastMode, setBroadcastMode] = useState<BroadcastMode>(BroadcastMode.STATIC)
-  const [marker, setMarker] = useState<tt.Marker>(null)
-  const [coordinates, setCoordinates] = useState<GeolocationCoordinates>(null)
-  const [map, setMap] = useState<tt.Map>(null)
-  const [isVendorProfileModalOpen, setIsVendorProfileModalOpen] = useState(
-      false
-      )
-  const [isMarkerSelectModalOpen, setIsMarkerSelectModalOpen] = useState(false)
+    const [hideVendorLocation] = useMutation<HideVendorLocationMutation, HideVendorLocationMutationVariables>(HIDE_VENDOR_LOCATION_MUTATION);
+    const [broadcastLocation, { loading: broadcastingLocation}] = useMutation<BroadcastLocationMutation, BroadcastLocationMutationVariables>(BROADCAST_LOCATION_MUTATION);
+    const [updateVendorMarker] = useMutation<UpdateVendorMarkerMutation, UpdateVendorMarkerMutationVariables>(UPDATE_VENDOR_MARKER)
+        const mapRef = useRef<HTMLDivElement>(null)
+    const [isLocationShown, setIsLocationShown] = useState(!vendor?.locationHidden)
+    const [locationBroadcastMode, setLocationBroadcastmode] = useState<LocationBroadcastMode>(vendor.locationBroadcastMode)
+    const [map, setMap] = useState<tt.Map>(null)
+    const [isVendorProfileModalOpen, setIsVendorProfileModalOpen] = useState(
+        false
+        )
+    const [isMarkerSelectModalOpen, setIsMarkerSelectModalOpen] = useState(false)
 
-  // if location is shown on visit, broadcast the location
-  useEffect(() => {
-    if(isLocationShown && map) {
-        broadcastLocationHandler()
-    }
-  }, [map])
-
+    // if location is shown on visit, broadcast the location
     useEffect(() => {
-        if (!coordinates) return
-        if (!map) return
-
-        if (marker) {
-            marker.remove()
-        }
-
-        const updatedMarker = createMarker(vendor)
-        updatedMarker.addTo(map)
-        if (broadcastMode === BroadcastMode.MANUAL) {
-            updatedMarker.setDraggable(true)
-            updatedMarker.on('dragend', () => {
-                const lngLat = updatedMarker.getLngLat()
-                broadcastLocation({
-                    variables: {
-                        id: vendor.id,
-                        input: {
-                            channel: process.env.PUSHER_CHANNEL,
-                            event: "location-broadcast",
-                            longitude: lngLat.lng,
-                            latitude: lngLat.lat,
-                        }
-                    },
-                    onError: (err) => {
-                        console.log(err)
-                        toast.error('failed broadcasting location')
-                    },
-                    onCompleted: () => {
-                        toast.success('Location broadcasted')
-                    }
+        (async () => {
+            if(isLocationShown && map) {
+                broadcastLocationHandler({
+                    ...(await getCoordinates()),
+                    locationBroadcastMode
                 })
-            })
-        }
-        setMarker(updatedMarker)
+            }
 
-    }, [map, coordinates, broadcastMode])
+        })()
+    }, [map])
 
 
   const handleVisibilityChange = useCallback(() => {
-        if (document.hidden && isLocationShown && broadcastMode === BroadcastMode.REALTIME) {
+        if (document.hidden && isLocationShown && locationBroadcastMode === LocationBroadcastMode.REALTIME) {
             staticModeButtonHandler()
         }
-  }, [broadcastMode, isLocationShown])
+  }, [locationBroadcastMode, isLocationShown])
 
   useEffect(() => {
 
@@ -203,7 +200,6 @@ export const Success = ({
           )
       }
   }, [handleVisibilityChange])
-
 
     useEffect(() => {
         if(!mapRef || !mapRef.current) return
@@ -224,78 +220,97 @@ export const Success = ({
     }, [mapRef])
 
 
-  const broadcastLocationHandler = useCallback(async () => {
-      if (!vendor || !map ) return
-      if (!process.env.PUSHER_CHANNEL) throw new Error("PUSHER_CHANNEL ENV is undefined")
+  const broadcastLocationHandler = useCallback(async ({
+    latitude,
+    longitude,
+    locationBroadcastMode
+  }) => {
+        if (!vendor || !map ) return
+        if (!process.env.PUSHER_CHANNEL) throw new Error("PUSHER_CHANNEL ENV is undefined")
 
+        try {
 
-      try {
-          const position = await getCurrentPositionAsync({
-              enableHighAccuracy: true,
-              timeout: 20000,
-              maximumAge: 1000,
-          })
-          map.setCenter([position.coords.longitude, position.coords.latitude])
-          map.zoomTo(15)
+            await broadcastLocation({
+                variables: {
+                    id: vendor.id,
+                    input: {
+                            channel: process.env.PUSHER_CHANNEL,
+                            event: "location-broadcast",
+                            longitude,
+                            latitude,
+                            locationBroadcastMode
+                    }
+                },
+                onError: (err) => {
+                    console.log(err)
+                    toast.error('failed broadcasting location')
+                },
+                onCompleted: () => {
+                    toast.success('Location broadcasted')
+                },
+                update: (cache, { data }) => {
+                    try {
+                        if (!data || !data.broadcastLocation) return
+                        cache.modify({
+                            id: cache.identify(vendor),
+                            fields: {
+                                latitude() {
+                                    return data.broadcastLocation.latitude
+                                },
+                                longitude() {
+                                    return data.broadcastLocation.longitude
+                                },
+                                LocationBroadcastMode() {
+                                    return data.broadcastLocation.locationBroadcastMode
+                                }
+                            },
+                        })
+                    } catch (err) {
+                        toast.error('Failed updating cache')
+                    }
+                }
+            })
+        } catch (err) {
+            console.log(err)
+            if (err.code === 1) {
+                alert(
+                    'You have denied access to your location. Please enable your browser location settings.'
+                )
+            }
 
-          await broadcastLocation({
-              variables: {
-                  id: vendor.id,
-                  input: {
-                      channel: process.env.PUSHER_CHANNEL,
-                      event: "location-broadcast",
-                      longitude: position.coords.longitude,
-                      latitude: position.coords.latitude,
-                  }
-              },
-              onError: (err) => {
-                  console.log(err)
-                  toast.error('failed broadcasting location')
-              },
-              onCompleted: () => {
-                  toast.success('Location broadcasted')
-              }
-          })
+            if (err.code === 2) {
+                alert(
+                    'Please turn on your device location settings and try again. '
+                )
+            }
 
-          setCoordinates(position.coords)
-      } catch (err) {
-          console.log(err)
-          if (err.code === 1) {
-              alert(
-                  'You have denied access to your location. Please enable your browser location settings.'
-              )
-          }
-
-          if (err.code === 2) {
-              alert(
-                  'Please turn on your device location settings and try again. '
-              )
-          }
-
-          if (err.code === 3) {
-              alert(
-                  'Location request timed out. Please try again or try moving to a location with better signal.'
-              )
-          }
-      }
-  }, [vendor, map, broadcastLocation])
+            if (err.code === 3) {
+                alert(
+                    'Location request timed out. Please try again or try moving to a location with better signal.'
+                )
+            }
+        }
+    },  [vendor, map, broadcastLocation])
 
   // broadcast location every 5 seconds when location is shown and in realtime mode
   useEffect(() => {
-      if ( !isLocationShown || !(broadcastMode === BroadcastMode.REALTIME)) return
-      const intervalId = setInterval(() => {
-          broadcastLocationHandler()
+      if ( !isLocationShown || !(locationBroadcastMode === LocationBroadcastMode.REALTIME)) return
+      const intervalId = setInterval(async () => {
+            broadcastLocationHandler({
+                ...(await getCoordinates()),
+                locationBroadcastMode: LocationBroadcastMode.REALTIME
+            })
       }, 5000)
 
       return () => {
           clearInterval(intervalId)
       }
-  }, [broadcastMode, broadcastLocationHandler, isLocationShown])
+  }, [locationBroadcastMode, broadcastLocationHandler, isLocationShown])
 
 
   const showLocationButtonHandler = () => {
       setIsLocationShown(true)
-      if (broadcastMode === BroadcastMode.STATIC || broadcastMode === BroadcastMode.MANUAL) {
+      if (locationBroadcastMode === LocationBroadcastMode.STATIC || locationBroadcastMode === LocationBroadcastMode.MANUAL) {
           updateLocationButtonHandler()
       }
   }
@@ -327,26 +342,36 @@ export const Success = ({
   }, [vendor])
 
   const realTimeModeButtonHandler = () => {
-      setBroadcastMode(BroadcastMode.REALTIME)
+      setLocationBroadcastmode(LocationBroadcastMode.REALTIME)
   }
 
-  const staticModeButtonHandler = () => {
-      setBroadcastMode(BroadcastMode.STATIC)
-      if (isLocationShown) {
-          broadcastLocationHandler()
-      }
-  }
-
-  const manualModeButtonHandler = () => {
-        setBroadcastMode(BroadcastMode.MANUAL)
+    const staticModeButtonHandler = async () => {
+        setLocationBroadcastmode(LocationBroadcastMode.STATIC)
         if (isLocationShown) {
-            broadcastLocationHandler()
+
+            broadcastLocationHandler({
+                    ...(await getCoordinates()),
+                    locationBroadcastMode: LocationBroadcastMode.STATIC
+            })
         }
-  }
+    }
+
+    const manualModeButtonHandler = async () => {
+        setLocationBroadcastmode(LocationBroadcastMode.MANUAL)
+        if (isLocationShown) {
+            broadcastLocationHandler({
+                ...(await getCoordinates()),
+                locationBroadcastMode: LocationBroadcastMode.MANUAL
+            })
+        }
+    }
 
 
-  const updateLocationButtonHandler = () => {
-        broadcastLocationHandler()
+  const updateLocationButtonHandler = async () => {
+        broadcastLocationHandler({
+            ...(await getCoordinates()),
+            locationBroadcastMode
+        })
   }
 
   const updateVendorMarkerHandler = async (url: string) => {
@@ -364,9 +389,12 @@ export const Success = ({
                     toast.error('Failed updating marker')
                   setIsMarkerSelectModalOpen(false)
               },
-              onCompleted: () => {
+              onCompleted: async () => {
                     if (isLocationShown) {
-                        broadcastLocationHandler()
+                        broadcastLocationHandler({
+                            ...(await getCoordinates()),
+                            locationBroadcastMode
+                        })
                     }
                   toast.success('Marker updated')
                   setIsMarkerSelectModalOpen(false)
@@ -377,12 +405,11 @@ export const Success = ({
       }
   }
 
-
-  const focusLocationButtonHandler = useCallback(() => {
-      if (!map || !coordinates) return
-      map.setCenter([coordinates.longitude, coordinates.latitude])
-      map.zoomTo(18)
-  }, [map, coordinates])
+    const focusLocationButtonHandler = useCallback(() => {
+            if (!map || vendor) return
+            map.zoomTo(18)
+            map.setCenter([vendor.longitude, vendor.latitude])
+    }, [map, vendor])
 
   return (
     <div className='max-w-7xl mx-auto p-8'>
@@ -441,7 +468,15 @@ export const Success = ({
               hidden={!isLocationShown}
               className='h-full  max-w-full'
           ></div>
-          {!isLocationShown && vendor && map && <Marker vendor={vendor} map={map} />}
+            {isLocationShown && vendor && map &&
+                <Marker
+                    vendor={vendor}
+                    map={map}
+                    draggable={locationBroadcastMode === LocationBroadcastMode.MANUAL}
+                    onDragEnd={broadcastLocationHandler}
+                    pulseColor='green'
+                />
+            }
           {isLocationShown &&
               <button
                   className='absolute bottom-6 right-4 w-10 h-10 flex justify-center items-center bg-white rounded-full shadow z-10'
@@ -466,7 +501,7 @@ export const Success = ({
 
       <Tab.Group
         as={'div'}
-            selectedIndex={(broadcastMode === BroadcastMode.MANUAL ? 0 : broadcastMode === BroadcastMode.STATIC ? 1 : 2)}
+            selectedIndex={(locationBroadcastMode === LocationBroadcastMode.MANUAL ? 0 : locationBroadcastMode === LocationBroadcastMode.STATIC ? 1 : 2)}
             onChange={(index) => {
                 switch(index) {
                     case 0: return manualModeButtonHandler()

@@ -33,7 +33,7 @@ import { toast } from "@redwoodjs/web/dist/toast";
 import { PlusIcon, XMarkIcon } from "@heroicons/react/20/solid";
 import FeaturedImage from "../FeaturedImage/FeaturedImage";
 import Button from "../Button/Button";
-
+import { DELETE_IMAGE_MUTATION } from "../Admin/Image/Image";
 
 export const QUERY = gql`
   query FindVendorAccountQuery($userId: Int!) {
@@ -42,6 +42,7 @@ export const QUERY = gql`
       username
       name
       mobileNumber
+      lastLocationUpdate
       featuredImages {
         id
         title
@@ -101,14 +102,6 @@ const UPLOAD_IMAGE_MUTATION = gql`
       title
       url
       userId
-    }
-  }
-`;
-
-const DELETE_IMAGE_MUTATION = gql`
-  mutation DeleteImageMutation($id: Int!) {
-    deleteImage(id: $id) {
-      id
     }
   }
 `;
@@ -331,7 +324,7 @@ export const Success = ({
             toast.error('Image delete failed');
           },
           update: (cache, { data }) => {
-            const deletedImageId = data?.deleteImage?.id
+            const deletedImageId = data?.softDeleteImage?.id
             if (deletedImageId) {
               cache.modify({
                 id: cache.identify({ __typename: 'User', id: vendorAccount.id }), // Identify the vendor object
