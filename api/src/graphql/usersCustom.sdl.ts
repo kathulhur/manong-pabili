@@ -14,7 +14,10 @@ export const schema = gql`
     vendorPage(page: Int, searchKey: String): VendorPage @requireAuth
     mapVendors: [User!]! @skipAuth
     userPage(page: Int): UserPage @requireAuth
+  }
 
+  type Mutation {
+    softDeleteUser(id: Int!): User! @requireAuth
   }
 
   input UpdateUserPasswordInput {

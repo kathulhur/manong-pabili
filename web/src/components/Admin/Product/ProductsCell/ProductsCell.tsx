@@ -59,33 +59,30 @@ interface SuccessProps extends CellSuccessProps<FindProducts> {
 export const Success = ({ productPage: { products, count }, paginate, userId }: SuccessProps) => {
   return (
     <div>
-      <div className="m-2 flex justify-between">
-        <div className="text-xl font-semibold space-x-2">
+      <div className="p-2 flex justify-between items-end">
+        <div className="font-semibold space-x-2">
           {!userId &&
             <Link to={routes.adminProducts()} className="hover:underline hover:underline-offset-1">
               Products
             </Link>
           }
           {userId && <>
-            <Link to={routes.adminImages()} className="hover:underline hover:underline-offset-1">
-              Images
-            </Link>
             <Link to={routes.adminUsers()} className="hover:underline hover:underline-offset-1">
             Users
             </Link>
             <span>&gt;</span>
             <Link to={routes.adminUser({ id: userId })} className="hover:underline hover:underline-offset-1">
-              { userId}
+              { userId }
             </Link>
             <span>&gt;</span>
-            <Link to={routes.adminImages()} className="hover:underline hover:underline-offset-1">
-              Images
+            <Link to={routes.userProducts({ id: userId })} className="hover:underline hover:underline-offset-1">
+              Products
             </Link>
             </>
           }
         </div>
         { userId &&
-          <Link to={routes.adminNewProduct({ id: userId })} className="flex items-center font-semibold border px-4 py-2 rounded-md">
+          <Link to={routes.adminNewProduct({ userId })} className="flex items-center font-semibold border px-4 py-2 rounded-md">
               <div className="rw-button-icon">+</div> Add Product
           </Link>
         }

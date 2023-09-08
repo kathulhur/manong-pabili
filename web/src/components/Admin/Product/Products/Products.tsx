@@ -4,19 +4,13 @@ import { toast } from "@redwoodjs/web/toast";
 
 import { QUERY } from "src/components/Admin/Product/ProductsCell";
 import { checkboxInputTag, truncate } from "src/lib/formatters";
+import { DELETE_PRODUCT_MUTATION } from "../Product";
 
 import type {
   DeleteProductMutationVariables,
   FindProducts,
 } from "types/graphql";
 
-const DELETE_PRODUCT_MUTATION = gql`
-  mutation DeleteProductMutation($id: Int!) {
-    deleteProduct(id: $id) {
-      id
-    }
-  }
-`;
 
 const ProductsList = ({ products }: { products: FindProducts['productPage']['products'] })  => {
   const [deleteProduct] = useMutation(DELETE_PRODUCT_MUTATION, {
@@ -53,7 +47,7 @@ const ProductsList = ({ products }: { products: FindProducts['productPage']['pro
   };
 
   return (
-    <div className="rw-segment rw-table-wrapper-responsive">
+    <div className="rw-table-wrapper-responsive">
       <table className="rw-table">
         <thead>
           <tr>

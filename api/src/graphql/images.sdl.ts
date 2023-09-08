@@ -5,6 +5,10 @@ export const schema = gql`
     url: String!
     user: User!
     userId: Int!
+    createdAt: DateTime!
+    updatedAt: DateTime!
+    deletedAt: DateTime
+    deleted: Boolean!
   }
 
   type Query {

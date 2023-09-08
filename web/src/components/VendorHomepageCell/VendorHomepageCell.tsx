@@ -124,7 +124,7 @@ export const Success = ({
 >) => {
 
   const [hideVendorLocation] = useMutation<HideVendorLocationMutation, HideVendorLocationMutationVariables>(HIDE_VENDOR_LOCATION_MUTATION);
-  const [broadcastLocation] = useMutation<BroadcastLocationMutation, BroadcastLocationMutationVariables>(BROADCAST_LOCATION_MUTATION);
+  const [broadcastLocation, { loading: broadcastingLocation}] = useMutation<BroadcastLocationMutation, BroadcastLocationMutationVariables>(BROADCAST_LOCATION_MUTATION);
   const [updateVendorMarker] = useMutation<UpdateVendorMarkerMutation, UpdateVendorMarkerMutationVariables>(UPDATE_VENDOR_MARKER)
     const mapRef = useRef<HTMLDivElement>(null)
   const [initialized, setInitialized] = useState(false)
@@ -138,15 +138,12 @@ export const Success = ({
       )
   const [isMarkerSelectModalOpen, setIsMarkerSelectModalOpen] = useState(false)
 
-  //
+  // if location is shown on visit, broadcast the location
   useEffect(() => {
-    if(!initialized) {
-        if(isLocationShown && map && vendor) {
-            broadcastLocationHandler()
-            setInitialized(true)
-        }
+    if(isLocationShown && map) {
+        broadcastLocationHandler()
     }
-  }, [initialized, isLocationShown, map, vendor])
+  }, [map])
 
     useEffect(() => {
         if (!coordinates) return
@@ -155,7 +152,6 @@ export const Success = ({
         if (marker) {
             marker.remove()
         }
-
 
         const updatedMarker = createMarker(vendor)
         updatedMarker.addTo(map)
@@ -229,7 +225,6 @@ export const Success = ({
 
 
   const broadcastLocationHandler = useCallback(async () => {
-    console.log(map)
       if (!vendor || !map ) return
       if (!process.env.PUSHER_CHANNEL) throw new Error("PUSHER_CHANNEL ENV is undefined")
 

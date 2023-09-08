@@ -101,7 +101,6 @@ export const updateUsername: MutationResolvers["updateUsername"] = ({ id, input 
   return db.user.update({
     data: {
       username: updatedUsername,
-      updatedAt: new Date()
     },
     where: { id },
   });
@@ -121,7 +120,6 @@ export const updateMobileNumber: MutationResolvers["updateMobileNumber"] = ({ id
   return db.user.update({
     data: {
       mobileNumber: updatedMobileNumber,
-      updatedAt: new Date()
     },
     where: { id },
   });
@@ -140,7 +138,6 @@ export const updateName: MutationResolvers["updateName"] = ({ id, input }) => {
   return db.user.update({
     data: {
       name: updatedName,
-      updatedAt: new Date()
     },
     where: { id },
   });
@@ -179,7 +176,6 @@ export const updateUserPassword: MutationResolvers['updateUserPassword'] =
       data: {
         hashedPassword,
         salt,
-        updatedAt: new Date()
       },
       where: { id },
     });
@@ -323,4 +319,14 @@ export const broadcastLocation: MutationResolvers['broadcastLocation']
 
     return user
 
+}
+
+export const softDeleteUser: MutationResolvers['softDeleteUser'] = async ({ id }) => {
+  return db.user.update({
+    where: { id },
+    data: {
+      deleted: true,
+      deletedAt: new Date()
+    }
+  })
 }

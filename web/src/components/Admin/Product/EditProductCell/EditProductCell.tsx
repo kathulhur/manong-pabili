@@ -57,10 +57,14 @@ export const Success = ({ product }: CellSuccessProps<EditProductById>) => {
 
   return (
     <>
-    <div className="m-2">
-      <div className="text-xl font-semibold space-x-2">
+    <div className="p-2">
+      <div className="font-semibold space-x-2 items-end">
         <Link to={routes.adminUsers()} className="hover:underline hover:underline-offset-1">
           Users
+        </Link>
+        <span>&gt;</span>
+        <Link to={routes.adminUsers()} className="hover:underline hover:underline-offset-1">
+          { product.userId }
         </Link>
         <span>&gt;</span>
         <Link to={routes.adminProducts()} className="hover:underline hover:underline-offset-1">
@@ -76,7 +80,7 @@ export const Success = ({ product }: CellSuccessProps<EditProductById>) => {
         </Link>
       </div>
     </div>
-    <div className="rw-segment">
+    <div className="">
       <header className="rw-segment-header">
         <h2 className="rw-heading rw-heading-secondary">
           Edit Product {product?.id}

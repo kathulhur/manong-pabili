@@ -7,6 +7,7 @@ import {
   DatetimeLocalField,
   CheckboxField,
   Submit,
+  PasswordField,
 } from "@redwoodjs/forms";
 
 import type { EditUserById, UpdateUserInput } from "types/graphql";
@@ -128,110 +129,6 @@ const UserForm = (props: UserFormProps) => {
 
         <FieldError name="mobileNumber" className="rw-field-error" />
 
-        <Label
-          name="hashedPassword"
-          className="rw-label"
-          errorClassName="rw-label rw-label-error"
-        >
-          Hashed password
-        </Label>
-
-        <TextField
-          name="hashedPassword"
-          defaultValue={props.user?.hashedPassword}
-          className="rw-input"
-          errorClassName="rw-input rw-input-error"
-          validation={{ required: true }}
-        />
-
-        <FieldError name="hashedPassword" className="rw-field-error" />
-
-        <Label
-          name="salt"
-          className="rw-label"
-          errorClassName="rw-label rw-label-error"
-        >
-          Salt
-        </Label>
-
-        <TextField
-          name="salt"
-          defaultValue={props.user?.salt}
-          className="rw-input"
-          errorClassName="rw-input rw-input-error"
-          validation={{ required: true }}
-        />
-
-        <FieldError name="salt" className="rw-field-error" />
-
-        <Label
-          name="resetToken"
-          className="rw-label"
-          errorClassName="rw-label rw-label-error"
-        >
-          Reset token
-        </Label>
-
-        <TextField
-          name="resetToken"
-          defaultValue={props.user?.resetToken}
-          className="rw-input"
-          errorClassName="rw-input rw-input-error"
-        />
-
-        <FieldError name="resetToken" className="rw-field-error" />
-
-        <Label
-          name="resetTokenExpiresAt"
-          className="rw-label"
-          errorClassName="rw-label rw-label-error"
-        >
-          Reset token expires at
-        </Label>
-
-        <DatetimeLocalField
-          name="resetTokenExpiresAt"
-          defaultValue={formatDatetime(props.user?.resetTokenExpiresAt)}
-          className="rw-input"
-          errorClassName="rw-input rw-input-error"
-        />
-
-        <FieldError name="resetTokenExpiresAt" className="rw-field-error" />
-
-        <Label
-          name="latitude"
-          className="rw-label"
-          errorClassName="rw-label rw-label-error"
-        >
-          Latitude
-        </Label>
-
-        <TextField
-          name="latitude"
-          defaultValue={props.user?.latitude}
-          className="rw-input"
-          errorClassName="rw-input rw-input-error"
-          validation={{ valueAsNumber: true }}
-        />
-
-        <FieldError name="latitude" className="rw-field-error" />
-
-        <Label
-          name="longitude"
-          className="rw-label"
-          errorClassName="rw-label rw-label-error"
-        >
-          Longitude
-        </Label>
-
-        <TextField
-          name="longitude"
-          defaultValue={props.user?.longitude}
-          className="rw-input"
-          errorClassName="rw-input rw-input-error"
-          validation={{ valueAsNumber: true }}
-        />
-
         <FieldError name="longitude" className="rw-field-error" />
 
         <Label
@@ -251,40 +148,6 @@ const UserForm = (props: UserFormProps) => {
         />
 
         <FieldError name="roles" className="rw-field-error" />
-
-        <Label
-          name="lastLocationUpdate"
-          className="rw-label"
-          errorClassName="rw-label rw-label-error"
-        >
-          Last location update
-        </Label>
-
-        <DatetimeLocalField
-          name="lastLocationUpdate"
-          defaultValue={formatDatetime(props.user?.lastLocationUpdate)}
-          className="rw-input"
-          errorClassName="rw-input rw-input-error"
-        />
-
-        <FieldError name="lastLocationUpdate" className="rw-field-error" />
-
-        <Label
-          name="locationHidden"
-          className="rw-label"
-          errorClassName="rw-label rw-label-error"
-        >
-          Location hidden
-        </Label>
-
-        <CheckboxField
-          name="locationHidden"
-          defaultChecked={props.user?.locationHidden}
-          className="rw-input"
-          errorClassName="rw-input rw-input-error"
-        />
-
-        <FieldError name="locationHidden" className="rw-field-error" />
 
         <Label
           name="verified"
@@ -320,39 +183,27 @@ const UserForm = (props: UserFormProps) => {
 
         <FieldError name="markerUrl" className="rw-field-error" />
 
-        <Label
-          name="deleted"
-          className="rw-label"
-          errorClassName="rw-label rw-label-error"
-        >
-          Deleted
-        </Label>
 
-        <CheckboxField
-          name="deleted"
-          defaultChecked={props.user?.deleted}
-          className="rw-input"
-          errorClassName="rw-input rw-input-error"
-        />
+        { !props?.user && (
+            <>
+              <Label
+                name="password"
+                className="rw-label"
+                errorClassName="rw-label rw-label-error"
+              >
+                password
+              </Label>
 
-        <FieldError name="deleted" className="rw-field-error" />
+              <PasswordField
+                name="password"
+                className="rw-input"
+                errorClassName="rw-input rw-input-error"
+              />
 
-        <Label
-          name="deletedAt"
-          className="rw-label"
-          errorClassName="rw-label rw-label-error"
-        >
-          Deleted at
-        </Label>
-
-        <DatetimeLocalField
-          name="deletedAt"
-          defaultValue={formatDatetime(props.user?.deletedAt)}
-          className="rw-input"
-          errorClassName="rw-input rw-input-error"
-        />
-
-        <FieldError name="deletedAt" className="rw-field-error" />
+              <FieldError name="password" className="rw-field-error" />
+            </>
+          )
+        }
 
         <div className="rw-button-group">
           <Submit disabled={props.loading} className="rw-button rw-button-blue">

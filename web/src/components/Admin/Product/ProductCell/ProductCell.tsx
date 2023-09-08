@@ -12,6 +12,10 @@ export const QUERY = gql`
       name
       availability
       userId
+      createdAt
+      updatedAt
+      deletedAt
+      deleted
     }
   }
 `;
@@ -28,8 +32,8 @@ export const Success = ({ product }: CellSuccessProps<FindProductById>) => {
   return (
     <>
       <MetaTags title="User Product" description="UserProducts page" />
-      <div className="m-2">
-        <div className="text-xl font-semibold space-x-2">
+      <div className="p-2">
+        <div className="font-semibold space-x-2">
           <Link to={routes.adminUsers()} className="hover:underline hover:underline-offset-1">
             Users
           </Link>

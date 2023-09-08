@@ -32,8 +32,10 @@ export const QUERY = gql`
         locationHidden
         verified
         markerUrl
-        deleted
+        createdAt
+        updatedAt
         deletedAt
+        deleted
       }
       count
     }
@@ -64,8 +66,8 @@ export interface UsersCellSuccessProps extends CellSuccessProps<FindUsers> {
 export const Success = ({ userPage: { users, count }, paginate }: UsersCellSuccessProps) => {
   return (
     <div>
-      <div className="m-2 flex justify-between">
-        <div className="text-xl font-semibold">
+      <div className="m-2 flex justify-between items-end">
+        <div className="font-semibold">
           <Link to={routes.adminUsers()} className="hover:underline hover:underline-offset-1 ">
             Users
           </Link>

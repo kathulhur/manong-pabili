@@ -81,8 +81,8 @@ export const Success = ({ user }: CellSuccessProps<EditUserById>) => {
 
   return (
     <>
-    <div className="m-2">
-      <div className="text-xl font-semibold space-x-2">
+    <div className="p-2">
+      <div className="font-semibold space-x-2 items-end">
         <Link to={routes.adminUsers()} className="hover:underline hover:underline-offset-1">
           Users
         </Link>
@@ -100,7 +100,7 @@ export const Success = ({ user }: CellSuccessProps<EditUserById>) => {
         </Link>
       </div>
     </div>
-    <div className="rw-segment">
+    <div className="">
       <header className="rw-segment-header">
         <h2 className="rw-heading rw-heading-secondary">
           Edit User {user?.id}

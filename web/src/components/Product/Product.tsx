@@ -3,6 +3,7 @@ import { ProductsQuery, UpdateProductAvailabilityMutationVariables } from 'types
 import { useMutation } from '@redwoodjs/web'
 import { QUERY as PRODUCTS_CELL_QUERY } from '../ProductsCell'
 import { toast } from '@redwoodjs/web/dist/toast'
+import { DELETE_PRODUCT_MUTATION } from '../Admin/Product/Product'
 
 const UPDATE_PRODUCT_MUTATION = gql`
     mutation UpdateProductAvailabilityMutation(
@@ -16,13 +17,6 @@ const UPDATE_PRODUCT_MUTATION = gql`
     }
 `
 
-const DELETE_PRODUCT_MUTATION = gql`
-    mutation DeleteProductMutation($id: Int!) {
-        deleteProduct: softDeleteProduct(id: $id) {
-            id
-        }
-    }
-`
 
 
 const Product = ({

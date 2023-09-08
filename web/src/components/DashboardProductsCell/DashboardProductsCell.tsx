@@ -12,7 +12,7 @@ import { useAuth } from 'src/auth'
 import { toast } from '@redwoodjs/web/toast'
 import { PlusIcon } from '@heroicons/react/20/solid'
 import Button from '../Button/Button'
-
+import { CREATE_PRODUCT_MUTATION } from '../Admin/Product/NewProduct'
 
 export const QUERY = gql`
     query DashboardProductsQuery($userId: Int!) {
@@ -23,17 +23,6 @@ export const QUERY = gql`
         }
     }
 `
-
-const CREATE_PRODUCT_MUTATION = gql`
-    mutation CreateProductMutation($input: CreateProductInput!) {
-        createProduct(input: $input) {
-            id
-            name
-            availability
-        }
-    }
-`
-
 
 
 

@@ -10,21 +10,10 @@ import { useState } from 'react'
 import { useAuth } from 'src/auth'
 import CreateProductModal from '../Modals/CreateProductModal'
 import { toast } from '@redwoodjs/web/dist/toast'
-
+import { CREATE_PRODUCT_MUTATION } from '../Admin/Product/NewProduct'
 export const QUERY = gql`
     query ProductsQuery($userId: Int!) {
         productsByUser(userId: $userId) {
-            id
-            name
-            availability
-        }
-    }
-`
-
-
-const CREATE_PRODUCT_MUTATION = gql`
-    mutation CreateProductMutation($input: CreateProductInput!) {
-        createProduct(input: $input) {
             id
             name
             availability

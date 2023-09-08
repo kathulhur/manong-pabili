@@ -4,16 +4,9 @@ import { toast } from "@redwoodjs/web/toast";
 
 import { QUERY } from "src/components/Admin/User/UsersCell";
 import { checkboxInputTag, timeTag, truncate } from "src/lib/formatters";
-
+import { DELETE_USER_MUTATION } from "src/components/Admin/User/User"
 import type { DeleteUserMutationVariables, FindUsers } from "types/graphql";
 
-const DELETE_USER_MUTATION = gql`
-  mutation DeleteUserMutation($id: Int!) {
-    deleteUser(id: $id) {
-      id
-    }
-  }
-`;
 
 const UsersList = ({ users }: {
   users: FindUsers['userPage']['users']
@@ -53,10 +46,10 @@ const UsersList = ({ users }: {
   };
 
   return (
-    <div className="rw-segment rw-table-wrapper-responsive">
+    <div className="rw-table-wrapper-responsive">
       <table className="rw-table">
         <thead>
-          <tr>
+          <tr className="whitespace-nowrap">
             <th>Id</th>
             <th>Email</th>
             <th>Username</th>
@@ -74,14 +67,17 @@ const UsersList = ({ users }: {
             <th>Location hidden</th>
             <th>Verified</th>
             <th>Marker url</th>
-            <th>Deleted</th>
+            <th>Verified</th>
+            <th>Created at</th>
+            <th>Updated at</th>
             <th>Deleted at</th>
+            <th>Deleted</th>
             <th>&nbsp;</th>
           </tr>
         </thead>
         <tbody>
           {users.map((user) => (
-            <tr key={user.id}>
+            <tr key={user.id} className="whitespace-nowrap">
               <td>{truncate(user.id)}</td>
               <td>{truncate(user.email)}</td>
               <td>{truncate(user.username)}</td>
@@ -97,10 +93,12 @@ const UsersList = ({ users }: {
               <td>{truncate(user.roles)}</td>
               <td>{timeTag(user.lastLocationUpdate)}</td>
               <td>{checkboxInputTag(user.locationHidden)}</td>
-              <td>{checkboxInputTag(user.verified)}</td>
               <td>{truncate(user.markerUrl)}</td>
-              <td>{checkboxInputTag(user.deleted)}</td>
+              <td>{checkboxInputTag(user.verified)}</td>
+              <td>{timeTag(user.createdAt)}</td>
+              <td>{timeTag(user.updatedAt)}</td>
               <td>{timeTag(user.deletedAt)}</td>
+              <td>{checkboxInputTag(user.deleted)}</td>
               <td>
                 <nav className="rw-table-actions">
                   <Link

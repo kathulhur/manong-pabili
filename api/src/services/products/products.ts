@@ -29,10 +29,7 @@ export const updateProduct: MutationResolvers["updateProduct"] = ({
   input,
 }) => {
   return db.product.update({
-    data: {
-      ...input,
-      updatedAt: new Date(),
-    },
+    data: input,
     where: {
       id
     },

@@ -10,9 +10,9 @@ import {
   FindUserById
 } from "types/graphql";
 
-const DELETE_USER_MUTATION = gql`
+export const DELETE_USER_MUTATION = gql`
   mutation DeleteUserMutation($id: Int!) {
-    deleteUser(id: $id) {
+    softDeleteUser(id: $id) {
       id
     }
   }
@@ -41,7 +41,7 @@ const User = ({ user }: Props) => {
 
   return (
     <>
-      <div className="rw-segment">
+      <div className="">
         <header className="rw-segment-header">
           <h2 className="rw-heading rw-heading-secondary">
             User {user.id} Detail
@@ -118,12 +118,20 @@ const User = ({ user }: Props) => {
               <td>{user.markerUrl}</td>
             </tr>
             <tr>
-              <th>Deleted</th>
-              <td>{checkboxInputTag(user.deleted)}</td>
+              <th>Created at</th>
+              <td>{timeTag(user.createdAt)}</td>
+            </tr>
+            <tr>
+              <th>Updated at</th>
+              <td>{timeTag(user.updatedAt)}</td>
             </tr>
             <tr>
               <th>Deleted at</th>
               <td>{timeTag(user.deletedAt)}</td>
+            </tr>
+            <tr>
+              <th>Deleted</th>
+              <td>{checkboxInputTag(user.deleted)}</td>
             </tr>
           </tbody>
         </table>

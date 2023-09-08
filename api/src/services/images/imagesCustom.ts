@@ -32,3 +32,17 @@ export const imagePage: QueryResolvers["imagePage"] = async ({
     count,
   };
 }
+
+export const softDeleteImage: MutationResolvers["softDeleteImage"] = async ({
+  id,
+}) => {
+  const image = await db.image.update({
+    where: { id },
+    data: {
+      deleted: true,
+      deletedAt: new Date(),
+    },
+  });
+
+  return image;
+}

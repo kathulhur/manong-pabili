@@ -4,16 +4,9 @@ import { toast } from "@redwoodjs/web/toast";
 
 import { QUERY } from "src/components/Admin/Image/ImagesCell";
 import { truncate } from "src/lib/formatters";
-
+import { DELETE_IMAGE_MUTATION } from "src/components/Admin/Image/Image"
 import type { DeleteImageMutationVariables, FindImages } from "types/graphql";
 
-const DELETE_IMAGE_MUTATION = gql`
-  mutation DeleteImageMutation($id: Int!) {
-    deleteImage(id: $id) {
-      id
-    }
-  }
-`;
 
 const ImagesList = ({ images }: {
   images: FindImages['imagePage']['images'],
@@ -55,7 +48,7 @@ const ImagesList = ({ images }: {
   };
 
   return (
-    <div className="rw-segment rw-table-wrapper-responsive">
+    <div className="rw-table-wrapper-responsive">
       <table className="rw-table">
         <thead>
           <tr>

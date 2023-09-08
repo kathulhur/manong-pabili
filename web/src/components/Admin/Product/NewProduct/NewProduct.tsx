@@ -6,7 +6,7 @@ import ProductForm from "src/components/Admin/Product/ProductForm";
 
 import type { CreateProductInput } from "types/graphql";
 
-const CREATE_PRODUCT_MUTATION = gql`
+export const CREATE_PRODUCT_MUTATION = gql`
   mutation CreateProductMutation($input: CreateProductInput!) {
     createProduct(input: $input) {
       id

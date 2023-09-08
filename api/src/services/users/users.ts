@@ -5,6 +5,7 @@ import type {
 } from "types/graphql";
 
 import { db } from "src/lib/db";
+import { hashPassword } from "@redwoodjs/auth-dbauth-api";
 
 export const users: QueryResolvers["users"] = () => {
   return db.user.findMany();
@@ -17,17 +18,22 @@ export const user: QueryResolvers["user"] = ({ id }) => {
 };
 
 export const createUser: MutationResolvers["createUser"] = ({ input }) => {
+
+  const [hashedPassword, salt] = hashPassword(input.password);
+  delete input.password
+
   return db.user.create({
-    data: input,
+    data: {
+      ...input,
+      hashedPassword,
+      salt,
+    }
   });
 };
 
 export const updateUser: MutationResolvers["updateUser"] = ({ id, input }) => {
   return db.user.update({
-    data: {
-      ...input,
-      updatedAt: new Date(),
-    },
+    data: input,
     where: { id },
   });
 };

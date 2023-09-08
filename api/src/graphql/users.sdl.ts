@@ -18,8 +18,10 @@ export const schema = gql`
     locationHidden: Boolean!
     verified: Boolean!
     markerUrl: String
+    createdAt: DateTime
     deleted: Boolean!
     deletedAt: DateTime
+    updatedAt: DateTime
     featuredImages: [Image]!
   }
 
@@ -29,24 +31,15 @@ export const schema = gql`
   }
 
   input CreateUserInput {
-    email: String
+    email: String!
     username: String!
-    name: String
-    gender: String
-    mobileNumber: String
-    hashedPassword: String!
-    salt: String!
-    resetToken: String
-    resetTokenExpiresAt: DateTime
-    latitude: Float
-    longitude: Float
+    name: String!
+    gender: String!
+    mobileNumber: String!
     roles: String!
-    lastLocationUpdate: DateTime
-    locationHidden: Boolean!
-    verified: Boolean!
+    verified: Boolean
     markerUrl: String
-    deleted: Boolean!
-    deletedAt: DateTime
+    password: String!
   }
 
   input UpdateUserInput {
@@ -55,19 +48,9 @@ export const schema = gql`
     name: String
     gender: String
     mobileNumber: String
-    hashedPassword: String
-    salt: String
-    resetToken: String
-    resetTokenExpiresAt: DateTime
-    latitude: Float
-    longitude: Float
     roles: String
-    lastLocationUpdate: DateTime
-    locationHidden: Boolean
     verified: Boolean
     markerUrl: String
-    deleted: Boolean
-    deletedAt: DateTime
   }
 
   type Mutation {
