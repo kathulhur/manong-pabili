@@ -1,6 +1,6 @@
-import { Dialog } from "@headlessui/react";
-import { set } from "@redwoodjs/forms";
 import { useState } from "react";
+import BaseModal from "./BaseModal";
+import Button from "../Button/Button";
 
 
 const UpdateUsernameModal = ({
@@ -16,12 +16,11 @@ const UpdateUsernameModal = ({
   const [username, setUsername] = useState('');
 
   return <>
-  <Dialog
-      open={isOpen}
-      onClose={onClose}
+      <BaseModal
+        isOpen={isOpen}
+        onClose={onClose}
       >
-      <Dialog.Panel>
-        <Dialog.Title>Update Username</Dialog.Title>
+        <BaseModal.Title>Update Username</BaseModal.Title>
         <form
           onSubmit={(e) => {
             e.preventDefault();
@@ -34,19 +33,21 @@ const UpdateUsernameModal = ({
             <input
               name="username"
               type="text"
+              className="rw-input"
               value={username}
               onChange={(e) => setUsername(e.target.value)}
               />
           </label>
-          <button
-            type="submit"
-            >
-            Update
-          </button>
+          <BaseModal.Footer>
+            <Button
+              type="submit"
+              fullWidth
+              >
+              Update
+            </Button>
+            </BaseModal.Footer>
         </form>
-      </Dialog.Panel>
-
-    </Dialog>
+    </BaseModal>
   </>
 }
 
