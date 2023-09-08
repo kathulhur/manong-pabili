@@ -1,5 +1,6 @@
-import { Dialog } from "@headlessui/react";
 import { useState } from "react";
+import BaseModal from "./BaseModal";
+import Button from "../Button/Button";
 
 
 const UpdateNameModal = ({
@@ -15,12 +16,11 @@ const UpdateNameModal = ({
   const [name, setName] = useState('');
 
   return <>
-  <Dialog
-      open={isOpen}
-      onClose={onClose}
+      <BaseModal
+        isOpen={isOpen}
+        onClose={onClose}
       >
-      <Dialog.Panel>
-        <Dialog.Title>Update Username</Dialog.Title>
+        <BaseModal.Title>Update Full Name</BaseModal.Title>
         <form
           onSubmit={(e) => {
             e.preventDefault();
@@ -29,23 +29,25 @@ const UpdateNameModal = ({
           }}
           >
           <label>
-            New Username
+            New full name
             <input
               name="username"
               type="text"
+              className="rw-input"
               value={name}
               onChange={(e) => setName(e.target.value)}
               />
           </label>
-          <button
-            type="submit"
-            >
-            Update
-          </button>
+          <BaseModal.Footer>
+            <Button
+              type="submit"
+              fullWidth
+              >
+              Update
+            </Button>
+          </BaseModal.Footer>
         </form>
-      </Dialog.Panel>
-
-    </Dialog>
+    </BaseModal>
   </>
 }
 
