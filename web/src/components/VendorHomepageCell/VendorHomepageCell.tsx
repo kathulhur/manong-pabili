@@ -3,6 +3,7 @@ import type {
   FindVendorHomepageQueryVariables,
   HideVendorLocationMutation,
   HideVendorLocationMutationVariables,
+  LocationBroadcastMode,
   BroadcastLocationMutation,
   BroadcastLocationMutationVariables,
   UpdateVendorMarkerMutation,
@@ -25,7 +26,6 @@ import tt, { LngLatLike } from "@tomtom-international/web-sdk-maps";
 import { toast } from "@redwoodjs/web/dist/toast";
 import Marker from "../Marker/Marker";
 import { get } from "@redwoodjs/forms";
-import { LocationBroadcastMode } from "@prisma/client";
 
 export const beforeQuery = ({ userId }) => {
   return {
@@ -182,7 +182,7 @@ export const Success = ({
 
 
   const handleVisibilityChange = useCallback(() => {
-        if (document.hidden && isLocationShown && locationBroadcastMode === LocationBroadcastMode.REALTIME) {
+        if (document.hidden && isLocationShown && locationBroadcastMode === "REALTIME") {
             staticModeButtonHandler()
         }
   }, [locationBroadcastMode, isLocationShown])
@@ -294,11 +294,11 @@ export const Success = ({
 
   // broadcast location every 5 seconds when location is shown and in realtime mode
   useEffect(() => {
-      if ( !isLocationShown || !(locationBroadcastMode === LocationBroadcastMode.REALTIME)) return
+      if ( !isLocationShown || !(locationBroadcastMode === "REALTIME")) return
       const intervalId = setInterval(async () => {
             broadcastLocationHandler({
                 ...(await getCoordinates()),
-                locationBroadcastMode: LocationBroadcastMode.REALTIME
+                locationBroadcastMode: "REALTIME"
             })
       }, 5000)
 
@@ -310,7 +310,7 @@ export const Success = ({
 
   const showLocationButtonHandler = () => {
       setIsLocationShown(true)
-      if (locationBroadcastMode === LocationBroadcastMode.STATIC || locationBroadcastMode === LocationBroadcastMode.MANUAL) {
+      if (locationBroadcastMode === "STATIC" || locationBroadcastMode === "MANUAL") {
           updateLocationButtonHandler()
       }
   }
@@ -342,26 +342,26 @@ export const Success = ({
   }, [vendor])
 
   const realTimeModeButtonHandler = () => {
-      setLocationBroadcastmode(LocationBroadcastMode.REALTIME)
+      setLocationBroadcastmode("REALTIME")
   }
 
     const staticModeButtonHandler = async () => {
-        setLocationBroadcastmode(LocationBroadcastMode.STATIC)
+        setLocationBroadcastmode("STATIC")
         if (isLocationShown) {
 
             broadcastLocationHandler({
                     ...(await getCoordinates()),
-                    locationBroadcastMode: LocationBroadcastMode.STATIC
+                    locationBroadcastMode: "STATIC"
             })
         }
     }
 
     const manualModeButtonHandler = async () => {
-        setLocationBroadcastmode(LocationBroadcastMode.MANUAL)
+        setLocationBroadcastmode("MANUAL")
         if (isLocationShown) {
             broadcastLocationHandler({
                 ...(await getCoordinates()),
-                locationBroadcastMode: LocationBroadcastMode.MANUAL
+                locationBroadcastMode: "MANUAL"
             })
         }
     }
@@ -472,7 +472,7 @@ export const Success = ({
                 <Marker
                     vendor={vendor}
                     map={map}
-                    draggable={locationBroadcastMode === LocationBroadcastMode.MANUAL}
+                    draggable={locationBroadcastMode === "MANUAL"}
                     onDragEnd={broadcastLocationHandler}
                     pulseColor='green'
                 />
@@ -501,7 +501,7 @@ export const Success = ({
 
       <Tab.Group
         as={'div'}
-            selectedIndex={(locationBroadcastMode === LocationBroadcastMode.MANUAL ? 0 : locationBroadcastMode === LocationBroadcastMode.STATIC ? 1 : 2)}
+            selectedIndex={(locationBroadcastMode === "MANUAL" ? 0 : locationBroadcastMode === "STATIC" ? 1 : 2)}
             onChange={(index) => {
                 switch(index) {
                     case 0: return manualModeButtonHandler()

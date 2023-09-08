@@ -11,6 +11,7 @@ import { useAuth } from 'src/auth'
 import CreateProductModal from '../Modals/CreateProductModal'
 import { toast } from '@redwoodjs/web/dist/toast'
 import { CREATE_PRODUCT_MUTATION } from '../Admin/Product/NewProduct'
+import Button from '../Button/Button'
 export const QUERY = gql`
     query ProductsQuery($userId: Int!) {
         productsByUser(userId: $userId) {
@@ -82,10 +83,10 @@ export const Success = ({
     }
     return (
     <div className='py-8'>
-        <div className='flex justify-between items-center'>
-            <h1 className='text-xl font-bold'>Products</h1>
+        <div className='flex justify-between items-center mb-8'>
+            <h1 className='text-lg font-bold'>Products</h1>
             <div>
-                <button
+                <Button
                     className='bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded'
                     type="button"
                     onClick={() =>
@@ -93,7 +94,7 @@ export const Success = ({
                     }
                 >
                     Add Product
-                </button>
+                </Button>
                 <CreateProductModal
                     isOpen={isCreateProductModalOpen}
                     onClose={() => setIsCreateProductModalOpen(false)}
