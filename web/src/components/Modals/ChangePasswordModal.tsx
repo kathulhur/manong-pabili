@@ -1,10 +1,6 @@
-import { Dialog } from "@headlessui/react";
 import { useState } from "react";
 import BaseModal from "./BaseModal";
 import Button from "../Button/Button";
-
-
-
 
 const ChangePasswordModal = ({
   isOpen,
