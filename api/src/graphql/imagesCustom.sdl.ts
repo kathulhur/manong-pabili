@@ -13,4 +13,8 @@ export const schema = gql`
     imagePage(page: Int, filter: ImagePageFilterInput): ImagePage! @requireAuth
     vendorImages(userId: Int!): [Image!]! @requireAuth
   }
+
+  type Mutation {
+    softDeleteImage(id: Int!): Image! @requireAuth
+  }
 `;

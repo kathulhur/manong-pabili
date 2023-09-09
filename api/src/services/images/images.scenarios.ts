@@ -9,9 +9,11 @@ export const standard = defineScenario<Prisma.ImageCreateArgs>({
         url: "String",
         user: {
           create: {
-            username: "String3187742",
-            hashedPassword: "String",
-            salt: "String",
+            email: "String9195689",
+            username: "String6946601",
+            name: "String",
+            gender: "String",
+            mobileNumber: "String",
           },
         },
       },
@@ -22,9 +24,11 @@ export const standard = defineScenario<Prisma.ImageCreateArgs>({
         url: "String",
         user: {
           create: {
-            username: "String8553485",
-            hashedPassword: "String",
-            salt: "String",
+            email: "String5921601",
+            username: "String1278643",
+            name: "String",
+            gender: "String",
+            mobileNumber: "String",
           },
         },
       },

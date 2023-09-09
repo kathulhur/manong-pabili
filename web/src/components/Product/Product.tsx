@@ -3,6 +3,9 @@ import { ProductsQuery, UpdateProductAvailabilityMutationVariables } from 'types
 import { useMutation } from '@redwoodjs/web'
 import { QUERY as PRODUCTS_CELL_QUERY } from '../ProductsCell'
 import { toast } from '@redwoodjs/web/dist/toast'
+import { DELETE_PRODUCT_MUTATION } from '../Admin/Product/Product'
+import Button from '../Button/Button'
+import { XMarkIcon } from '@heroicons/react/20/solid'
 
 const UPDATE_PRODUCT_MUTATION = gql`
     mutation UpdateProductAvailabilityMutation(
@@ -16,13 +19,6 @@ const UPDATE_PRODUCT_MUTATION = gql`
     }
 `
 
-const DELETE_PRODUCT_MUTATION = gql`
-    mutation DeleteProductMutation($id: Int!) {
-        deleteProduct: softDeleteProduct(id: $id) {
-            id
-        }
-    }
-`
 
 
 const Product = ({
@@ -49,11 +45,13 @@ const Product = ({
             toast.success('Product deleted')
         },
         update: (cache, { data }) => {
-            const deletedProductId = data?.deleteProduct?.id
+            const deletedProductId = data?.softDeleteProduct?.id
+            console.log(data)
             if (deletedProductId) {
                 cache.modify({
                     fields: {
                         productsByUser: (existingProductsRefs, { readField }) => {
+                            console.log(existingProductsRefs)
                             return existingProductsRefs.filter(
                                 (productRef) => deletedProductId !== readField('id', productRef)
                             )
@@ -101,24 +99,25 @@ const Product = ({
         }
   }
   return (
-    <div className='p-4 border'>
+    <div>
         <div className='flex justify-between items-center'>
-            <span>{product.name}</span>
-            <div className='space-x-4'>
-                <button
-                    className='border py-2 px-4 rounded-md'
+            <span className='font-semibold text-slate-700'>{product.name}</span>
+            <div className='flex items-center space-x-4'>
+                <Button
                     type="button"
+                    variant='subtle'
                     onClick={productAvailabilityButtonHandler}
                     >
                     {product.availability ? 'Available' : 'Unavailable'}
-                </button>
+                </Button>
 
-                <button
-                    className='border py-2 px-4 rounded-md'
-                    type="button" onClick={deleteProductHandler}>
-                    {' '}
-                    X{' '}
-                </button>
+                <Button
+                    icon={<XMarkIcon />}
+                    variant='subtle'
+                    className='text-red-700'
+                    aria-label='Delete'
+                    onClick={deleteProductHandler}>
+                </Button>
             </div>
         </div>
     </div>

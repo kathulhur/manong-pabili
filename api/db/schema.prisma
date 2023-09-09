@@ -12,29 +12,38 @@ generator client {
 // to create migrations for them and apply to your dev DB.
 // TODO: Please remove the following example:
 model User {
-  id                  Int       @id @default(autoincrement())
-  email               String?   @unique
-  username            String    @unique
-  name                String?
-  gender              String?
-  mobileNumber        String?
-  hashedPassword      String
-  salt                String
-  resetToken          String?
-  resetTokenExpiresAt DateTime?
-  products            Product[]
-  latitude            Float?
-  longitude           Float?
-  roles               String    @default("VENDOR")
-  lastLocationUpdate  DateTime?
-  locationHidden      Boolean   @default(true)
-  verified            Boolean   @default(false)
-  markerUrl           String?   @default("/assets/images/default_marker.png")
-  deleted             Boolean   @default(false)
-  deletedAt           DateTime?
-  createdAt           DateTime  @default(now())
-  updatedAt           DateTime?  @updatedAt
-  featuredImages      Image[]
+  id                              Int       @id @default(autoincrement())
+  email                           String   @unique
+  username                        String    @unique
+  name                            String
+  gender                          String
+  mobileNumber                    String
+  hashedPassword                  String?
+  salt                            String?
+  resetToken                      String?
+  resetTokenExpiresAt             DateTime?
+  productsOffered                 Product[]
+  latitude                        Float?
+  longitude                       Float?
+  roles                           String?    @default("VENDOR")
+  lastLocationUpdate              DateTime?
+  locationBroadcastMode           LocationBroadcastMode @default(STATIC)
+  locationHidden                  Boolean?    @default(true)
+  verified                        Boolean?    @default(false)
+  markerUrl                       String?     @default("img/kiosk.png")
+  deleted                         Boolean?    @default(false)
+  deletedAt                       DateTime?
+  createdAt                       DateTime?   @default(now())
+  updatedAt                       DateTime?   @updatedAt
+  featuredImages                  Image[]
+  Markers                         Marker[]
+}
+
+enum LocationBroadcastMode {
+  STATIC
+  MANUAL
+  REALTIME
+
 }
 
 model Product {
@@ -43,12 +52,23 @@ model Product {
   availability Boolean
   user         User    @relation(fields: [userId], references: [id], onDelete: Cascade)
   userId       Int
-  createdAt    DateTime @default(now())
+  createdAt    DateTime? @default(now())
   updatedAt    DateTime? @updatedAt
-  deleted      Boolean  @default(false)
+  deleted      Boolean?  @default(false)
   deletedAt    DateTime?
 }
 
+
+model Marker {
+  id      Int    @id @default(autoincrement())
+  url     String
+  user    User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId  Int
+  createdAt DateTime? @default(now())
+  updatedAt DateTime? @updatedAt
+  deleted   Boolean?  @default(false)
+  deletedAt DateTime?
+}
 
 model Image {
   id      Int    @id @default(autoincrement())
@@ -56,8 +76,8 @@ model Image {
   url     String
   user    User   @relation(fields: [userId], references: [id], onDelete: Cascade)
   userId  Int
-  createdAt DateTime @default(now())
+  createdAt DateTime? @default(now())
   updatedAt DateTime? @updatedAt
-  deleted   Boolean  @default(false)
+  deleted   Boolean?  @default(false)
   deletedAt DateTime?
 }

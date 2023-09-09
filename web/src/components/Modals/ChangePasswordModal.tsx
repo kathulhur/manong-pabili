@@ -1,8 +1,6 @@
-import { Dialog } from "@headlessui/react";
 import { useState } from "react";
-
-
-
+import BaseModal from "./BaseModal";
+import Button from "../Button/Button";
 
 const ChangePasswordModal = ({
   isOpen,
@@ -18,58 +16,63 @@ const ChangePasswordModal = ({
   const [newPassword, setNewPassword] = useState('');
   const [confirmNewPassword, setConfirmNewPassword] = useState('');
 
-  return <>
-  <Dialog
-      open={isOpen}
-      onClose={onClose}
+  return (
+      <BaseModal
+        isOpen={isOpen}
+        onClose={onClose}
       >
-      <Dialog.Panel>
-        <Dialog.Title>Update Username</Dialog.Title>
-        <form
-          onSubmit={(e) => {
-            e.preventDefault();
-            onSubmit(oldPassword, newPassword);
-            setNewPassword('');
-            setConfirmNewPassword('');
-          }}
-          >
-            <label>
-              Old Password
-            <input
-              name="password"
-              type="text"
-              value={oldPassword}
-              onChange={(e) => setOldPassword(e.target.value)}
-            />
-          </label>
-          <label>
-            New password
-            <input
-              name="password"
-              type="text"
-              value={newPassword}
-              onChange={(e) => setNewPassword(e.target.value)}
-            />
-          </label>
-          <label>
-            <p>Confirm Password</p>
-            <input
-              name="confirmPassword"
-              type="text"
-              value={confirmNewPassword}
-              onChange={(e) => setConfirmNewPassword(e.target.value)}
-            />
-          </label>
-          <button
-            type="submit"
-            >
-            Update
-          </button>
-        </form>
-      </Dialog.Panel>
+        <BaseModal.Title>Change Password</BaseModal.Title>
 
-    </Dialog>
-  </>
+          <form
+            onSubmit={(e) => {
+              e.preventDefault();
+              onSubmit(oldPassword, newPassword);
+              setNewPassword('');
+              setConfirmNewPassword('');
+            }}
+            >
+              <label>
+                Old Password
+              <input
+                name="password"
+                type="text"
+                className="rw-input mb-4"
+                value={oldPassword}
+                onChange={(e) => setOldPassword(e.target.value)}
+              />
+            </label>
+            <label>
+              New password
+              <input
+                name="password"
+                type="text"
+                className="rw-input mb-4"
+                value={newPassword}
+                onChange={(e) => setNewPassword(e.target.value)}
+              />
+            </label>
+            <label>
+              <p>Confirm Password</p>
+              <input
+                name="confirmPassword"
+                type="text"
+                className="rw-input"
+                value={confirmNewPassword}
+                onChange={(e) => setConfirmNewPassword(e.target.value)}
+              />
+            </label>
+            <BaseModal.Footer>
+              <Button
+                type="submit"
+                fullWidth
+                >
+                Update
+              </Button>
+            </BaseModal.Footer>
+          </form>
+      </BaseModal>
+  )
+
 }
 
 

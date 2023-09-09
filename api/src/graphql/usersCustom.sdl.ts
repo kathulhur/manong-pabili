@@ -9,12 +9,28 @@ export const schema = gql`
     count: Int!
   }
 
+  input CustomCreateUserInput {
+    email: String!
+    username: String!
+    name: String!
+    gender: String!
+    mobileNumber: String!
+    roles: String
+    verified: Boolean
+    markerUrl: String
+    password: String!
+  }
+
   type Query {
     vendor(id: Int!): User @requireAuth
     vendorPage(page: Int, searchKey: String): VendorPage @requireAuth
     mapVendors: [User!]! @skipAuth
     userPage(page: Int): UserPage @requireAuth
+  }
 
+  type Mutation {
+    softDeleteUser(id: Int!): User! @requireAuth
+    customCreateUser(input: CustomCreateUserInput!): User! @skipAuth
   }
 
   input UpdateUserPasswordInput {
@@ -36,6 +52,7 @@ export const schema = gql`
     event: String!
     latitude: Float!
     longitude: Float!
+    locationBroadcastMode: LocationBroadcastMode!
   }
 
   input UpdateVendorMarkerInput {

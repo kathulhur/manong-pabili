@@ -25,10 +25,7 @@ export const createUser: MutationResolvers["createUser"] = ({ input }) => {
 
 export const updateUser: MutationResolvers["updateUser"] = ({ id, input }) => {
   return db.user.update({
-    data: {
-      ...input,
-      updatedAt: new Date(),
-    },
+    data: input,
     where: { id },
   });
 };
@@ -39,8 +36,14 @@ export const deleteUser: MutationResolvers["deleteUser"] = ({ id }) => {
   });
 };
 
-export const User: UserRelationResolvers = {
-  products: (_obj, { root }) => {
-    return db.user.findUnique({ where: { id: root?.id } }).products();
-  },
-};
+// export const User: UserRelationResolvers = {
+//   productsOffered: (_obj, { root }) => {
+//     return db.user.findUnique({ where: { id: root?.id } }).productsOffered();
+//   },
+//   featuredImages: (_obj, { root }) => {
+//     return db.user.findUnique({ where: { id: root?.id } }).featuredImages();
+//   },
+//   Markers: (_obj, { root }) => {
+//     return db.user.findUnique({ where: { id: root?.id } }).Markers();
+//   },
+// };

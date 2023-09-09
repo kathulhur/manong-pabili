@@ -52,6 +52,12 @@ const Routes = () => {
             <Route path="/admin/images/{id:Int}/edit" page={AdminImageEditImagePage} name="adminEditImage" />
             <Route path="/admin/images/{id:Int}" page={AdminImageImagePage} name="adminImage" />
             <Route path="/admin/images" page={AdminImageImagesPage} name="adminImages" />
+
+            <Route path="/admin/markers/new" page={AdminMarkerNewMarkerPage} name="adminNewMarker" />
+            <Route path="/admin/markers/{id:Int}/edit" page={AdminMarkerEditMarkerPage} name="adminEditMarker" />
+            <Route path="/admin/markers/{id:Int}" page={AdminMarkerMarkerPage} name="adminMarker" />
+            <Route path="/admin/markers" page={AdminMarkerMarkersPage} name="adminMarkers" />
+
             <Route path="/admin" page={AdminPage} name="admin"/>
         </Set>
       </Private>

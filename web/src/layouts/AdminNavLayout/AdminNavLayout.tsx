@@ -26,6 +26,9 @@ const AdminNavLayout = ({ children }: AdminNavLayoutProps) => {
               <Link to={routes.adminImages()}>Images</Link>
             </li>
             <li>
+              <Link to={routes.adminMarkers()}>Markers</Link>
+            </li>
+            <li>
               <button onClick={ logOut }>Logout</button>
             </li>
           </ul>

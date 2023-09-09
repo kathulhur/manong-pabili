@@ -4,16 +4,9 @@ import { toast } from "@redwoodjs/web/toast";
 
 import { QUERY } from "src/components/Admin/Image/ImagesCell";
 import { truncate } from "src/lib/formatters";
-
+import { DELETE_IMAGE_MUTATION } from "src/components/Admin/Image/Image"
 import type { DeleteImageMutationVariables, FindImages } from "types/graphql";
 
-const DELETE_IMAGE_MUTATION = gql`
-  mutation DeleteImageMutation($id: Int!) {
-    deleteImage(id: $id) {
-      id
-    }
-  }
-`;
 
 const ImagesList = ({ images }: {
   images: FindImages['imagePage']['images'],
@@ -28,8 +21,8 @@ const ImagesList = ({ images }: {
     // This refetches the query on the list page. Read more about other ways to
     // update the cache over here:
     // https://www.apollographql.com/docs/react/data/mutations/#making-all-other-cache-updates
-    update: (cache, { data: deleteImage}) => {
-      const deletedImageId = deleteImage?.deleteImage?.id;
+    update: (cache, { data: softDeleteImage}) => {
+      const deletedImageId = softDeleteImage?.id;
       if (deletedImageId) {
         cache.modify({
           fields: {
@@ -55,8 +48,8 @@ const ImagesList = ({ images }: {
   };
 
   return (
-    <div className="rw-segment rw-table-wrapper-responsive">
-      <table className="rw-table">
+    <div className="rw-table-wrapper-responsive">
+      <table className="rw-table whitespace-nowrap">
         <thead>
           <tr>
             <th>Id</th>

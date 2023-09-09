@@ -12,28 +12,18 @@ import { useAuth } from 'src/auth'
 import { toast } from '@redwoodjs/web/toast'
 import { PlusIcon } from '@heroicons/react/20/solid'
 import Button from '../Button/Button'
-
+import { CREATE_PRODUCT_MUTATION } from '../Admin/Product/NewProduct'
 
 export const QUERY = gql`
     query DashboardProductsQuery($userId: Int!) {
         dashboardProducts: productsByUser(userId: $userId) {
+            __typename
             id
             name
             availability
         }
     }
 `
-
-const CREATE_PRODUCT_MUTATION = gql`
-    mutation CreateProductMutation($input: CreateProductInput!) {
-        createProduct(input: $input) {
-            id
-            name
-            availability
-        }
-    }
-`
-
 
 
 
@@ -61,6 +51,7 @@ export const Empty = () => {
                     fields: {
                         productsByUser: (existingDashboardProducts = []) => {
                             const newProductRef = cache.writeFragment({
+                                id: newProduct.__typename+":"+newProduct.id,
                                 data: newProduct,
                                 fragment: gql`
                                     fragment NewProduct on Product {
@@ -139,6 +130,7 @@ export const Success = ({
                     fields: {
                         productsByUser: (existingDashboardProducts = []) => {
                             const newProductRef = cache.writeFragment({
+                                id: newProduct.__typename+":"+newProduct.id,
                                 data: newProduct,
                                 fragment: gql`
                                     fragment NewProduct on Product {

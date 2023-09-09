@@ -4,7 +4,7 @@ import { Link, navigate, routes } from "@redwoodjs/router";
 import type { CellSuccessProps, CellFailureProps } from "@redwoodjs/web";
 import { useMutation } from "@redwoodjs/web";
 import { toast } from "@redwoodjs/web/toast";
-
+import LoadingComponent from "src/components/Loading/Loading";
 import ImageForm from "src/components/Admin/Image/ImageForm";
 
 export const QUERY = gql`
@@ -28,7 +28,7 @@ const UPDATE_IMAGE_MUTATION = gql`
   }
 `;
 
-export const Loading = () => <div>Loading...</div>;
+export const Loading = () => null;
 
 export const Failure = ({ error }: CellFailureProps) => (
   <div className="rw-cell-error">{error?.message}</div>
@@ -55,7 +55,15 @@ export const Success = ({ image }: CellSuccessProps<EditImageById>) => {
   return (
     <>
     <div className="m-2">
-      <div className="text-xl font-semibold space-x-2">
+      <div className="font-semibold space-x-2">
+        <Link to={routes.adminUsers()} className="hover:underline hover:underline-offset-1">
+          Users
+        </Link>
+        <span>&gt;</span>
+        <Link to={routes.adminUser({ id: image.userId })} className="hover:underline hover:underline-offset-1">
+          { image.userId }
+        </Link>
+        <span>&gt;</span>
         <Link to={routes.adminImages()} className="hover:underline hover:underline-offset-1">
           Images
         </Link>
@@ -69,7 +77,7 @@ export const Success = ({ image }: CellSuccessProps<EditImageById>) => {
         </Link>
       </div>
     </div>
-    <div className="rw-segment">
+    <div className="">
       <header className="rw-segment-header">
         <h2 className="rw-heading rw-heading-secondary">
           Edit Image {image?.id}

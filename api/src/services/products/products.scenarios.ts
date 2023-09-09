@@ -9,9 +9,11 @@ export const standard = defineScenario<Prisma.ProductCreateArgs>({
         availability: true,
         user: {
           create: {
-            username: "String7185899",
-            hashedPassword: "String",
-            salt: "String",
+            email: "String444216",
+            username: "String6757584",
+            name: "String",
+            gender: "String",
+            mobileNumber: "String",
           },
         },
       },
@@ -22,9 +24,11 @@ export const standard = defineScenario<Prisma.ProductCreateArgs>({
         availability: true,
         user: {
           create: {
-            username: "String7237806",
-            hashedPassword: "String",
-            salt: "String",
+            email: "String2367247",
+            username: "String381799",
+            name: "String",
+            gender: "String",
+            mobileNumber: "String",
           },
         },
       },

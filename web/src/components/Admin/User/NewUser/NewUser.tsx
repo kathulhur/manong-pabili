@@ -7,8 +7,8 @@ import UserForm from "src/components/Admin/User/UserForm";
 import type { CreateUserInput } from "types/graphql";
 
 const CREATE_USER_MUTATION = gql`
-  mutation CreateUserMutation($input: CreateUserInput!) {
-    createUser(input: $input) {
+  mutation CreateUserMutation($input: CustomCreateUserInput!) {
+    customCreateUser(input: $input) {
       id
     }
   }

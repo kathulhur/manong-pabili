@@ -3,7 +3,6 @@ import bbq_grill from '../images/bbq-grill.png'
 import coconut from '../images/coconut.png'
 import kiosk from '../images/kiosk.png'
 import meatball from '../images/meatball.png'
-import default_marker from '../images/default_marker.png'
 
 
 export const iconImages = {
@@ -12,7 +11,6 @@ export const iconImages = {
   coconut,
   kiosk,
   meatball,
-  default_marker
 }
 
 export type IconKeys = keyof typeof iconImages

@@ -11,6 +11,7 @@ export const schema = gql`
     type Query {
         productsByUser(userId: Int!): [Product!]! @requireAuth
         productPage(page: Int, filter: ProductPageFilterInput): ProductPage @requireAuth
+        vendorProducts: [Product!]! @skipAuth
     }
 
     type Mutation {

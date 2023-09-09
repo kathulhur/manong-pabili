@@ -2,16 +2,16 @@ import { Link, routes, navigate } from "@redwoodjs/router";
 import { useMutation } from "@redwoodjs/web";
 import { toast } from "@redwoodjs/web/toast";
 
-import { checkboxInputTag } from "src/lib/formatters";
+import { checkboxInputTag, timeTag } from "src/lib/formatters";
 
 import type {
   DeleteProductMutationVariables,
   FindProductById,
 } from "types/graphql";
 
-const DELETE_PRODUCT_MUTATION = gql`
+export const DELETE_PRODUCT_MUTATION = gql`
   mutation DeleteProductMutation($id: Int!) {
-    deleteProduct(id: $id) {
+    softDeleteProduct(id: $id) {
       id
     }
   }
@@ -40,7 +40,7 @@ const Product = ({ product }: Props) => {
 
   return (
     <>
-      <div className="rw-segment">
+      <div className="">
         <header className="rw-segment-header">
           <h2 className="rw-heading rw-heading-secondary">
             Product {product.id} Detail
@@ -63,6 +63,22 @@ const Product = ({ product }: Props) => {
             <tr>
               <th>User id</th>
               <td>{product.userId}</td>
+            </tr>
+            <tr>
+              <th>Created at</th>
+              <td>{timeTag(product.createdAt) }</td>
+            </tr>
+            <tr>
+              <th>Updated at</th>
+              <td>{timeTag(product.updatedAt)}</td>
+            </tr>
+            <tr>
+              <th>Deleted at</th>
+              <td>{timeTag(product.deletedAt)}</td>
+            </tr>
+            <tr>
+              <th>Deleted</th>
+              <td>{checkboxInputTag(product.deleted)}</td>
             </tr>
           </tbody>
         </table>

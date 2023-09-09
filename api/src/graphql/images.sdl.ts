@@ -5,6 +5,10 @@ export const schema = gql`
     url: String!
     user: User!
     userId: Int!
+    createdAt: DateTime
+    updatedAt: DateTime
+    deleted: Boolean
+    deletedAt: DateTime
   }
 
   type Query {
@@ -16,12 +20,16 @@ export const schema = gql`
     title: String!
     url: String!
     userId: Int!
+    deleted: Boolean
+    deletedAt: DateTime
   }
 
   input UpdateImageInput {
     title: String
     url: String
     userId: Int
+    deleted: Boolean
+    deletedAt: DateTime
   }
 
   type Mutation {

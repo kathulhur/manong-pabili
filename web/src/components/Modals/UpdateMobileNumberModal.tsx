@@ -1,6 +1,6 @@
-import { Dialog } from "@headlessui/react";
-import { set } from "@redwoodjs/forms";
 import { useState } from "react";
+import BaseModal from "./BaseModal";
+import Button from "../Button/Button";
 
 
 const UpdateMobileNumberModal = ({
@@ -18,12 +18,11 @@ const UpdateMobileNumberModal = ({
   const [mobileNumber, setMobileNumber] = useState(defaultValue);
 
   return <>
-  <Dialog
-      open={isOpen}
-      onClose={onClose}
+      <BaseModal
+        isOpen={isOpen}
+        onClose={onClose}
       >
-      <Dialog.Panel>
-        <Dialog.Title>Update Mobile Number</Dialog.Title>
+        <BaseModal.Title>Update Mobile Number</BaseModal.Title>
         <form
           onSubmit={(e) => {
             e.preventDefault();
@@ -36,19 +35,21 @@ const UpdateMobileNumberModal = ({
             <input
               name="mobileNumber"
               type="text"
+              className="rw-input"
               value={mobileNumber}
               onChange={(e) => setMobileNumber(e.target.value)}
               />
           </label>
-          <button
-            type="submit"
-            >
-            Update
-          </button>
+          <BaseModal.Footer>
+            <Button
+              type="submit"
+              fullWidth
+              >
+              Update
+            </Button>
+          </BaseModal.Footer>
         </form>
-      </Dialog.Panel>
-
-    </Dialog>
+    </BaseModal>
   </>
 }
 

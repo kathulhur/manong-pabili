@@ -22,8 +22,10 @@ const Pagination = ({ count, paginate }) => {
 
   return (
     <>
-      <h2>Pagination</h2>
-      <ul className="flex space-x-4">{items}</ul>
+      <ul className="flex space-x-4">
+        <li>Page</li>
+        {items}
+      </ul>
     </>
   )
 }

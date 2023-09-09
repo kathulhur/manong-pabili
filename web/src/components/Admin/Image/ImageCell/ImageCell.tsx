@@ -1,7 +1,7 @@
 import type { FindImageById } from "types/graphql";
 
 import type { CellSuccessProps, CellFailureProps } from "@redwoodjs/web";
-
+import LoadingComponent from "src/components/Loading/Loading";
 import Image from "src/components/Admin/Image/Image";
 import { Link, routes } from "@redwoodjs/router";
 
@@ -12,11 +12,16 @@ export const QUERY = gql`
       title
       url
       userId
+      createdAt
+      updatedAt
+      deletedAt
+      deleted
+
     }
   }
 `;
 
-export const Loading = () => <div>Loading...</div>;
+export const Loading = () => null;
 
 export const Empty = () => <div>Image not found</div>;
 
@@ -27,9 +32,9 @@ export const Failure = ({ error }: CellFailureProps) => (
 
 export const Success = ({ image }: CellSuccessProps<FindImageById>) => {
   return (
-    <>
-      <div className="m-2">
-        <div className="text-xl font-semibold space-x-2">
+    <div className="m-8">
+      <div className="p-2">
+        <div className="font-semibold space-x-2">
             <Link to={routes.adminUsers()} className="hover:underline hover:underline-offset-1">
             Users
             </Link>
@@ -38,7 +43,7 @@ export const Success = ({ image }: CellSuccessProps<FindImageById>) => {
             { image.userId }
             </Link>
             <span>&gt;</span>
-            <Link to={routes.userProducts({ id: image.userId })} className="hover:underline hover:underline-offset-1">
+            <Link to={routes.userImages({ id: image.userId })} className="hover:underline hover:underline-offset-1">
               Images
             </Link>
             <span>&gt;</span>
@@ -47,7 +52,9 @@ export const Success = ({ image }: CellSuccessProps<FindImageById>) => {
             </Link>
         </div>
       </div>
-      <Image image={image} />
-    </>
+      <div className="mt-8">
+        <Image image={image} />
+      </div>
+    </div>
   );
 };

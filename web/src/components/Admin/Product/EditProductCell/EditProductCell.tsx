@@ -4,7 +4,7 @@ import { Link, navigate, routes } from "@redwoodjs/router";
 import type { CellSuccessProps, CellFailureProps } from "@redwoodjs/web";
 import { useMutation } from "@redwoodjs/web";
 import { toast } from "@redwoodjs/web/toast";
-
+import LoadingComponent from "src/components/Loading/Loading";
 import ProductForm from "src/components/Admin/Product/ProductForm";
 
 export const QUERY = gql`
@@ -28,7 +28,7 @@ const UPDATE_PRODUCT_MUTATION = gql`
   }
 `;
 
-export const Loading = () => <div>Loading...</div>;
+export const Loading = () => null;
 
 export const Failure = ({ error }: CellFailureProps) => (
   <div className="rw-cell-error">{error?.message}</div>
@@ -56,11 +56,15 @@ export const Success = ({ product }: CellSuccessProps<EditProductById>) => {
   };
 
   return (
-    <>
-    <div className="m-2">
-      <div className="text-xl font-semibold space-x-2">
+    <div className="m-8">
+    <div>
+      <div className="font-semibold space-x-2 items-end">
         <Link to={routes.adminUsers()} className="hover:underline hover:underline-offset-1">
           Users
+        </Link>
+        <span>&gt;</span>
+        <Link to={routes.adminUsers()} className="hover:underline hover:underline-offset-1">
+          { product.userId }
         </Link>
         <span>&gt;</span>
         <Link to={routes.adminProducts()} className="hover:underline hover:underline-offset-1">
@@ -76,7 +80,7 @@ export const Success = ({ product }: CellSuccessProps<EditProductById>) => {
         </Link>
       </div>
     </div>
-    <div className="rw-segment">
+    <div className="mt-8">
       <header className="rw-segment-header">
         <h2 className="rw-heading rw-heading-secondary">
           Edit Product {product?.id}
@@ -91,6 +95,6 @@ export const Success = ({ product }: CellSuccessProps<EditProductById>) => {
         />
       </div>
     </div>
-    </>
+    </div>
   );
 };

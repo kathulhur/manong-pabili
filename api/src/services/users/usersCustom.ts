@@ -20,16 +20,22 @@ export const vendor: QueryResolvers["vendor"] = ({ id }) => {
       deleted: false,
     },
     include: {
-      products: {
+      productsOffered: {
         where: {
-          deleted: false
+          deleted: false,
         }
       },
       featuredImages: {
         where: {
           deleted: false
         }
+      },
+      Markers: {
+        where: {
+          deleted: false
+        }
       }
+
     }
   });
 }
@@ -66,8 +72,8 @@ export const updateVendorMarker: MutationResolvers["updateVendorMarker"] = ({ id
   })
 }
 
-export const mapVendors: QueryResolvers["mapVendors"] = () => {
-  return db.user.findMany({
+export const mapVendors: QueryResolvers["mapVendors"] = async () => {
+  const result = await db.user.findMany({
     where: {
       locationHidden: false,
       roles: {
@@ -77,6 +83,12 @@ export const mapVendors: QueryResolvers["mapVendors"] = () => {
       verified: true,
     },
     include: {
+      productsOffered: {
+        where: {
+          deleted: false,
+          availability: true,
+        }
+      },
       featuredImages: {
         where: {
           deleted: false
@@ -84,6 +96,7 @@ export const mapVendors: QueryResolvers["mapVendors"] = () => {
       }
     }
   })
+  return result
 }
 
 
@@ -101,7 +114,6 @@ export const updateUsername: MutationResolvers["updateUsername"] = ({ id, input 
   return db.user.update({
     data: {
       username: updatedUsername,
-      updatedAt: new Date()
     },
     where: { id },
   });
@@ -121,7 +133,6 @@ export const updateMobileNumber: MutationResolvers["updateMobileNumber"] = ({ id
   return db.user.update({
     data: {
       mobileNumber: updatedMobileNumber,
-      updatedAt: new Date()
     },
     where: { id },
   });
@@ -140,19 +151,17 @@ export const updateName: MutationResolvers["updateName"] = ({ id, input }) => {
   return db.user.update({
     data: {
       name: updatedName,
-      updatedAt: new Date()
     },
     where: { id },
+    include: {
+      productsOffered: {
+        where: {
+          deleted: false,
+        }
+      }
+    }
   });
 }
-
-
-
-export const User: UserRelationResolvers = {
-  products: (_obj, { root }) => {
-    return db.user.findUnique({ where: { id: root?.id } }).products();
-  },
-};
 
 
 export const updateUserPassword: MutationResolvers['updateUserPassword'] =
@@ -179,7 +188,6 @@ export const updateUserPassword: MutationResolvers['updateUserPassword'] =
       data: {
         hashedPassword,
         salt,
-        updatedAt: new Date()
       },
       where: { id },
     });
@@ -300,7 +308,7 @@ export const hideVendorLocation: MutationResolvers['hideVendorLocation'] = async
 
 
 export const broadcastLocation: MutationResolvers['broadcastLocation']
-  = async ({id, input: {channel, event, latitude, longitude}}) => {
+  = async ({id, input: {channel, event, latitude, longitude, locationBroadcastMode}}) => {
 
     const user = await db.user.update({
         where: { id: id },
@@ -308,11 +316,21 @@ export const broadcastLocation: MutationResolvers['broadcastLocation']
             longitude: longitude,
             latitude: latitude,
             lastLocationUpdate: new Date(),
-            locationHidden: false
+            locationHidden: false,
+            locationBroadcastMode
         },
         include: {
-          products: true,
-          featuredImages: true
+          productsOffered: {
+            where: {
+              deleted: false,
+            }
+          },
+          featuredImages: {
+            where: {
+              deleted: false,
+              userId: id
+            }
+          }
         }
 
     })
@@ -324,3 +342,27 @@ export const broadcastLocation: MutationResolvers['broadcastLocation']
     return user
 
 }
+
+export const softDeleteUser: MutationResolvers['softDeleteUser'] = async ({ id }) => {
+  return db.user.update({
+    where: { id },
+    data: {
+      deleted: true,
+      deletedAt: new Date()
+    }
+  })
+}
+
+
+export const customCreateUser: MutationResolvers["customCreateUser"] = ({ input }) => {
+  const [hashedPassword, salt] = hashPassword(input.password);
+  delete input.password
+
+  return db.user.create({
+    data: {
+      ...input,
+      hashedPassword,
+      salt,
+    }
+  });
+};

@@ -1,8 +1,6 @@
-import { Dialog } from "@headlessui/react";
 import { useState } from "react";
-
-
-
+import BaseModal from "./BaseModal";
+import Button from "../Button/Button";
 
 const DeleteAccountModal = ({
   isOpen,
@@ -15,12 +13,11 @@ const DeleteAccountModal = ({
 }) => {
   const [password, setPassword] = useState('');
   return <>
-    <Dialog
-      open={isOpen}
-      onClose={onClose}
-    >
-      <Dialog.Panel>
-        <Dialog.Title>Delete Account</Dialog.Title>
+    <BaseModal
+        isOpen={isOpen}
+        onClose={onClose}
+      >
+        <BaseModal.Title>Delete Account</BaseModal.Title>
         <form
           onSubmit={(e) => {
             e.preventDefault();
@@ -33,18 +30,21 @@ const DeleteAccountModal = ({
             <input
               name="password"
               type="password"
+              className="rw-input"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
             />
           </label>
-          <button
-            type="submit"
-            >
-            Confirm Delete
-          </button>
+          <BaseModal.Footer>
+            <Button
+              type="submit"
+              fullWidth
+              >
+              Confirm Delete
+            </Button>
+          </BaseModal.Footer>
         </form>
-      </Dialog.Panel>
-    </Dialog>
+    </BaseModal>
   </>
 }
 
