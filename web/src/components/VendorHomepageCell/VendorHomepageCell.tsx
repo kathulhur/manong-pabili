@@ -26,12 +26,8 @@ import tt, { LngLatLike } from "@tomtom-international/web-sdk-maps";
 import { toast } from "@redwoodjs/web/dist/toast";
 import Marker from "../Marker/Marker";
 import { get } from "@redwoodjs/forms";
-<<<<<<< Updated upstream
 
-=======
-import { LocationBroadcastMode } from "@prisma/client";
 import LoadingComponent from "src/components/Loading/Loading";
->>>>>>> Stashed changes
 export const beforeQuery = ({ userId }) => {
   return {
     variables: { id: userId }
@@ -151,7 +147,7 @@ export const Success = ({
         const mapRef = useRef<HTMLDivElement>(null)
     const [isLocationShown, setIsLocationShown] = useState(!vendor?.locationHidden)
 
-    const defaultLocationBroadcastMode = vendor?.locationBroadcastMode == 'REALTIME' ? LocationBroadcastMode.STATIC : vendor?.locationBroadcastMode
+    const defaultLocationBroadcastMode = vendor?.locationBroadcastMode == 'REALTIME' ? 'STATIC' : vendor?.locationBroadcastMode
 
     const [locationBroadcastMode, setLocationBroadcastmode] = useState<LocationBroadcastMode>(defaultLocationBroadcastMode)
     const [map, setMap] = useState<tt.Map>(null)
@@ -289,7 +285,6 @@ export const Success = ({
     },  [vendor, map, broadcastLocation])
 
   // broadcast location every 5 seconds when location is shown and in realtime mode
-<<<<<<< Updated upstream
   useEffect(() => {
       if ( !isLocationShown || !(locationBroadcastMode === "REALTIME")) return
       const intervalId = setInterval(async () => {
@@ -298,14 +293,6 @@ export const Success = ({
                 locationBroadcastMode: "REALTIME"
             })
       }, 5000)
-=======
-    useEffect(() => {
-        if ( !isLocationShown || !(locationBroadcastMode === LocationBroadcastMode.REALTIME)) return
-        updateLocationButtonHandler(locationBroadcastMode)
-        const intervalId = setInterval(async () => {
-            updateLocationButtonHandler(locationBroadcastMode)
-        }, 5000)
->>>>>>> Stashed changes
 
         return () => {
             clearInterval(intervalId)
@@ -315,13 +302,8 @@ export const Success = ({
 
   const showLocationButtonHandler = () => {
       setIsLocationShown(true)
-<<<<<<< Updated upstream
       if (locationBroadcastMode === "STATIC" || locationBroadcastMode === "MANUAL") {
-          updateLocationButtonHandler()
-=======
-      if (locationBroadcastMode === LocationBroadcastMode.STATIC || locationBroadcastMode === LocationBroadcastMode.MANUAL) {
           updateLocationButtonHandler(locationBroadcastMode)
->>>>>>> Stashed changes
       }
   }
 
