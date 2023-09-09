@@ -9,6 +9,18 @@ export const schema = gql`
     count: Int!
   }
 
+  input CustomCreateUserInput {
+    email: String!
+    username: String!
+    name: String!
+    gender: String!
+    mobileNumber: String!
+    roles: String
+    verified: Boolean
+    markerUrl: String
+    password: String!
+  }
+
   type Query {
     vendor(id: Int!): User @requireAuth
     vendorPage(page: Int, searchKey: String): VendorPage @requireAuth
@@ -18,6 +30,7 @@ export const schema = gql`
 
   type Mutation {
     softDeleteUser(id: Int!): User! @requireAuth
+    customCreateUser(input: CustomCreateUserInput!): User! @skipAuth
   }
 
   input UpdateUserPasswordInput {

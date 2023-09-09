@@ -20,16 +20,22 @@ export const vendor: QueryResolvers["vendor"] = ({ id }) => {
       deleted: false,
     },
     include: {
-      products: {
+      productsOffered: {
         where: {
-          deleted: false
+          deleted: false,
         }
       },
       featuredImages: {
         where: {
           deleted: false
         }
+      },
+      Markers: {
+        where: {
+          deleted: false
+        }
       }
+
     }
   });
 }
@@ -66,8 +72,8 @@ export const updateVendorMarker: MutationResolvers["updateVendorMarker"] = ({ id
   })
 }
 
-export const mapVendors: QueryResolvers["mapVendors"] = () => {
-  return db.user.findMany({
+export const mapVendors: QueryResolvers["mapVendors"] = async () => {
+  const result = await db.user.findMany({
     where: {
       locationHidden: false,
       roles: {
@@ -77,6 +83,12 @@ export const mapVendors: QueryResolvers["mapVendors"] = () => {
       verified: true,
     },
     include: {
+      productsOffered: {
+        where: {
+          deleted: false,
+          availability: true,
+        }
+      },
       featuredImages: {
         where: {
           deleted: false
@@ -84,6 +96,7 @@ export const mapVendors: QueryResolvers["mapVendors"] = () => {
       }
     }
   })
+  return result
 }
 
 
@@ -140,16 +153,15 @@ export const updateName: MutationResolvers["updateName"] = ({ id, input }) => {
       name: updatedName,
     },
     where: { id },
+    include: {
+      productsOffered: {
+        where: {
+          deleted: false,
+        }
+      }
+    }
   });
 }
-
-
-
-export const User: UserRelationResolvers = {
-  products: (_obj, { root }) => {
-    return db.user.findUnique({ where: { id: root?.id } }).products();
-  },
-};
 
 
 export const updateUserPassword: MutationResolvers['updateUserPassword'] =
@@ -308,8 +320,17 @@ export const broadcastLocation: MutationResolvers['broadcastLocation']
             locationBroadcastMode
         },
         include: {
-          products: true,
-          featuredImages: true
+          productsOffered: {
+            where: {
+              deleted: false,
+            }
+          },
+          featuredImages: {
+            where: {
+              deleted: false,
+              userId: id
+            }
+          }
         }
 
     })
@@ -331,3 +352,17 @@ export const softDeleteUser: MutationResolvers['softDeleteUser'] = async ({ id }
     }
   })
 }
+
+
+export const customCreateUser: MutationResolvers["customCreateUser"] = ({ input }) => {
+  const [hashedPassword, salt] = hashPassword(input.password);
+  delete input.password
+
+  return db.user.create({
+    data: {
+      ...input,
+      hashedPassword,
+      salt,
+    }
+  });
+};

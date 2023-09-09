@@ -45,11 +45,13 @@ const Product = ({
             toast.success('Product deleted')
         },
         update: (cache, { data }) => {
-            const deletedProductId = data?.deleteProduct?.id
+            const deletedProductId = data?.softDeleteProduct?.id
+            console.log(data)
             if (deletedProductId) {
                 cache.modify({
                     fields: {
                         productsByUser: (existingProductsRefs, { readField }) => {
+                            console.log(existingProductsRefs)
                             return existingProductsRefs.filter(
                                 (productRef) => deletedProductId !== readField('id', productRef)
                             )

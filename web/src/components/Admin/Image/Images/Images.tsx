@@ -49,7 +49,7 @@ const ImagesList = ({ images }: {
 
   return (
     <div className="rw-table-wrapper-responsive">
-      <table className="rw-table">
+      <table className="rw-table whitespace-nowrap">
         <thead>
           <tr>
             <th>Id</th>

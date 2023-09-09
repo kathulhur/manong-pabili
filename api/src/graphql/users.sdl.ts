@@ -1,29 +1,30 @@
 export const schema = gql`
   type User {
     id: Int!
-    email: String
+    email: String!
     username: String!
-    name: String
-    gender: String
-    mobileNumber: String
-    hashedPassword: String!
-    salt: String!
+    name: String!
+    gender: String!
+    mobileNumber: String!
+    hashedPassword: String
+    salt: String
     resetToken: String
     resetTokenExpiresAt: DateTime
-    products: [Product]!
+    productsOffered: [Product]!
     latitude: Float
     longitude: Float
-    roles: String!
+    roles: String
     lastLocationUpdate: DateTime
-    locationHidden: Boolean!
-    verified: Boolean!
+    locationBroadcastMode: LocationBroadcastMode!
+    locationHidden: Boolean
+    verified: Boolean
     markerUrl: String
-    createdAt: DateTime
-    locationBroadcastMode: LocationBroadcastMode
-    deleted: Boolean!
+    deleted: Boolean
     deletedAt: DateTime
+    createdAt: DateTime
     updatedAt: DateTime
     featuredImages: [Image]!
+    Markers: [Marker]!
   }
 
   enum LocationBroadcastMode {
@@ -43,10 +44,20 @@ export const schema = gql`
     name: String!
     gender: String!
     mobileNumber: String!
-    roles: String!
+    hashedPassword: String
+    salt: String
+    resetToken: String
+    resetTokenExpiresAt: DateTime
+    latitude: Float
+    longitude: Float
+    roles: String
+    lastLocationUpdate: DateTime
+    locationBroadcastMode: LocationBroadcastMode!
+    locationHidden: Boolean
     verified: Boolean
     markerUrl: String
-    password: String!
+    deleted: Boolean
+    deletedAt: DateTime
   }
 
   input UpdateUserInput {
@@ -55,9 +66,20 @@ export const schema = gql`
     name: String
     gender: String
     mobileNumber: String
+    hashedPassword: String
+    salt: String
+    resetToken: String
+    resetTokenExpiresAt: DateTime
+    latitude: Float
+    longitude: Float
     roles: String
+    lastLocationUpdate: DateTime
+    locationBroadcastMode: LocationBroadcastMode
+    locationHidden: Boolean
     verified: Boolean
     markerUrl: String
+    deleted: Boolean
+    deletedAt: DateTime
   }
 
   type Mutation {

@@ -62,3 +62,12 @@ export const productPage: QueryResolvers['productPage'] = async ({
   }
 }
 
+export const softDeleteProduct: MutationResolvers["softDeleteProduct"] = ({ id }) => {
+  return db.product.update({
+    where: { id },
+    data: {
+      deleted: true,
+      deletedAt: new Date()
+    }
+  });
+};

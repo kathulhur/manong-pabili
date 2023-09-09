@@ -26,7 +26,6 @@ export const createMarker = ({
         'animate-ping absolute inline-flex h-8 w-8 rounded-full opacity-75',
         pulseColor === 'gray' && 'bg-gray-400',
         pulseColor === 'red' && 'bg-red-400',
-        pulseColor === 'orange' && 'bg-orange-400',
         pulseColor === 'green' && 'bg-green-400',
     )
 
@@ -50,19 +49,15 @@ interface MarkerProps {
     vendor: FindVendorHomepageQuery['vendor'];
     onClick?: (vendor: any) => void
     draggable?: boolean;
-    onDragEnd?: ({ latitude, longitude }: { latitude: number, longitude: number }) => void
+    onDragEnd?: ({ latitude, longitude, locationBroadcastMode }: {
+        latitude: number,
+        longitude: number,
+        locationBroadcastMode: LocationBroadcastMode
+    }) => void
     pulseColor?: string;
 }
 
 const getMarkerColor = (locationBroadcastMode: FindVendorHomepageQuery['vendor']['locationBroadcastMode']) => {
-    if(locationBroadcastMode === LocationBroadcastMode.MANUAL) {
-        return 'gray'
-    }
-
-    if(locationBroadcastMode === LocationBroadcastMode.STATIC) {
-        return 'orange'
-    }
-
     if(locationBroadcastMode === LocationBroadcastMode.REALTIME) {
         return 'red'
     }
@@ -88,7 +83,7 @@ const Marker = ({map, vendor, onClick, draggable=false, onDragEnd, pulseColor}: 
             marker.setDraggable(true)
             marker.on('dragend', (event) => {
                 const coordinates = marker.getLngLat()
-                onDragEnd({ latitude: coordinates.lat, longitude: coordinates.lng })
+                onDragEnd({ latitude: coordinates.lat, longitude: coordinates.lng, locationBroadcastMode: vendor.locationBroadcastMode })
             })
         }
 

@@ -4,7 +4,7 @@ import { type CellSuccessProps, type CellFailureProps, MetaTags } from "@redwood
 
 import Product from "src/components/Admin/Product/Product";
 import { Link, routes } from "@redwoodjs/router";
-
+import LoadingComponent from "src/components/Loading/Loading";
 export const QUERY = gql`
   query FindProductById($id: Int!) {
     product: product(id: $id) {
@@ -20,7 +20,7 @@ export const QUERY = gql`
   }
 `;
 
-export const Loading = () => <div>Loading...</div>;
+export const Loading = () => null;
 
 export const Empty = () => <div>Product not found</div>;
 
@@ -30,7 +30,7 @@ export const Failure = ({ error }: CellFailureProps) => (
 
 export const Success = ({ product }: CellSuccessProps<FindProductById>) => {
   return (
-    <>
+    <div className="m-8">
       <MetaTags title="User Product" description="UserProducts page" />
       <div className="p-2">
         <div className="font-semibold space-x-2">
@@ -51,7 +51,9 @@ export const Success = ({ product }: CellSuccessProps<FindProductById>) => {
           </Link>
         </div>
       </div>
-      <Product product={product} />
-    </>
+      <div className="mt-8">
+        <Product product={product} />
+      </div>
+    </div>
   );
 };

@@ -5,7 +5,6 @@ import type {
 } from "types/graphql";
 
 import { db } from "src/lib/db";
-import { hashPassword } from "@redwoodjs/auth-dbauth-api";
 
 export const users: QueryResolvers["users"] = () => {
   return db.user.findMany();
@@ -18,16 +17,8 @@ export const user: QueryResolvers["user"] = ({ id }) => {
 };
 
 export const createUser: MutationResolvers["createUser"] = ({ input }) => {
-
-  const [hashedPassword, salt] = hashPassword(input.password);
-  delete input.password
-
   return db.user.create({
-    data: {
-      ...input,
-      hashedPassword,
-      salt,
-    }
+    data: input,
   });
 };
 
@@ -44,8 +35,14 @@ export const deleteUser: MutationResolvers["deleteUser"] = ({ id }) => {
   });
 };
 
-export const User: UserRelationResolvers = {
-  products: (_obj, { root }) => {
-    return db.user.findUnique({ where: { id: root?.id } }).products();
-  },
-};
+// export const User: UserRelationResolvers = {
+//   productsOffered: (_obj, { root }) => {
+//     return db.user.findUnique({ where: { id: root?.id } }).productsOffered();
+//   },
+//   featuredImages: (_obj, { root }) => {
+//     return db.user.findUnique({ where: { id: root?.id } }).featuredImages();
+//   },
+//   Markers: (_obj, { root }) => {
+//     return db.user.findUnique({ where: { id: root?.id } }).Markers();
+//   },
+// };

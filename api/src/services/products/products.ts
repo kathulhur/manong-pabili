@@ -30,9 +30,7 @@ export const updateProduct: MutationResolvers["updateProduct"] = ({
 }) => {
   return db.product.update({
     data: input,
-    where: {
-      id
-    },
+    where: { id },
   });
 };
 
@@ -41,18 +39,6 @@ export const deleteProduct: MutationResolvers["deleteProduct"] = ({ id }) => {
     where: { id },
   });
 };
-
-export const softDeleteProduct: MutationResolvers["softDeleteProduct"] = ({
-  id,
-}) => {
-  return db.product.update({
-    data: {
-      deleted: true,
-      deletedAt: new Date(),
-    },
-    where: { id },
-  });
-}
 
 export const Product: ProductRelationResolvers = {
   user: (_obj, { root }) => {

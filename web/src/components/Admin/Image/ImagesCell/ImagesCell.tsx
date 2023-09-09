@@ -5,7 +5,7 @@ import type { CellSuccessProps, CellFailureProps } from "@redwoodjs/web";
 
 import Images from "src/components/Admin/Image/Images";
 import Pagination, { PaginationProps } from "src/components/Pagination/Pagination";
-
+import LoadingComponent from "src/components/Loading/Loading";
 export const beforeQuery = ({ page, userId }) => {
   page = page ? parseInt(page, 10) : 1
   userId = userId ? parseInt(userId, 10) : null
@@ -33,7 +33,7 @@ export const isEmpty = ({ imagePage: { count } }: CellSuccessProps<FindImages>) 
   return count === 0
 }
 
-export const Loading = () => <div>Loading...</div>;
+export const Loading = () => null;
 
 export const Empty = () => {
   return (
@@ -57,8 +57,8 @@ export interface ImagesCellProps extends CellSuccessProps<FindImages>{
 
 export const Success = ({ imagePage: { images, count }, paginate, userId }: ImagesCellProps) => {
   return (
-    <div>
-        <div className="m-2 flex justify-between">
+    <div className="m-8">
+        <div className="flex justify-between">
           <div className="font-semibold space-x-2 flex items-end">
           {!userId &&
             <Link to={routes.adminImages()} className="hover:underline hover:underline-offset-1">
@@ -71,7 +71,7 @@ export const Success = ({ imagePage: { images, count }, paginate, userId }: Imag
             </Link>
               <span>&gt;</span>
               <Link to={routes.adminUser({ id: userId })} className="hover:underline hover:underline-offset-1">
-                { userId}
+                { userId }
               </Link>
               <span>&gt;</span>
               <Link to={routes.adminImages()} className="hover:underline hover:underline-offset-1">
@@ -91,8 +91,12 @@ export const Success = ({ imagePage: { images, count }, paginate, userId }: Imag
             </Link>
           }
         </div>
-      <Images images={images} />
-      <Pagination count={count} paginate={paginate}/>
+        <div className="mt-8">
+          <div className="mb-2">
+            <Pagination count={count} paginate={paginate}/>
+          </div>
+          <Images images={images} />
+        </div>
     </div>
   );
 };

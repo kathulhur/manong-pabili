@@ -4,7 +4,7 @@ import { Link, navigate, routes } from "@redwoodjs/router";
 import type { CellSuccessProps, CellFailureProps } from "@redwoodjs/web";
 import { useMutation } from "@redwoodjs/web";
 import { toast } from "@redwoodjs/web/toast";
-
+import LoadingComponent from "src/components/Loading/Loading";
 import ImageForm from "src/components/Admin/Image/ImageForm";
 
 export const QUERY = gql`
@@ -28,7 +28,7 @@ const UPDATE_IMAGE_MUTATION = gql`
   }
 `;
 
-export const Loading = () => <div>Loading...</div>;
+export const Loading = () => null;
 
 export const Failure = ({ error }: CellFailureProps) => (
   <div className="rw-cell-error">{error?.message}</div>

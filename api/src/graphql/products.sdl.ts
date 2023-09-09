@@ -5,28 +5,31 @@ export const schema = gql`
     availability: Boolean!
     user: User!
     userId: Int!
-    createdAt: DateTime!
-    updatedAt: DateTime!
+    createdAt: DateTime
+    updatedAt: DateTime
+    deleted: Boolean
     deletedAt: DateTime
-    deleted: Boolean!
   }
 
   type Query {
     products: [Product!]! @requireAuth
     product(id: Int!): Product @requireAuth
-    vendorProducts: [Product!]! @skipAuth
   }
 
   input CreateProductInput {
     name: String!
     availability: Boolean!
     userId: Int!
+    deleted: Boolean
+    deletedAt: DateTime
   }
 
   input UpdateProductInput {
     name: String
     availability: Boolean
     userId: Int
+    deleted: Boolean
+    deletedAt: DateTime
   }
 
   type Mutation {

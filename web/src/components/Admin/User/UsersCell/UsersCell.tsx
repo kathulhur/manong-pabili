@@ -5,7 +5,9 @@ import type { CellSuccessProps, CellFailureProps } from "@redwoodjs/web";
 
 import Users from "src/components/Admin/User/Users";
 import Pagination from "src/components/Pagination/Pagination";
-
+import LoadingComponent from "src/components/Loading/Loading";
+import { Transition } from "@headlessui/react";
+import { Fragment, useEffect } from "react";
 export const beforeQuery = ({ page }) => {
   page = page ? parseInt(page, 10) : 1
   return { variables: { page } }
@@ -30,6 +32,7 @@ export const QUERY = gql`
         roles
         lastLocationUpdate
         locationHidden
+        locationBroadcastMode
         verified
         markerUrl
         createdAt
@@ -42,7 +45,7 @@ export const QUERY = gql`
   }
 `;
 
-export const Loading = () => <div>Loading...</div>;
+export const Loading = () => null;
 
 export const Empty = () => {
   return (
@@ -64,9 +67,15 @@ export interface UsersCellSuccessProps extends CellSuccessProps<FindUsers> {
 }
 
 export const Success = ({ userPage: { users, count }, paginate }: UsersCellSuccessProps) => {
+  const [isShowing, setIsShowing] = React.useState(false)
+
+  useEffect(() => {
+    setIsShowing(true)
+  }, [])
+
   return (
-    <div>
-      <div className="m-2 flex justify-between items-end">
+    <div className="m-8">
+      <div className="flex justify-between items-end">
         <div className="font-semibold">
           <Link to={routes.adminUsers()} className="hover:underline hover:underline-offset-1 ">
             Users
@@ -76,7 +85,12 @@ export const Success = ({ userPage: { users, count }, paginate }: UsersCellSucce
           <div className="rw-button-icon">+</div> New User
         </Link>
       </div>
-      <Users users={users}/>
-      <Pagination count={count} paginate={paginate}/>
-    </div>);
+      <div className="mt-8">
+        <div className="mb-2">
+          <Pagination count={count} paginate={paginate}/>
+        </div>
+        <Users users={users}/>
+      </div>
+    </div>
+    );
 };

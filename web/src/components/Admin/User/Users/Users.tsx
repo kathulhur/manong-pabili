@@ -65,6 +65,7 @@ const UsersList = ({ users }: {
             <th>Roles</th>
             <th>Last location update</th>
             <th>Location hidden</th>
+            <th>Location Broadcast Mode</th>
             <th>Verified</th>
             <th>Marker url</th>
             <th>Verified</th>
@@ -93,6 +94,7 @@ const UsersList = ({ users }: {
               <td>{truncate(user.roles)}</td>
               <td>{timeTag(user.lastLocationUpdate)}</td>
               <td>{checkboxInputTag(user.locationHidden)}</td>
+              <td>{user.locationBroadcastMode}</td>
               <td>{truncate(user.markerUrl)}</td>
               <td>{checkboxInputTag(user.verified)}</td>
               <td>{timeTag(user.createdAt)}</td>
@@ -136,6 +138,13 @@ const UsersList = ({ users }: {
                     className="rw-button rw-button-small rw-button-blue"
                   >
                     view featured images
+                  </Link>
+                  <Link
+                    to={routes.adminMarkers({ page: 1, id: user.id })}
+                    title={"Edit user " + user.id}
+                    className="rw-button rw-button-small rw-button-blue"
+                  >
+                    view custom markers
                   </Link>
                 </nav>
               </td>

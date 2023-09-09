@@ -7,23 +7,25 @@ import UpdateMobileNumberModal from "src/components/Modals/UpdateMobileNumberMod
 import UpdateNameModal from "src/components/Modals/UpdateNameModal";
 import UpdateUsernameModal from "src/components/Modals/UpdateUsernameModal";
 
-import type {
-  FindVendorAccountQuery,
-  FindVendorAccountQueryVariables,
-  UpdateUsernameMutation,
-  UpdateUsernameMutationVariables,
-  UpdateNameMutation,
-  UpdateNameMutationVariables,
-  UpdateMobileNumberMutation,
-  UpdateMobileNumberMutationVariables,
-  UpdateUserPasswordMutation,
-  UpdateUserPasswordMutationVariables,
-  DeleteAccountMutation,
-  DeleteAccountMutationVariables,
-  UploadImageMutation,
-  UploadImageMutationVariables,
-  DeleteImageMutation,
-  DeleteImageMutationVariables
+import {
+  type FindVendorAccountQuery,
+  type FindVendorAccountQueryVariables,
+  type UpdateUsernameMutation,
+  type UpdateUsernameMutationVariables,
+  type UpdateNameMutation,
+  type UpdateNameMutationVariables,
+  type UpdateMobileNumberMutation,
+  type UpdateMobileNumberMutationVariables,
+  type UpdateUserPasswordMutation,
+  type UpdateUserPasswordMutationVariables,
+  type DeleteAccountMutation,
+  type DeleteAccountMutationVariables,
+  type UploadImageMutation,
+  type UploadImageMutationVariables,
+  type DeleteImageMutation,
+  type DeleteImageMutationVariables,
+  DeleteMarkerMutation,
+  DeleteMarkerMutationVariables
 } from "types/graphql";
 import type { CellSuccessProps, CellFailureProps } from "@redwoodjs/web";
 import { Form, FormError } from "@redwoodjs/forms";
@@ -34,6 +36,7 @@ import { PlusIcon, XMarkIcon } from "@heroicons/react/20/solid";
 import FeaturedImage from "../FeaturedImage/FeaturedImage";
 import Button from "../Button/Button";
 import { DELETE_IMAGE_MUTATION } from "../Admin/Image/Image";
+import { DELETE_MARKER_MUTATION } from "../Admin/Marker/Marker/Marker";
 
 export const QUERY = gql`
   query FindVendorAccountQuery($userId: Int!) {
@@ -46,6 +49,10 @@ export const QUERY = gql`
       featuredImages {
         id
         title
+        url
+      },
+      Markers {
+        id
         url
       }
     }
@@ -133,7 +140,7 @@ export const Success = ({
 
   const [uploadImage, { loading: imageUploading, error: imageUploadError }] = useMutation<UploadImageMutation, UploadImageMutationVariables>(UPLOAD_IMAGE_MUTATION);
   const [deleteImage, { loading: imageDeleteLoading }] = useMutation<DeleteImageMutation, DeleteImageMutationVariables>(DELETE_IMAGE_MUTATION);
-
+  const [deleteMarker, { loading: deleteMarkerLoading}] = useMutation<DeleteMarkerMutation, DeleteMarkerMutationVariables>(DELETE_MARKER_MUTATION);
   const [isUpdateUsernameModalOpen, setIsUpdateUsernameModalOpen] = useState(false);
   const [isUpdateNameModalOpen, setIsUpdateNameModalOpen] = useState(false);
   const [isUpdateMobileNumberModalOpen, setIsUpdateMobileNumberModalOpen] = useState(false);
@@ -288,6 +295,7 @@ export const Success = ({
               fields: {
                 featuredImages: (existingImagesRefs = [], { readField }) => {
                   const newImageRef = cache.writeFragment({
+                    id: newImage.__typename + ":" + newImage.id,
                     data: newImage,
                     fragment: gql`
                       fragment NewImage on Image {
@@ -346,75 +354,147 @@ export const Success = ({
     }
   }
 
+  const deleteMarkerHandler = async (id: number) => {
+    try {
+      if (confirm('Are you sure you want to delete this marker?') === true) {
+        deleteMarker({
+          variables: {
+            id
+          },
+          onCompleted: () => {
+            toast.success('Marker deleted successfully');
+          },
+          onError: (err) => {
+            console.log(err);
+            toast.error('Marker delete failed');
+          },
+          update: (cache, { data }) => {
+            const deletedMarkerId = data?.softDeleteMarker?.id
+            console.log(data)
+            if (deletedMarkerId) {
+              cache.modify({
+                id: cache.identify({ __typename: 'User', id: vendorAccount.id }), // Identify the vendor object
+                fields: {
+                  Markers: (existingMarkersRefs, { readField }) => {
+                    return existingMarkersRefs.filter(
+                      (markerRef) => deletedMarkerId !== readField('id', markerRef)
+                    )
+                  },
+                },
+              })
+            }
+          }
+        });
+      }
+    } catch (err) {
+      toast.error(err.message)
+    }
+  }
+
 
 
 
   return (
-    <div className="space-y-8">
-      <h2 className="text-2xl font-bold">Your Profile</h2>
+    <div className="">
+      <section className="space-y-8">
+        <h2 className="text-2xl font-bold">Your Profile</h2>
 
-      <div className="flex space-x-8 justify-between items-center mt-4">
-        <div>
-          <h2 className="text-sm">Username</h2>
-          <p className="text-lg font-semibold">{vendorAccount?.username}</p>
+        <div className="flex space-x-8 justify-between items-center mt-4">
+          <div>
+            <h2 className="text-sm">Username</h2>
+            <p className="text-lg font-semibold">{vendorAccount?.username}</p>
+          </div>
+          <Button
+            variant="secondary"
+            onClick={() => setIsUpdateUsernameModalOpen(true)}>
+            Edit
+          </Button>
+          <UpdateUsernameModal
+            isOpen={isUpdateUsernameModalOpen}
+            onClose={() => setIsUpdateUsernameModalOpen(false)}
+            onSubmit={onSubmitUsername}
+          />
         </div>
-        <Button
-          variant="secondary"
-          onClick={() => setIsUpdateUsernameModalOpen(true)}>
-          Edit
-        </Button>
-        <UpdateUsernameModal
-          isOpen={isUpdateUsernameModalOpen}
-          onClose={() => setIsUpdateUsernameModalOpen(false)}
-          onSubmit={onSubmitUsername}
-        />
-      </div>
-      <div
-        className="flex space-x-8 justify-between items-center"
-      >
-        <div>
-          <h2 className="text-sm">Fullname</h2>
-          <p className="text-lg font-semibold">{vendorAccount?.name}</p>
-        </div>
-        <Button
-          variant="secondary"
-          onClick={() => setIsUpdateNameModalOpen(true)}
+        <div
+          className="flex space-x-8 justify-between items-center"
         >
-          Edit
-        </Button>
-        <UpdateNameModal
-          isOpen={isUpdateNameModalOpen}
-          onClose={() => setIsUpdateNameModalOpen(false)}
-          onSubmit={onSubmitName}
-        />
-      </div>
-      <div
-        className="flex space-x-8 justify-between items-center"
-      >
-        <div>
-          <h2 className="text-sm">Mobile Number</h2>
-          <p className="text-lg font-semibold">{vendorAccount?.mobileNumber}</p>
+          <div>
+            <h2 className="text-sm">Fullname</h2>
+            <p className="text-lg font-semibold">{vendorAccount?.name}</p>
+          </div>
+          <Button
+            variant="secondary"
+            onClick={() => setIsUpdateNameModalOpen(true)}
+          >
+            Edit
+          </Button>
+          <UpdateNameModal
+            isOpen={isUpdateNameModalOpen}
+            onClose={() => setIsUpdateNameModalOpen(false)}
+            onSubmit={onSubmitName}
+          />
         </div>
-        <Button
-          variant="secondary"
-          onClick={() => setIsUpdateMobileNumberModalOpen(true)}
+        <div
+          className="flex space-x-8 justify-between items-center"
         >
-          Edit
-        </Button>
-        <UpdateMobileNumberModal
-          defaultValue={vendorAccount?.mobileNumber}
-          isOpen={isUpdateMobileNumberModalOpen}
-          onClose={() => setIsUpdateMobileNumberModalOpen(false)}
-          onSubmit={onSubmitMobileNumber}
-        />
-      </div>
+          <div>
+            <h2 className="text-sm">Mobile Number</h2>
+            <p className="text-lg font-semibold">{vendorAccount?.mobileNumber}</p>
+          </div>
+          <Button
+            variant="secondary"
+            onClick={() => setIsUpdateMobileNumberModalOpen(true)}
+          >
+            Edit
+          </Button>
+          <UpdateMobileNumberModal
+            defaultValue={vendorAccount?.mobileNumber}
+            isOpen={isUpdateMobileNumberModalOpen}
+            onClose={() => setIsUpdateMobileNumberModalOpen(false)}
+            onSubmit={onSubmitMobileNumber}
+          />
+        </div>
 
-      <div>
+      </section>
+
+      <section className="mt-16">
+        <div className="flex flex-col justify-between space-y-2 mb-4">
+          <div>
+            <h2 className="font-semibold mb-2">Your custom markers</h2>
+          </div>
+        </div>
+        { vendorAccount?.Markers.length === 0 &&
+          <div>
+            <p className="mt-4 text-sm">You have not uploaded any custom markers. Go to the home page and click your marker icon and tapping on the plus icon.</p>
+            <Button variant="outline" className="text-sm mt-4">
+              <Link to={routes.home()}>Go to Homepage &gt;</Link>
+            </Button>
+          </div>
+        }
+        <div className="flex space-x-8 mt-8">
+          {vendorAccount?.Markers?.map((image) => (
+            <div key={image.id} className="relative">
+              <div className="absolute -top-8 -right-2">
+                <Button
+                  variant="danger"
+                  onClick={() => deleteMarkerHandler(image.id)}
+                  disabled={deleteMarkerLoading}
+                >
+                  <XMarkIcon className="w-2 h-2"/>
+                </Button>
+              </div>
+              <img src={image.url} alt="marker icon" className='object-scale-down w-12 h-12'/>
+            </div>
+          ))}
+        </div>
+      </section>
+
+      <section className="mt-16">
         <div className="flex flex-col justify-between space-y-2 mb-4">
           <div>
             <h2 className="font-semibold mb-2">Featured Images</h2>
-            <p>This shows up in the popover when user clicks on your map marker</p>
-            <p>Note: You can only upload up to two photos</p>
+            <p className="text-sm">{'('}This shows up in the popover when user clicks on your map marker{')'}</p>
+            <p className="text-sm">Note: You can only upload up to two photos</p>
           </div>
           <Button
             icon={<PlusIcon />}
@@ -425,7 +505,7 @@ export const Success = ({
             Add Featured Image
           </Button>
         </div>
-        <div className="flex space-x-8">
+        <div className="flex flex-col space-x-8 sm:flex-row">
           {vendorAccount?.featuredImages?.map((image) => (
             <FeaturedImage
               key={image.id}
@@ -445,11 +525,11 @@ export const Success = ({
           />
         }
         </div>
-      </div>
+      </section>
 
       <hr />
 
-      <div>
+      <section className="mt-16">
         <h2 className="mb-4 font-semibold">Account Password</h2>
         <Button
           variant="secondary"
@@ -462,11 +542,11 @@ export const Success = ({
           onClose={() => setIsChangePasswordModalOpen(false)}
           onSubmit={updateUserPasswordHandler}
         />
-      </div>
+      </section>
 
-      <hr/>
+      <hr className="mt-16"/>
 
-      <div className="p-4 border border-dashed border-red-700 rounded-lg">
+      <section className="p-4 border border-dashed border-red-700 rounded-lg mt-16">
         <h2 className="mb-4 font-semibold text-red-700">Danger Zone</h2>
         <Button
           variant="danger"
@@ -479,7 +559,7 @@ export const Success = ({
           onClose={() => setIsDeleteAccountModalOpen(false)}
           onSubmit={onDeleteAccount}
         />
-      </div>
+      </section>
     </div>
   );
 };

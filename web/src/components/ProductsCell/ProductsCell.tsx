@@ -53,6 +53,7 @@ export const Success = ({
                     fields: {
                         productsByUser: (existingProductsRefs = [], { readField }) => {
                             const newProductRef = cache.writeFragment({
+                                id: newProduct.__typename+":"+newProduct.id,
                                 data: newProduct,
                                 fragment: gql`
                                     fragment NewProduct on Product {

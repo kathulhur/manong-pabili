@@ -1,18 +1,15 @@
-import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import '@tomtom-international/web-sdk-maps/dist/maps.css'
 import tt from '@tomtom-international/web-sdk-maps'
-import { timeTag } from "src/lib/formatters";
 import { useApolloClient } from '@apollo/client'
 import { MetaTags, useQuery } from '@redwoodjs/web'
 import { MapVendorsQuery, VendorProductsQuery, User } from 'types/graphql'
 import useCoordinates from 'src/hooks/useCoordinates'
 import usePusher from 'src/hooks/usePusher'
-import icons from 'src/assets/js/icons'
 import Select from 'react-select'
 import Marker from 'src/components/Marker/Marker'
-import { renderToString } from 'react-dom/server'
 import BaseModal from 'src/components/Modals/BaseModal'
-import { XMarkIcon } from '@heroicons/react/20/solid'
+import { QuestionMarkCircleIcon, XMarkIcon } from '@heroicons/react/20/solid'
 
 const MAP_VENDORS_QUERY = gql`
     query MapVendorsQuery {
@@ -24,9 +21,9 @@ const MAP_VENDORS_QUERY = gql`
             latitude
             longitude
             lastLocationUpdate
-            lastLocationUpdate
+            locationBroadcastMode
             locationHidden
-            products {
+            productsOffered {
                 id
                 name
             }
@@ -49,23 +46,6 @@ const VENDOR_PRODUCTS_QUERY = gql`
         }
     }
 `
-
-
-
-export function buildPopupHtml({ name, products }) {
-    return(
-    <div>
-        <h1 className='font-bold text-lg'>{name}</h1>
-        <ul>
-            {products.map((product) =>
-                <li key={product.id} className='text-sm'>{product.name}</li>
-            )}
-        </ul>
-        {/* <button onClick={() => console.log('hey')}>View Vendor</button> */}
-    </div>
-  )
-}
-
 
 
 function removeSpacesAndHyphens(str: string) {
@@ -106,17 +86,19 @@ export const formatDatetime = (dateTime?: string) => {
 const MapPage = () => {
     const apolloClient = useApolloClient()
     const coordinates = useCoordinates();
-    const [map, setMap] = useState<tt.Map>(null)
-    const { data }= useQuery<MapVendorsQuery>(MAP_VENDORS_QUERY)
-    const { data: vendorProductsQueryData  }= useQuery<VendorProductsQuery>(VENDOR_PRODUCTS_QUERY)
-    const [vendors, setVendors] = useState<MapVendorsQuery['mapVendors']>([])
+
     const [pusher, channel] = usePusher();
-    const [products, setProducts] = useState<VendorProductsQuery['vendorProducts']>([])
     const mapRef = useRef(null)
+    const [map, setMap] = useState<tt.Map>(null)
+
+    const { data }= useQuery<MapVendorsQuery>(MAP_VENDORS_QUERY)
+    const [vendors, setVendors] = useState<MapVendorsQuery['mapVendors']>([])
+
+    const { data: vendorProductsQueryData  }= useQuery<VendorProductsQuery>(VENDOR_PRODUCTS_QUERY)
+    const [products, setProducts] = useState<VendorProductsQuery['vendorProducts']>([])
+
     const [selectedVendor, setSelectedVendor] = useState<MapVendorsQuery['mapVendors'][number]>(null)
-
-    // filter vendors by selected product
-
+    const [isLegendModalOpen, setIsLegendModalOpen] = useState(false)
 
     // zoom to current location
     useEffect(() => {
@@ -132,6 +114,8 @@ const MapPage = () => {
         if (pusher && channel) {
             channel.bind('location-broadcast', ({vendor}: {vendor: MapVendorsQuery['mapVendors'][number]}) => {
                 // check if marker already exists, if it does, update it, else add it as a new one
+                console.log('vendors', vendors)
+                console.log('vendor', vendor)
                 setVendors(vendors.filter((v) => v.id !== vendor.id).concat(vendor))
 
             })
@@ -150,7 +134,7 @@ const MapPage = () => {
             }
         }
 
-    }, [pusher, channel, map])
+    }, [pusher, channel, map, vendors])
 
 
 
@@ -161,7 +145,6 @@ const MapPage = () => {
         const map = tt.map({
             key: process.env.TOMTOM_API_KEY,
             container: 'map',
-            // center: [121.004995, 14.610395],
             zoom: 15,
         })
         setMap(map)
@@ -176,7 +159,7 @@ const MapPage = () => {
     // set vendors once the data is ready
     useEffect(() => {
         if (data) {
-            setVendors([...data.mapVendors])
+            setVendors([...(structuredClone(data.mapVendors))])
         }
     }
     , [data])
@@ -191,7 +174,7 @@ const MapPage = () => {
     const searchProductHandler = (selectedProduct: {value: number, label: string}) => {
         if (selectedProduct) {
             const filteredVendors = data.mapVendors.filter((vendor) => {
-                return vendor.products.find((product) => searchMatches(product.name, selectedProduct.label))
+                return vendor.productsOffered.find((product) => searchMatches(product.name, selectedProduct.label))
             })
             setVendors(filteredVendors)
         } else {
@@ -200,7 +183,8 @@ const MapPage = () => {
     }
     return (
         <>
-            <MetaTags title="Map" description="Map page" />
+        <MetaTags title="Map" description="Map page" />
+        <div className='flex flex-col h-screen'>
             <Select
                 className='basic-single'
                 classNamePrefix='select'
@@ -215,12 +199,60 @@ const MapPage = () => {
                     })
                 }}
                 options={products.map((product) => ({ value: product.id, label: product.name }))}
-            />
+                />
             <div
                 id="map"
                 ref={mapRef}
-                style={{ width: '100%', height: '100vh' }}
-            ></div>
+                className='w-full h-full'
+                >
+                <BaseModal
+                    isOpen={isLegendModalOpen}
+                    onClose={() => setIsLegendModalOpen(false)}
+                >
+                    <div className='text-right'>
+                        <button onClick={() => setIsLegendModalOpen(false)}>
+                            <XMarkIcon className='w-6 h-6' />
+                        </button>
+
+                    </div>
+                    <BaseModal.Title>
+                        Legends
+                    </BaseModal.Title>
+                    <div>
+                        <div>
+                            <div className='flex items-center space-x-4'>
+                                <span className="relative flex">
+                                    <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-gray-400 opacity-75"></span>
+                                    <span className="relative inline-flex rounded-full h-3 w-3 bg-gray-400"></span>
+                                </span>
+                                <div>
+                                    <p className='text-sm'>Gray ping indicates that the vendor has <span className='font-bold'>Static</span> location broadcast mode. This means that it is only updated personally by the vendor and the vendor might not be exactly on the location indicated.</p>
+                                    <p className='text-sm mt-2'>{'('}Kindly check the <span className='font-bold'>last location update</span> below the modal that shows up after clicking on the vendor marker{')'}</p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div className='mt-8'>
+                            <div className='flex items-center space-x-4'>
+                                <span className="relative flex">
+                                    <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-red-400 opacity-75"></span>
+                                    <span className="relative inline-flex rounded-full h-3 w-3 bg-red-400"></span>
+                                </span>
+                                <p className='text-sm'>Red ping indicates that the vendor is on <span className='font-bold'>Realtime</span> location broadcast mode. In realtime mode, vendor location is broadcasted every 5 seconds.</p>
+                            </div>
+                        </div>
+
+                    </div>
+                </BaseModal>
+                <div className='absolute z-10 bottom-5 right-5'>
+                    <button
+                        className='bg-green-400 text-white rounded-full p-2 shadow-md'
+                        onClick={() => setIsLegendModalOpen(true)}
+                        >
+                        <QuestionMarkCircleIcon className='w-6 h-6' />
+                    </button>
+                </div>
+            </div>
             <div>
             { vendors.map((vendor) => (
                 <Marker onClick={() => setSelectedVendor(vendor)} key={vendor.id} map={map} vendor={vendor} />
@@ -229,8 +261,8 @@ const MapPage = () => {
             <div>
                 {selectedVendor && (
                     <BaseModal
-                        onClose={() => setSelectedVendor(null)}
-                        isOpen={selectedVendor!= null}
+                    onClose={() => setSelectedVendor(null)}
+                    isOpen={selectedVendor != null}
 
                     >
                         <div id="abcd">
@@ -243,7 +275,7 @@ const MapPage = () => {
                                 <div className='flex flex-col items-center'>
                                     <div
                                         className='flex items-center justify-center rounded-full p-4 w-24 h-24 bg-green-100 hover:bg-green-200'
-                                    >
+                                        >
                                         <img src={selectedVendor?.markerUrl} alt="marker icon"/>
                                     </div>
                                     <h2 className='font-bold text-lg'>{selectedVendor.name}</h2>
@@ -253,14 +285,20 @@ const MapPage = () => {
                             <section className='mb-8'>
 
                             <h3 className='font-bold text-medium'>Available Products</h3>
+                                {selectedVendor && selectedVendor.productsOffered.length === 0 && (
+                                    <p>No available products</p>
+                                )}
                                 <ul className='list-disc pl-4'>
-                                    {selectedVendor.products.map((product) => (
+                                    {selectedVendor.productsOffered.map((product) => (
                                         <li key={product.id}>{product.name}</li>
                                     ))}
                                 </ul>
                             </section>
                             <section className='mb-8'>
                                 <h3 className='font-bold text-medium'>Featured Images</h3>
+                                {selectedVendor && selectedVendor.featuredImages.length === 0 && (
+                                    <p>No featured images</p>
+                                )}
                                 <div className='flex flex-col space-y-4'>
                                     {selectedVendor.featuredImages.map((image) => (
                                         <div key={image.id}>
@@ -279,8 +317,7 @@ const MapPage = () => {
                     </BaseModal>
                 )}
             </div>
-
-            <h1>Let the games begin</h1>
+        </div>
         </>
     )
 }

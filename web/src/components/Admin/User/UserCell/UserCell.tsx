@@ -4,7 +4,7 @@ import type { CellSuccessProps, CellFailureProps } from "@redwoodjs/web";
 
 import User from "src/components/Admin/User/User";
 import { Link, routes } from "@redwoodjs/router";
-
+import LoadingComponent from "src/components/Loading/Loading";
 export const QUERY = gql`
   query FindUserById($id: Int!) {
     user: user(id: $id) {
@@ -34,7 +34,7 @@ export const QUERY = gql`
   }
 `;
 
-export const Loading = () => <div>Loading...</div>;
+export const Loading = () => null;
 
 export const Empty = () => <div>User not found</div>;
 
@@ -45,8 +45,8 @@ export const Failure = ({ error }: CellFailureProps) => (
 export const Success = ({ user }: CellSuccessProps<FindUserById>) => {
 
   return (
-    <>
-      <div className="p-2">
+    <div className="m-8">
+      <div>
         <div className="font-semibold space-x-2">
           <Link to={routes.adminUsers()} className="hover:underline hover:underline-offset-1">
             Users
@@ -57,7 +57,9 @@ export const Success = ({ user }: CellSuccessProps<FindUserById>) => {
           </Link>
         </div>
       </div>
-      <User user={user} />
-    </>
+      <div className="mt-8">
+        <User user={user} />
+      </div>
+    </div>
   );
 };

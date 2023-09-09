@@ -1,5 +1,6 @@
 import { routes } from "@redwoodjs/router";
 import ProductsCell from "src/components/Admin/Product/ProductsCell";
+import FadeTransitionLayout from "src/layouts/FadeTransitionLayout/FadeTransitionLayout";
 
 export interface ProductsPageProps {
   page: number
@@ -7,9 +8,15 @@ export interface ProductsPageProps {
 }
 
 const ProductsPage = ({ page }) => {
-  return <ProductsCell page={page} paginate={(page) => routes.adminProducts({
-    page,
-  })}/>;
+  return (
+    <FadeTransitionLayout>
+      <div>
+        <ProductsCell page={page} paginate={(page) => routes.adminProducts({
+          page,
+        })}/>
+      </div>
+    </FadeTransitionLayout>
+  );
 };
 
 export default ProductsPage;

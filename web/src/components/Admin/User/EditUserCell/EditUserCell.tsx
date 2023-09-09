@@ -4,7 +4,7 @@ import { Link, navigate, routes } from "@redwoodjs/router";
 import type { CellSuccessProps, CellFailureProps } from "@redwoodjs/web";
 import { useMutation } from "@redwoodjs/web";
 import { toast } from "@redwoodjs/web/toast";
-
+import LoadingComponent from "src/components/Loading/Loading";
 import UserForm from "src/components/Admin/User/UserForm";
 
 export const QUERY = gql`
@@ -58,7 +58,7 @@ const UPDATE_USER_MUTATION = gql`
   }
 `;
 
-export const Loading = () => <div>Loading...</div>;
+export const Loading = () => null;
 
 export const Failure = ({ error }: CellFailureProps) => (
   <div className="rw-cell-error">{error?.message}</div>
@@ -80,36 +80,36 @@ export const Success = ({ user }: CellSuccessProps<EditUserById>) => {
   };
 
   return (
-    <>
-    <div className="p-2">
-      <div className="font-semibold space-x-2 items-end">
-        <Link to={routes.adminUsers()} className="hover:underline hover:underline-offset-1">
-          Users
-        </Link>
-        <span>&gt;</span>
-        <Link to={routes.adminUsers({ id: user.id })} className="hover:underline hover:underline-offset-1">
-          Users
-        </Link>
-        <span>&gt;</span>
-        <Link to={routes.adminUser({ id: user.id })} className="hover:underline hover:underline-offset-1">
-          { user.name }
-        </Link>
-        <span>&gt;</span>
-        <Link to={routes.adminEditUser({ id: user.id })} className="hover:underline hover:underline-offset-1">
-          Edit
-        </Link>
+    <div className="m-8">
+      <div>
+        <div className="font-semibold space-x-2 items-end">
+          <Link to={routes.adminUsers()} className="hover:underline hover:underline-offset-1">
+            Users
+          </Link>
+          <span>&gt;</span>
+          <Link to={routes.adminUsers({ id: user.id })} className="hover:underline hover:underline-offset-1">
+            Users
+          </Link>
+          <span>&gt;</span>
+          <Link to={routes.adminUser({ id: user.id })} className="hover:underline hover:underline-offset-1">
+            { user.name }
+          </Link>
+          <span>&gt;</span>
+          <Link to={routes.adminEditUser({ id: user.id })} className="hover:underline hover:underline-offset-1">
+            Edit
+          </Link>
+        </div>
+      </div>
+      <div className="mt-8">
+        <header className="rw-segment-header">
+          <h2 className="rw-heading rw-heading-secondary">
+            Edit User {user?.id}
+          </h2>
+        </header>
+        <div className="rw-segment-main">
+          <UserForm user={user} onSave={onSave} error={error} loading={loading} />
+        </div>
       </div>
     </div>
-    <div className="">
-      <header className="rw-segment-header">
-        <h2 className="rw-heading rw-heading-secondary">
-          Edit User {user?.id}
-        </h2>
-      </header>
-      <div className="rw-segment-main">
-        <UserForm user={user} onSave={onSave} error={error} loading={loading} />
-      </div>
-    </div>
-    </>
   );
 };
