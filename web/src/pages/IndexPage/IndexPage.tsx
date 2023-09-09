@@ -3,7 +3,7 @@ import { MetaTags } from "@redwoodjs/web";
 import { useEffect } from "react";
 import { useAuth } from "src/auth";
 import Button from "src/components/Button/Button";
-
+import tahoVendor from './taho-vendor.jpg'
 const IndexPage = () => {
   const { isAuthenticated, currentUser, loading } = useAuth();
 
@@ -40,7 +40,10 @@ const IndexPage = () => {
         </header>
       </div>
 
-        <section className="relative w-full bg-cover bg-center bg-[url('/img/taho-vendor.jpg')]">
+        <section
+          style={{ backgroundImage: `url(${tahoVendor})` }}
+          className={`relative w-full bg-cover bg-center`}
+        >
           <div className="absolute inset-0 bg-gradient-to-r from-green-300 to-green-400/80"></div>
           <div className='relative max-w-7xl mx-auto px-8 pt-20 pb-32'>
             <h2 className="text-3xl font-bold text-slate-900 mb-8">Missed that taho<br/>vendor?</h2>

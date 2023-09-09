@@ -140,7 +140,7 @@ export const Success = ({
   FindVendorHomepageQuery,
   FindVendorHomepageQueryVariables
 >) => {
-
+    console.log(vendor.markerUrl)
     const [hideVendorLocation] = useMutation<HideVendorLocationMutation, HideVendorLocationMutationVariables>(HIDE_VENDOR_LOCATION_MUTATION);
     const [broadcastLocation, { loading: broadcastingLocation}] = useMutation<BroadcastLocationMutation, BroadcastLocationMutationVariables>(BROADCAST_LOCATION_MUTATION);
     const [updateVendorMarker] = useMutation<UpdateVendorMarkerMutation, UpdateVendorMarkerMutationVariables>(UPDATE_VENDOR_MARKER)

@@ -1,8 +1,7 @@
 import tt from "@tomtom-international/web-sdk-maps";
 import { Popup } from "@tomtom-international/web-sdk-maps";
 import { useEffect } from "react";
-import { FindVendorHomepageQuery, MapVendorsQuery } from "types/graphql";
-import { LocationBroadcastMode } from '@prisma/client'
+import { FindVendorHomepageQuery, LocationBroadcastMode, MapVendorsQuery } from "types/graphql";
 import clsx from "clsx";
 
 export interface CreateMarkerProps {
@@ -58,7 +57,7 @@ interface MarkerProps {
 }
 
 const getMarkerColor = (locationBroadcastMode: FindVendorHomepageQuery['vendor']['locationBroadcastMode']) => {
-    if(locationBroadcastMode === LocationBroadcastMode.REALTIME) {
+    if(locationBroadcastMode === 'REALTIME') {
         return 'red'
     }
 

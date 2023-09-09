@@ -146,6 +146,7 @@ export const handler = async (
             return db.user.create({
                 data: {
                     name: userAttributes?.name,
+                    email: userAttributes?.email,
                     mobileNumber: userAttributes?.mobileNumber,
                     gender: userAttributes?.gender,
                     roles: userAttributes?.roles,

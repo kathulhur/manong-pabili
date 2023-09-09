@@ -16,7 +16,6 @@ const ProductsPage = () => {
             <MetaTags title="Products" description="Products page" />
             <div
                 className='max-w-7xl mx-auto p-8'
-<<<<<<< Updated upstream
             >
                 <Link to={routes.home()}>
                     <Button
@@ -24,10 +23,6 @@ const ProductsPage = () => {
                         icon={<ChevronLeftIcon />}
                     >Go back</Button>
                 </Link>
-=======
-                >
-                <Link to={routes.home()}>&lt; Go back</Link>
->>>>>>> Stashed changes
                 <ProductsCell userId={currentUser?.id} />
 
             </div>
