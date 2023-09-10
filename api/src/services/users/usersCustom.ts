@@ -2,12 +2,14 @@ import type {
   QueryResolvers,
   MutationResolvers,
   UserRelationResolvers,
+  Mutation,
 } from "types/graphql";
 
 import { db } from "src/lib/db";
 import { hashPassword } from "@redwoodjs/auth-dbauth-api";
-import { validate, validateWith, validateWithSync } from "@redwoodjs/api";
+import { validate, validateWith, validateWithSync, validateUniqueness } from "@redwoodjs/api";
 import { pusher } from "src/functions/broadcast/broadcast";
+import { sendVerificationEmail } from "src/lib/email";
 
 
 export const vendor: QueryResolvers["vendor"] = ({ id }) => {
@@ -46,11 +48,18 @@ export const userPage: QueryResolvers["userPage"] = async ({ page = 1 }) => {
   const offset = (page - 1) * USERS_PER_PAGE;
 
   const users = await db.user.findMany({
+    where: {
+      deleted: false,
+    },
     take: USERS_PER_PAGE,
     skip: offset,
   })
 
-  const count = await db.user.count()
+  const count = await db.user.count({
+    where: {
+      deleted: false,
+    }
+  })
   return {
     users,
     count
@@ -117,6 +126,27 @@ export const updateUsername: MutationResolvers["updateUsername"] = ({ id, input 
     },
     where: { id },
   });
+}
+
+
+export const updateEmail: MutationResolvers["updateEmail"] = ({ id, input }) => {
+  const { updatedEmail } = input;
+  validate(updatedEmail, 'Email', {
+    presence: true,
+    email: true,
+  })
+
+  return validateUniqueness('user', {
+      email: updatedEmail,
+    }, {
+      message: "Email already taken"
+    }, (db) => db.user.update({
+      data: {
+        email: updatedEmail,
+      },
+      where: { id },
+    })
+  )
 }
 
 export const updateMobileNumber: MutationResolvers["updateMobileNumber"] = ({ id, input }) => {
@@ -292,7 +322,10 @@ export const hideVendorLocation: MutationResolvers['hideVendorLocation'] = async
   })
 
   pusher.trigger(channel, event, {
-    vendor: user,
+    vendor: {
+      __typename: "User",
+      ...user
+    },
   })
 
 
@@ -336,7 +369,10 @@ export const broadcastLocation: MutationResolvers['broadcastLocation']
     })
 
     pusher.trigger(channel, event, {
-      vendor: user,
+      vendor: {
+        __typename: "User",
+        ...user
+      },
     })
 
     return user
@@ -366,3 +402,29 @@ export const customCreateUser: MutationResolvers["customCreateUser"] = ({ input 
     }
   });
 };
+
+
+export const verifyUser: MutationResolvers["verifyUser"] = async ({ id }) => {
+
+  const user = await db.user.findUnique({ where: { id } });
+  if (!user) {
+    throw "User not found"
+  }
+
+  if (user.verified) {
+    throw "User already verified"
+  }
+
+  const updatedUser = await db.user.update({
+    where: { id },
+    data: {
+      verified: true
+    }
+  })
+
+  await sendVerificationEmail(user.email)
+
+  return updatedUser
+
+
+}

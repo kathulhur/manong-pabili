@@ -30,11 +30,17 @@ export const markerPage: QueryResolvers["markerPage"] = async ({
   const markers = await db.marker.findMany({
     take: MARKERS_PER_PAGE,
     skip: offset,
-    where: {...filteredFilter}
+    where: {
+      ...filteredFilter,
+      deleted: false,
+    }
   });
 
   const count = await db.marker.count({
-    where: {...filteredFilter}
+    where: {
+      ...filteredFilter,
+      deleted: false,
+    }
   });
   return {
     markers: markers,

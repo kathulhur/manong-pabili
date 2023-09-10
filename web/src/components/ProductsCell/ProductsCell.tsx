@@ -40,7 +40,6 @@ export const Success = ({
     const [createProduct] = useMutation<CreateProductMutation, CreateProductMutationVariables>(CREATE_PRODUCT_MUTATION, {
         onError: (error) => {
             toast.error('Error creating product')
-            console.log(error)
         },
         onCompleted: () => {
             toast.success('Product created')
@@ -79,7 +78,7 @@ export const Success = ({
                 }
             });
         } catch (error) {
-            console.log(error)
+
         }
     }
     return (

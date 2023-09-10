@@ -21,11 +21,17 @@ export const imagePage: QueryResolvers["imagePage"] = async ({
   const images = await db.image.findMany({
     take: IMAGES_PER_PAGE,
     skip: offset,
-    where: {...filteredFilter}
+    where: {
+      ...filteredFilter,
+      deleted: false,
+    }
   });
 
   const count = await db.image.count({
-    where: {...filteredFilter}
+    where: {
+      ...filteredFilter,
+      deleted: false,
+    }
   });
   return {
     images,

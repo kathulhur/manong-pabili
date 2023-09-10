@@ -3,7 +3,7 @@ import '@tomtom-international/web-sdk-maps/dist/maps.css'
 import tt from '@tomtom-international/web-sdk-maps'
 import { useApolloClient } from '@apollo/client'
 import { MetaTags, useQuery } from '@redwoodjs/web'
-import { MapVendorsQuery, VendorProductsQuery, User } from 'types/graphql'
+import { MapVendorsQuery, VendorProductsQuery, User, Product } from 'types/graphql'
 import useCoordinates from 'src/hooks/useCoordinates'
 import usePusher from 'src/hooks/usePusher'
 import Select from 'react-select'
@@ -11,9 +11,11 @@ import Marker from 'src/components/Marker/Marker'
 import BaseModal from 'src/components/Modals/BaseModal'
 import { QuestionMarkCircleIcon, XMarkIcon } from '@heroicons/react/20/solid'
 
+
 const MAP_VENDORS_QUERY = gql`
     query MapVendorsQuery {
         mapVendors {
+            __typename
             id
             name
             username
@@ -114,23 +116,96 @@ const MapPage = () => {
         if (pusher && channel) {
             channel.bind('location-broadcast', ({vendor}: {vendor: MapVendorsQuery['mapVendors'][number]}) => {
                 // check if marker already exists, if it does, update it, else add it as a new one
-                console.log('vendors', vendors)
-                console.log('vendor', vendor)
-                setVendors(vendors.filter((v) => v.id !== vendor.id).concat(vendor))
+                apolloClient.cache.updateQuery(
+                    { query: MAP_VENDORS_QUERY },
+                    (data) => {
+                        const vendorIndex = data.mapVendors.findIndex((v) => v.id === vendor.id)
+                        if (vendorIndex !== -1) {
+                            return {
+                                mapVendors: data.mapVendors.map((v) => {
+                                    if (v.id === vendor.id) {
+                                        return vendor
+                                    }
+                                    return v
+                                })
+                            }
+                        } else {
+                            return {
+                                mapVendors: data.mapVendors.concat({...vendor})
+                            }
+                        }
+                    }
+                )
 
             })
 
             channel.bind('hide-location', ({vendor}: {vendor: User}) => {
                 // remove marker
-                setVendors(vendors.filter((v) => v.id !== vendor.id))
+                apolloClient.cache.updateQuery(
+                    { query: MAP_VENDORS_QUERY },
+                    (data) => ({
+                        mapVendors: data.mapVendors.filter((v) => v.id !== vendor.id)
+                    }),
+
+                )
 
             })
+
+            channel.bind('product-update', ({ updatedProduct }: {updatedProduct: Product}) => {
+                if (updatedProduct.availability === true) {
+                    apolloClient.cache.updateQuery(
+                        { query: MAP_VENDORS_QUERY },
+                        (data) => ({
+                            mapVendors: data.mapVendors.map((vendor) => {
+                                if(vendor.id !== updatedProduct.userId) return vendor
+                                return {
+                                    ...vendor,
+                                    productsOffered: vendor.productsOffered.filter((p) => p.id !== updatedProduct.id).concat({...updatedProduct})
+                                }
+                            })
+                        })
+                    )
+                } else {
+                    apolloClient.cache.updateQuery(
+                        { query: MAP_VENDORS_QUERY },
+                        (data) => ({
+                            mapVendors: data.mapVendors.map((vendor) => {
+                                if(vendor.id !== updatedProduct.userId) return vendor
+                                return {
+                                    ...vendor,
+                                    productsOffered: vendor.productsOffered.filter((p) => p.id !== updatedProduct.id)
+                                }
+                            })
+                        })
+                    )
+                }
+
+
+            })
+
+            channel.bind('product-delete', ({ deletedProduct }: {deletedProduct: Product}) => {
+                apolloClient.cache.updateQuery(
+                    { query: MAP_VENDORS_QUERY },
+                    (data) => ({
+                        mapVendors: data.mapVendors.map((vendor) => {
+                            if(vendor.id !== deletedProduct.userId) return vendor
+                            return {
+                                ...vendor,
+                                productsOffered: vendor.productsOffered.filter((p) => p.id !== deletedProduct.id)
+                            }
+                        })
+                    })
+                )
+            })
+
         }
 
         return () => {
             if(pusher && channel) {
                 channel.unbind("location-broadcast")
                 channel.unbind("hide-location")
+                channel.unbind("product-update")
+                channel.unbind("product-delete")
             }
         }
 
@@ -160,6 +235,9 @@ const MapPage = () => {
     useEffect(() => {
         if (data) {
             setVendors([...(structuredClone(data.mapVendors))])
+            if (selectedVendor) {
+                setSelectedVendor(data.mapVendors.find((vendor) => vendor.id === selectedVendor.id))
+            }
         }
     }
     , [data])
@@ -173,12 +251,10 @@ const MapPage = () => {
     // handle product search; filter vendors by selected product
     const searchProductHandler = (selectedProduct: {value: number, label: string}) => {
         if (selectedProduct) {
-            const filteredVendors = data.mapVendors.filter((vendor) => {
-                return vendor.productsOffered.find((product) => searchMatches(product.name, selectedProduct.label))
-            })
-            setVendors(filteredVendors)
+            const filteredVendors = data.mapVendors.filter((vendor) => searchMatches(selectedProduct.label, vendor.productsOffered.map((product) => product.name).join(' ')))
+            setVendors(structuredClone(filteredVendors))
         } else {
-            setVendors(data.mapVendors)
+            setVendors(structuredClone(data.mapVendors))
         }
     }
     return (

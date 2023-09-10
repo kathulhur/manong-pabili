@@ -20,8 +20,8 @@ const ProductsList = ({ products }: { products: FindProducts['productPage']['pro
     onError: (error) => {
       toast.error(error.message);
     },
-    update: (cache, { data: deleteProduct }) => {
-      const deletedProductId = deleteProduct?.deleteProduct?.id;
+    update: (cache, { data: { softDeleteProduct } }) => {
+      const deletedProductId = softDeleteProduct?.id;
       if (deletedProductId) {
         cache.modify({
           fields: {

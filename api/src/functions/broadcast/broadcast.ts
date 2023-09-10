@@ -54,7 +54,6 @@ export const handler = async (event: APIGatewayEvent, _context: Context) => {
             vendor,
         })
 
-        console.log(channel, eventName, vendor)
 
         return {
             statusCode: 200,

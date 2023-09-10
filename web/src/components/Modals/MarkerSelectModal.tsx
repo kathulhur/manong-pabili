@@ -17,6 +17,7 @@ import { PlusIcon } from "@heroicons/react/20/solid"
 import CustomMarkerUploadModal from "./CustomMarkerUploadModal"
 import clsx from "clsx"
 import { useMutation, useQuery } from "@redwoodjs/web"
+import { toast } from "@redwoodjs/web/dist/toast"
 
 
 const UPLOAD_MARKER_MUTATION = gql`
@@ -56,11 +57,7 @@ const MarkerSelectModal = ({
     }
   })
   const [isUploadCustomMarkerModalOpen, setIsUploadCustomMarkerModalOpen] = useState(false)
-  const [uploadMarker, { loading: uploadMarkerLoading, error }] = useMutation<UploadMarkerMutation, UploadMarkerMutationVariables>(UPLOAD_MARKER_MUTATION, {
-    onCompleted: (data) => {
-      console.log(data)
-    }
-  })
+  const [uploadMarker, { loading: uploadMarkerLoading, error }] = useMutation<UploadMarkerMutation, UploadMarkerMutationVariables>(UPLOAD_MARKER_MUTATION)
 
   const uploadMarkerHandler = (url: string) => {
     try {
@@ -70,6 +67,9 @@ const MarkerSelectModal = ({
             url: url,
             userId: currentUser?.id
           }
+        },
+        onCompleted: () => {
+          toast.success('Marker uploaded')
         },
         update: (cache, { data }) => {
           const newMarker = data?.createMarker
@@ -86,7 +86,7 @@ const MarkerSelectModal = ({
         }
       })
     } catch (e) {
-      console.log(e)
+
     }
   }
 

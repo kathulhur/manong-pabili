@@ -35,7 +35,6 @@ export const QUERY = gql`
 export const Loading = () => null;
 
 export const Empty = () => {
-  console.log('empty')
   return (
     <div className="rw-text-center">
       {"No products yet. "}

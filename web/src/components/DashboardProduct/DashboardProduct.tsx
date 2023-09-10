@@ -26,7 +26,6 @@ const DashboardProduct = ({
     const [updateProduct] = useMutation(UPDATE_PRODUCT_MUTATION, {
         onError: (error) => {
             toast.error('Error updating product availability')
-            console.log(error)
         },
         onCompleted: () => {
             toast.success('Product availability updated')
@@ -49,7 +48,6 @@ const DashboardProduct = ({
             updateProductAvailability(product.id, product.availability)
         } catch (error) {
             alert('Error updating product availability')
-            console.log(error)
         }
     }
 

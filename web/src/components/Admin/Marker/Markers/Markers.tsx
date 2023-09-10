@@ -19,11 +19,22 @@ const MarkersList = ({ markers }: {
     onError: (error) => {
       toast.error(error.message);
     },
-    // This refetches the query on the list page. Read more about other ways to
-    // update the cache over here:
-    // https://www.apollographql.com/docs/react/data/mutations/#making-all-other-cache-updates
-    refetchQueries: [{ query: QUERY }],
-    awaitRefetchQueries: true,
+    update: (cache, { data: { softDeleteMarker } }) => {
+      const deletedMarkerId = softDeleteMarker?.id;
+      cache.modify({
+        fields: {
+          markerPage: (existingMarkerPage: FindMarkers['markerPage'], { readField }): FindMarkers['markerPage'] => {
+            return ({
+              ...existingMarkerPage,
+              markers: existingMarkerPage.markers.filter(
+                (marker) => deletedMarkerId !== readField("id", marker),
+              ),
+              count: existingMarkerPage.count - 1,
+            });
+          },
+        },
+      });
+    }
   });
 
   const onDeleteClick = (id: DeleteMarkerMutationVariables["id"]) => {

@@ -5,6 +5,7 @@ import type {
 } from 'types/graphql'
 
 import { db } from 'src/lib/db'
+import { pusher } from 'src/functions/broadcast/broadcast'
 
 export const productsByUser: QueryResolvers['productsByUser'] = ({
   userId,
@@ -22,6 +23,7 @@ export const vendorProducts: QueryResolvers['vendorProducts'] = () => {
   return db.product.findMany({
       where: {
         availability: true,
+        deleted: false,
         user: {
           deleted: false,
           roles: {
@@ -31,7 +33,7 @@ export const vendorProducts: QueryResolvers['vendorProducts'] = () => {
           locationHidden: false
         }
       },
-      orderBy: { id: 'desc' },
+      orderBy: { id: 'asc' },
   })
 }
 
@@ -50,11 +52,17 @@ export const productPage: QueryResolvers['productPage'] = async ({
   const products = await db.product.findMany({
     take: 5,
     skip: offset,
-    where: {...filteredFilter}
+    where: {
+      ...filteredFilter,
+      deleted: false,
+    }
   })
 
   const count = await db.product.count({
-    where: {...filteredFilter}
+    where: {
+      ...filteredFilter,
+      deleted: false,
+    }
   })
   return {
     products,
@@ -62,12 +70,23 @@ export const productPage: QueryResolvers['productPage'] = async ({
   }
 }
 
-export const softDeleteProduct: MutationResolvers["softDeleteProduct"] = ({ id }) => {
-  return db.product.update({
+export const softDeleteProduct: MutationResolvers["softDeleteProduct"] = async ({ id }) => {
+
+
+  const deletedProduct = await db.product.update({
     where: { id },
     data: {
       deleted: true,
       deletedAt: new Date()
     }
   });
+
+  pusher.trigger(process.env.PUSHER_CHANNEL, "product-delete", {
+    deletedProduct: {
+      __typename: "Product",
+      ...deletedProduct,
+    }
+  });
+
+  return deletedProduct
 };

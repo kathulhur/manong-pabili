@@ -9,6 +9,7 @@ import {
     FieldError,
     Submit,
     RadioField,
+    EmailField,
 } from '@redwoodjs/forms'
 import { Link, navigate, routes } from '@redwoodjs/router'
 import { MetaTags } from '@redwoodjs/web'
@@ -36,13 +37,13 @@ const SignupPage = () => {
         try {
             const response = await signUp({
                 name: data.name,
+                email: data.email,
                 mobileNumber: data.mobileNumber,
                 roles: "VENDOR",
                 gender: data.gender,
                 username: data.username,
                 password: data.password,
             })
-
             if (response.message) {
                 toast(response.message)
             } else if (response.error) {
@@ -64,7 +65,7 @@ const SignupPage = () => {
                     toastOptions={{ className: 'rw-toast', duration: 6000 }}
                 />
                 <div className="rw-scaffold rw-login-container">
-                    <div className="rw-segment">
+                    <div className="mt-12 p-4">
                         <header>
                             <h1 className='mb-4 font-bold text-xl text-green-700 text-center'>Manong Pabili</h1>
                             <h2 className="font-semibold">Sign up</h2>
@@ -99,8 +100,31 @@ const SignupPage = () => {
                                             className="rw-field-error"
                                         />
 
+                                        {/* Email */}
+                                        <Label
+                                            name="email"
+                                            className="rw-label"
+                                            errorClassName="rw-label rw-label-error"
+                                        >Email</Label>
+                                        <EmailField
+                                            name="email"
+                                            className="rw-input"
+                                            errorClassName="rw-input rw-input-error"
+                                            ref={nameRef}
+                                            validation={{
+                                                required: {
+                                                    value: true,
+                                                    message: 'email is required',
+                                                },
+                                            }}
+                                        />
+                                        <FieldError
+                                            name="email"
+                                            className="rw-field-error"
+                                        />
+
                                         {/* Gender */}
-                                        <fieldset>
+                                        <fieldset className='mt-4'>
                                             <legend className='rw-label'>Gender</legend>
                                             <div className='flex items-center'>
                                                 <RadioField
