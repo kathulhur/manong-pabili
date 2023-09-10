@@ -57,7 +57,7 @@ const IndexPage = () => {
             <h2 className="text-3xl font-bold text-slate-900 mb-8">Missed that taho<br/>vendor?</h2>
             <p className="text-slate-700 mb-4">Don't worry, manong could be<br/>nearby.</p>
             <Button className="px-4 py-3">
-              See moving vendors
+              View vendors
               <ChevronDoubleRightIcon className="w-4"/>
             </Button>
           </div>
