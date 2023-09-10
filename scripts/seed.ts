@@ -40,53 +40,58 @@ export default async () => {
         // the same algorithm that dbAuth uses internally:
         //
 
-        const products = [
-            {
-                name: 'Product 1',
-                availability: false,
+        const [hashedPassword, salt] = hashPassword('adminpassword');
+        await db.user.create({
+            data: {
+                name: "Administrator",
+                username: "admin",
+                email: `admin@mail.com`,
+                mobileNumber: `09123456789`,
+                roles: "ADMIN",
+                hashedPassword,
+                gender: "Male",
+                salt,
+                verified: true
             },
-            {
-                name: 'Product 2',
-                availability: true,
-            },
-            {
-                name: 'Product 3',
-                availability: true,
-            },
-        ]
+        });
 
-        for (let i = 0; i < 10; i++) {
-            const [hashedPassword, salt] = hashPassword(`password${i}`);
-            const user = await db.user.create({
-                data: {
-                    name: `User ${i}`,
-                    username: `user${i}`,
-                    email: `user${i}@mail.com`,
-                    mobileNumber: `0912345678${i}`,
-                    latitude: 0,
-                    longitude: 0,
-                    roles: i == 0 ? "ADMIN" : "VENDOR",
-                    hashedPassword,
-                    gender: "Male",
-                    salt,
-                    verified: true
-                },
-            });
 
-            for (const product of products) {
-                await db.product.create({
-                    data: {
-                        name: product.name,
-                        availability: product.availability,
-                        user: {
-                            connect: {
-                                id: user.id,
-                            },
-                        },
-                    },
-                });
+
+        const [hashedPassword2, salt2] = hashPassword('password');
+        const vendor = await db.user.create({
+            data: {
+                name: "John Doe",
+                username: "john",
+                email: 'johndoe@gmail.com',
+                mobileNumber: `09123456781`,
+                roles: "VENDOR",
+                hashedPassword: hashedPassword2,
+                gender: "Male",
+                salt: salt2,
+                verified: true
             }
-        }
+        })
+
+        const products = await db.product.createMany({
+            data: [
+                {
+                    name: "Mango Juice",
+                    availability: false,
+                    userId: vendor.id
+                },
+                {
+                    name: "Buko Juice",
+                    availability: true,
+                    userId: vendor.id
+                },
+                {
+                    name: "Pineapple Juice",
+                    availability: true,
+                    userId: vendor.id
+                },
+            ]
+        })
+
     } catch (error) {
         console.warn('Please define your seed data.');
         console.error(error);
