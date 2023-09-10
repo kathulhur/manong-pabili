@@ -25,6 +25,11 @@ const cache =  new InMemoryCache({
                     return incoming;
                 },
             },
+            featuredImages: {
+                merge(existing = [], incoming) {
+                    return incoming;
+                },
+            },
             }
         },
     },

@@ -5,6 +5,7 @@ import type {
 } from "types/graphql";
 
 import { db } from "src/lib/db";
+import { pusher } from "src/functions/broadcast/broadcast";
 
 const IMAGES_PER_PAGE = 5;
 export const imagePage: QueryResolvers["imagePage"] = async ({
@@ -42,7 +43,7 @@ export const imagePage: QueryResolvers["imagePage"] = async ({
 export const softDeleteImage: MutationResolvers["softDeleteImage"] = async ({
   id,
 }) => {
-  const image = await db.image.update({
+  const deletedImage = await db.image.update({
     where: { id },
     data: {
       deleted: true,
@@ -50,5 +51,12 @@ export const softDeleteImage: MutationResolvers["softDeleteImage"] = async ({
     },
   });
 
-  return image;
+  pusher.trigger(process.env.PUSHER_CHANNEL, "image-delete", {
+    deletedImage: {
+      __typename: "Image",
+      ...deletedImage,
+    }
+  });
+
+  return deletedImage;
 }

@@ -3,7 +3,7 @@ import '@tomtom-international/web-sdk-maps/dist/maps.css'
 import tt from '@tomtom-international/web-sdk-maps'
 import { useApolloClient } from '@apollo/client'
 import { MetaTags, useQuery } from '@redwoodjs/web'
-import { MapVendorsQuery, VendorProductsQuery, User, Product } from 'types/graphql'
+import { MapVendorsQuery, VendorProductsQuery, User, Product, Image } from 'types/graphql'
 import useCoordinates from 'src/hooks/useCoordinates'
 import usePusher from 'src/hooks/usePusher'
 import Select from 'react-select'
@@ -35,6 +35,7 @@ const MAP_VENDORS_QUERY = gql`
                 id
                 title
                 url
+                userId
             }
         }
     }
@@ -198,6 +199,35 @@ const MapPage = () => {
                 )
             })
 
+            channel.bind('image-create', ({ newImage }: {newImage: Image}) => {
+                    apolloClient.cache.updateQuery(
+                        { query: MAP_VENDORS_QUERY },
+                        (data) => ({
+                            mapVendors: data.mapVendors.map((vendor) => {
+                                if(vendor.id !== newImage.userId) return vendor
+                                return {
+                                    ...vendor,
+                                    featuredImages: vendor.featuredImages.filter((i) => i.id !== newImage.id).concat({...newImage})
+                                }
+                            })
+                        })
+                    )
+            })
+
+            channel.bind('image-delete', ({ deletedImage }: {deletedImage: Image}) => {
+                apolloClient.cache.updateQuery(
+                    { query: MAP_VENDORS_QUERY },
+                    (data) => ({
+                        mapVendors: data.mapVendors.map((vendor) => {
+                            if(vendor.id !== deletedImage.userId) return vendor
+                            return {
+                                ...vendor,
+                                featuredImages: vendor.featuredImages.filter((i) => i.id !== deletedImage.id)
+                            }
+                        })
+                    })
+                )
+        })
         }
 
         return () => {
@@ -206,6 +236,8 @@ const MapPage = () => {
                 channel.unbind("hide-location")
                 channel.unbind("product-update")
                 channel.unbind("product-delete")
+                channel.unbind("image-create")
+                channel.unbind("image-delete")
             }
         }
 

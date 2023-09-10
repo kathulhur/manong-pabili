@@ -5,6 +5,7 @@ import type {
 } from "types/graphql";
 
 import { db } from "src/lib/db";
+import { pusher } from "src/functions/broadcast/broadcast";
 
 export const images: QueryResolvers["images"] = () => {
   return db.image.findMany();
@@ -16,10 +17,20 @@ export const image: QueryResolvers["image"] = ({ id }) => {
   });
 };
 
-export const createImage: MutationResolvers["createImage"] = ({ input }) => {
-  return db.image.create({
+export const createImage: MutationResolvers["createImage"] = async ({ input }) => {
+
+  const newImage = await db.image.create({
     data: input,
   });
+
+  pusher.trigger(process.env.PUSHER_CHANNEL, "image-create", {
+    newImage: {
+      __typename: "Image",
+      ...newImage,
+    }
+  });
+
+  return newImage
 };
 
 export const updateImage: MutationResolvers["updateImage"] = ({

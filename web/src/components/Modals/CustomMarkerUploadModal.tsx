@@ -48,6 +48,14 @@ const CustomMarkerUploadModal = ({
         }}
       >
         <BaseModal.Title>Custom Marker Icon</BaseModal.Title>
+        <style>
+          {`
+            /* Style for the Filestack picker modal */
+            .fsp-picker--inline {
+              min-width: 100%;
+            }
+          `}
+        </style>
         { !markerUrl ?
             <PickerInline
               apikey={process.env.REDWOOD_ENV_FILESTACK_API_KEY}
