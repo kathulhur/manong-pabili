@@ -50,7 +50,6 @@ const LoginPage = () => {
     }
 
     // don't show the login form until we know if the user is logged in or not
-    console.log(loading, isAuthenticated, currentUser)
     return (
         <>
             <MetaTags title="Login" />
@@ -60,7 +59,7 @@ const LoginPage = () => {
                     toastOptions={{ duration: 6000 }}
                 />
                 <div className='rw-scaffold rw-login-container'>
-                    <div className='rw-segment'>
+                    <div className='mt-12 p-4'>
                         <header>
                             <h1 className='mb-4 font-bold text-xl text-green-700 text-center'>Manong Pabili</h1>
                             <h2 className="font-semibold">Login</h2>

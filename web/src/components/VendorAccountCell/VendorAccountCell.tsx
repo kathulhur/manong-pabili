@@ -24,8 +24,10 @@ import {
   type UploadImageMutationVariables,
   type DeleteImageMutation,
   type DeleteImageMutationVariables,
-  DeleteMarkerMutation,
-  DeleteMarkerMutationVariables
+  type DeleteMarkerMutation,
+  type DeleteMarkerMutationVariables,
+  type UpdateEmailMutation,
+  type UpdateEmailMutationVariables,
 } from "types/graphql";
 import type { CellSuccessProps, CellFailureProps } from "@redwoodjs/web";
 import { Form, FormError } from "@redwoodjs/forms";
@@ -37,6 +39,7 @@ import FeaturedImage from "../FeaturedImage/FeaturedImage";
 import Button from "../Button/Button";
 import { DELETE_IMAGE_MUTATION } from "../Admin/Image/Image";
 import { DELETE_MARKER_MUTATION } from "../Admin/Marker/Marker/Marker";
+import UpdateEmailModal from "../Modals/UpdateEmailModal";
 
 export const QUERY = gql`
   query FindVendorAccountQuery($userId: Int!) {
@@ -44,6 +47,7 @@ export const QUERY = gql`
       id
       username
       name
+      email
       mobileNumber
       lastLocationUpdate
       featuredImages {
@@ -82,6 +86,16 @@ const UPDATE_MOBILE_NUMBER_MUTATION = gql`
     updateMobileNumber(id: $id, input: { updatedMobileNumber: $mobileNumber }) {
       id
       mobileNumber
+    }
+  }
+`;
+
+
+const UPDATE_EMAIL_MUTATION = gql`
+  mutation UpdateEmailMutation($id: Int!, $email: String!) {
+    updateEmail(id: $id, input: { updatedEmail: $email }) {
+      id
+      email
     }
   }
 `;
@@ -135,6 +149,7 @@ export const Success = ({
   const [updateUsername] = useMutation<UpdateUsernameMutation, UpdateUsernameMutationVariables>(UPDATE_USERNAME_MUTATION);
   const [updateName] = useMutation<UpdateNameMutation, UpdateNameMutationVariables>(UPDATE_NAME_MUTATION);
   const [updateMobileNumber] = useMutation<UpdateMobileNumberMutation, UpdateMobileNumberMutationVariables>(UPDATE_MOBILE_NUMBER_MUTATION);
+  const [updateEmail] = useMutation<UpdateEmailMutation, UpdateEmailMutationVariables>(UPDATE_EMAIL_MUTATION);
   const [updateUserPasswordMutation, { error }] = useMutation<UpdateUserPasswordMutation, UpdateUserPasswordMutationVariables>(CHANGE_PASSWORD_MUTATION);
   const [deleteUserAccount] = useMutation<DeleteAccountMutation, DeleteAccountMutationVariables>(DELETE_ACCOUNT_MUTATION);
 
@@ -144,6 +159,7 @@ export const Success = ({
   const [isUpdateUsernameModalOpen, setIsUpdateUsernameModalOpen] = useState(false);
   const [isUpdateNameModalOpen, setIsUpdateNameModalOpen] = useState(false);
   const [isUpdateMobileNumberModalOpen, setIsUpdateMobileNumberModalOpen] = useState(false);
+  const [isUpdateEmailModalOpen, setIsUpdateEmailModalOpen] = useState(false);
   const [isChangePasswordModalOpen, setIsChangePasswordModalOpen] = useState(false);
   const [isDeleteAccountModalOpen, setIsDeleteAccountModalOpen] = useState(false);
   const [isUploadFeatureImageModalOpen, setIsUploadFeatureImageModalOpen] = useState(false);
@@ -211,6 +227,27 @@ export const Success = ({
     }
   }
 
+  const onSubmitEmail = (email: string) => {
+    try {
+      updateEmail({
+        variables: {
+          id: vendorAccount?.id,
+          email,
+        },
+        onCompleted: () => {
+          setIsUpdateEmailModalOpen(false);
+          toast.success('Email updated successfully');
+        },
+        onError: (err) => {
+          toast.error(err.message);
+        },
+
+      });
+    } catch (err) {
+      alert(err.message)
+    }
+  }
+
   const updateUserPasswordHandler = async (oldPassword: string, newPassword: string) => {
     try {
       await updateUserPasswordMutation({
@@ -232,7 +269,6 @@ export const Success = ({
         }
       });
     } catch (e) {
-      console.log('exception', e)
 
     }
   }
@@ -284,7 +320,6 @@ export const Success = ({
           setIsUploadFeatureImageModalOpen(false);
         },
         onError: (err) => {
-          console.log(err);
           toast.error('Image upload failed');
         },
         update: (cache, { data }) => {
@@ -328,7 +363,6 @@ export const Success = ({
             toast.success('Image deleted successfully');
           },
           onError: (err) => {
-            console.log(err);
             toast.error('Image delete failed');
           },
           update: (cache, { data }) => {
@@ -365,12 +399,10 @@ export const Success = ({
             toast.success('Marker deleted successfully');
           },
           onError: (err) => {
-            console.log(err);
             toast.error('Marker delete failed');
           },
           update: (cache, { data }) => {
             const deletedMarkerId = data?.softDeleteMarker?.id
-            console.log(data)
             if (deletedMarkerId) {
               cache.modify({
                 id: cache.identify({ __typename: 'User', id: vendorAccount.id }), // Identify the vendor object
@@ -452,6 +484,27 @@ export const Success = ({
             isOpen={isUpdateMobileNumberModalOpen}
             onClose={() => setIsUpdateMobileNumberModalOpen(false)}
             onSubmit={onSubmitMobileNumber}
+          />
+        </div>
+
+        <div
+          className="flex space-x-8 justify-between items-center"
+        >
+          <div>
+            <h2 className="text-sm">Email</h2>
+            <p className="text-lg font-semibold">{vendorAccount?.email}</p>
+          </div>
+          <Button
+            variant="secondary"
+            onClick={() => setIsUpdateEmailModalOpen(true)}
+          >
+            Edit
+          </Button>
+          <UpdateEmailModal
+            defaultValue={vendorAccount?.email}
+            isOpen={isUpdateEmailModalOpen}
+            onClose={() => setIsUpdateEmailModalOpen(false)}
+            onSubmit={onSubmitEmail}
           />
         </div>
 

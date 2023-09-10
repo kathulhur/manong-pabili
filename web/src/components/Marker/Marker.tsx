@@ -5,7 +5,7 @@ import { FindVendorHomepageQuery, LocationBroadcastMode, MapVendorsQuery } from 
 import clsx from "clsx";
 
 export interface CreateMarkerProps {
-    vendor: MapVendorsQuery['mapVendors'][number];
+    vendor: FindVendorHomepageQuery['vendor'];
     pulseColor?: string;
     draggable?: boolean;
 }

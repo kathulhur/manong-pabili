@@ -113,7 +113,6 @@ const getCoordinates = async () => {
             longitude: coords.longitude
         }
     } catch (err) {
-        console.log(err)
         if (err.code === 1) {
             alert(
                 'You have denied access to your location. Please enable your browser location settings.'
@@ -140,7 +139,6 @@ export const Success = ({
   FindVendorHomepageQuery,
   FindVendorHomepageQueryVariables
 >) => {
-    console.log(vendor.markerUrl)
     const [hideVendorLocation] = useMutation<HideVendorLocationMutation, HideVendorLocationMutationVariables>(HIDE_VENDOR_LOCATION_MUTATION);
     const [broadcastLocation, { loading: broadcastingLocation}] = useMutation<BroadcastLocationMutation, BroadcastLocationMutationVariables>(BROADCAST_LOCATION_MUTATION);
     const [updateVendorMarker] = useMutation<UpdateVendorMarkerMutation, UpdateVendorMarkerMutationVariables>(UPDATE_VENDOR_MARKER)
@@ -156,13 +154,13 @@ export const Success = ({
         )
     const [isMarkerSelectModalOpen, setIsMarkerSelectModalOpen] = useState(false)
 
-    console.log(locationBroadcastMode)
     // if location is shown on visit, broadcast the location
     useEffect(() => {
         (async () => {
-            if(isLocationShown && map) {
+            if(isLocationShown && map && vendor) {
                 broadcastLocationHandler({
-                    ...(await getCoordinates()),
+                    latitude: vendor.latitude,
+                    longitude: vendor.longitude,
                     locationBroadcastMode
                 })
             }
@@ -230,14 +228,12 @@ export const Success = ({
                     }
                 },
                 onError: (err) => {
-                    console.log(err)
                     toast.error('failed broadcasting location')
                 },
                 onCompleted: () => {
                     toast.success('Location broadcasted')
                 },
                 update: (cache, { data }) => {
-                    console.log('data', data)
                     try {
                         if (!data || !data.broadcastLocation) return
                         cache.modify({
@@ -263,7 +259,6 @@ export const Success = ({
                 }
             })
         } catch (err) {
-            console.log(err)
             if (err.code === 1) {
                 alert(
                     'You have denied access to your location. Please enable your browser location settings.'
@@ -287,10 +282,16 @@ export const Success = ({
   // broadcast location every 5 seconds when location is shown and in realtime mode
   useEffect(() => {
       if ( !isLocationShown || !(locationBroadcastMode === "REALTIME")) return
+
+      (async () => broadcastLocationHandler({
+          ...(await getCoordinates()),
+          locationBroadcastMode
+      }))()
+
       const intervalId = setInterval(async () => {
             broadcastLocationHandler({
                 ...(await getCoordinates()),
-                locationBroadcastMode: "REALTIME"
+                locationBroadcastMode
             })
       }, 5000)
 
@@ -321,7 +322,6 @@ export const Success = ({
                   }
               },
               onError: (err) => {
-                  console.log(err)
                   toast.error('failed hiding vendor location')
               },
               onCompleted: () => {
@@ -344,7 +344,7 @@ export const Success = ({
                 }
           })
       } catch (err) {
-          console.log(err)
+
       }
   }, [vendor])
 
@@ -392,7 +392,6 @@ export const Success = ({
 
               },
               onError: (err) => {
-                  console.log(err)
                     toast.error('Failed updating marker')
                   setIsMarkerSelectModalOpen(false)
               },
@@ -408,7 +407,7 @@ export const Success = ({
               }
           })
       } catch (err) {
-        console.log(err)
+
       }
   }
 
@@ -540,7 +539,7 @@ export const Success = ({
                 <Tab.Panel>
                     <Button
                         fullWidth
-                        onClick={updateLocationButtonHandler}
+                        onClick={() => updateLocationButtonHandler(locationBroadcastMode)}
                         disabled={!isLocationShown}
                     >Update location</Button>
                 </Tab.Panel>

@@ -2,8 +2,8 @@ import type { APIGatewayProxyEvent, Context } from 'aws-lambda'
 
 import { DbAuthHandler, DbAuthHandlerOptions } from '@redwoodjs/auth-dbauth-api'
 
-import { db } from 'src/lib/db'
-import { validate, validateWith } from '@redwoodjs/api'
+import { db as prismaClient } from 'src/lib/db'
+import { validate, validateUniqueness, validateWith } from '@redwoodjs/api'
 
 export const handler = async (
     event: APIGatewayProxyEvent,
@@ -113,12 +113,16 @@ export const handler = async (
         // If this returns anything else, it will be returned by the
         // `signUp()` function in the form of: `{ message: 'String here' }`.
         handler: ({ username, hashedPassword, salt, userAttributes }) => {
-            console.log(userAttributes)
             const { name, roles, mobileNumber, gender } = userAttributes
             validate(username, "Username", {
                 presence: true,
                 length: { min: 3, max: 20 },
             });
+
+            validate(userAttributes?.email, "Email", {
+                presence: true,
+                email: true,
+            })
 
             validate(name, "Name", {
                 presence: true,
@@ -143,18 +147,32 @@ export const handler = async (
                 }
             })
 
-            return db.user.create({
-                data: {
-                    name: userAttributes?.name,
+            return validateUniqueness('user', {
+                mobileNumber: userAttributes?.mobileNumber,
+            }, {
+                mobileNumber: "Mobile Number",
+                db: prismaClient,
+            }, (db) => validateUniqueness('user', {
                     email: userAttributes?.email,
-                    mobileNumber: userAttributes?.mobileNumber,
-                    gender: userAttributes?.gender,
-                    roles: userAttributes?.roles,
-                    username: username,
-                    hashedPassword: hashedPassword,
-                    salt: salt,
-                },
-            })
+                }, {
+                    email: "Email",
+                    db: prismaClient,
+                }, (db) => {
+                    return db.user.create({
+                    data: {
+                        name: userAttributes?.name,
+                        email: userAttributes?.email,
+                        mobileNumber: userAttributes?.mobileNumber,
+                        gender: userAttributes?.gender,
+                        roles: userAttributes?.roles,
+                        username: username,
+                        hashedPassword: hashedPassword,
+                        salt: salt,
+                    },
+                })
+            }
+            ))
+
         },
 
         // Include any format checks for password here. Return `true` if the
@@ -173,7 +191,7 @@ export const handler = async (
 
     const authHandler = new DbAuthHandler(event, context, {
         // Provide prisma db client
-        db: db,
+        db: prismaClient,
 
         // The name of the property you'd call on `db` to access your user table.
         // i.e. if your Prisma model is named `User` this value would be `user`, as in `db.user`

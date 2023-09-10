@@ -21,7 +21,7 @@ const ImagesList = ({ images }: {
     // This refetches the query on the list page. Read more about other ways to
     // update the cache over here:
     // https://www.apollographql.com/docs/react/data/mutations/#making-all-other-cache-updates
-    update: (cache, { data: softDeleteImage}) => {
+    update: (cache, { data: {softDeleteImage}}) => {
       const deletedImageId = softDeleteImage?.id;
       if (deletedImageId) {
         cache.modify({

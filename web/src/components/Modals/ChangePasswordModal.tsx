@@ -1,6 +1,7 @@
 import { useState } from "react";
 import BaseModal from "./BaseModal";
 import Button from "../Button/Button";
+import { toast } from "@redwoodjs/web/dist/toast";
 
 const ChangePasswordModal = ({
   isOpen,
@@ -26,7 +27,12 @@ const ChangePasswordModal = ({
           <form
             onSubmit={(e) => {
               e.preventDefault();
+              if(newPassword !== confirmNewPassword) {
+                toast.error("New password do not match");
+                return;
+              }
               onSubmit(oldPassword, newPassword);
+              setOldPassword('');
               setNewPassword('');
               setConfirmNewPassword('');
             }}
@@ -35,7 +41,7 @@ const ChangePasswordModal = ({
                 Old Password
               <input
                 name="password"
-                type="text"
+                type="password"
                 className="rw-input mb-4"
                 value={oldPassword}
                 onChange={(e) => setOldPassword(e.target.value)}
@@ -45,7 +51,7 @@ const ChangePasswordModal = ({
               New password
               <input
                 name="password"
-                type="text"
+                type="password"
                 className="rw-input mb-4"
                 value={newPassword}
                 onChange={(e) => setNewPassword(e.target.value)}
@@ -55,7 +61,7 @@ const ChangePasswordModal = ({
               <p>Confirm Password</p>
               <input
                 name="confirmPassword"
-                type="text"
+                type="password"
                 className="rw-input"
                 value={confirmNewPassword}
                 onChange={(e) => setConfirmNewPassword(e.target.value)}

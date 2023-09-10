@@ -29,7 +29,6 @@ const Product = ({
   const [updateProduct] = useMutation(UPDATE_PRODUCT_MUTATION, {
         onError: (error) => {
             toast.error('Error updating product availability')
-            console.log(error)
         },
         onCompleted: () => {
             toast.success('Product availability updated')
@@ -38,7 +37,6 @@ const Product = ({
 
   const [deleteProduct] = useMutation(DELETE_PRODUCT_MUTATION, {
         onError: (error) => {
-            console.log(error)
             toast.error('Error deleting product')
         },
         onCompleted: () => {
@@ -46,12 +44,10 @@ const Product = ({
         },
         update: (cache, { data }) => {
             const deletedProductId = data?.softDeleteProduct?.id
-            console.log(data)
             if (deletedProductId) {
                 cache.modify({
                     fields: {
                         productsByUser: (existingProductsRefs, { readField }) => {
-                            console.log(existingProductsRefs)
                             return existingProductsRefs.filter(
                                 (productRef) => deletedProductId !== readField('id', productRef)
                             )
@@ -73,7 +69,6 @@ const Product = ({
             }
         } catch (error) {
             toast.error('Error deleting product')
-            console.log(error)
         }
   }
 
@@ -82,7 +77,6 @@ const Product = ({
             variables: input,
             onError: (error) => {
                 toast.error('Error updating product availability')
-                console.log(error)
             },
 
         })
@@ -95,7 +89,6 @@ const Product = ({
             }})
         } catch (error) {
             toast.error('Error updating product availability')
-            console.log(error)
         }
   }
   return (

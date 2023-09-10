@@ -28,7 +28,6 @@ export default function useCoordinates() {
         setCoordinates(position.coords)
 
       } catch (err) {
-        console.log(err)
         if (err.code === 1) {
             alert(
                 'You have denied access to your location. Please enable your browser location settings.'

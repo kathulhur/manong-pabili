@@ -71,15 +71,22 @@ export const schema = gql`
     updatedMobileNumber: String!
   }
 
+  input UpdateEmailInput {
+    updatedEmail: String!
+  }
+
+
   type Mutation {
     updateName(id: Int!, input: UpdateNameInput!): User! @requireAuth
     updateUsername(id: Int!, input: UpdateUsernameInput!): User! @requireAuth
     updateMobileNumber(id: Int!, input: UpdateMobileNumberInput!): User! @requireAuth
+    updateEmail(id: Int!, input: UpdateEmailInput!): User! @requireAuth
     updateUserPassword(id: Int!, input: UpdateUserPasswordInput!): User!
       @requireAuth
     deleteUserAccount(id: Int!, input: DeleteUserAccountInput!): User! @requireAuth
     hideVendorLocation(id: Int!, input: HideVendorLocationInput!): User! @requireAuth
     broadcastLocation(id: Int!, input: BroadcastLocationInput!): User! @requireAuth
     updateVendorMarker(id: Int!, input: UpdateVendorMarkerInput!): User! @requireAuth
+    verifyUser(id: Int!): User! @requireAuth
   }
 `;

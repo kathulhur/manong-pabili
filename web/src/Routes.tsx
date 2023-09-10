@@ -28,7 +28,7 @@ const Routes = () => {
       <Route path="/admin/login" page={AdminLoginPage} name="adminLogin" />
       <Route path="/admin/signup" page={AdminSignupPage} name="adminSignup" />
       <Route notfound page={NotFoundPage} />
-      <Private unauthenticated="forbidden" roles={"VENDOR"}>
+      <Private unauthenticated="login" roles={"VENDOR"}>
         <Set wrap={VerifiedVendorLayout}>
           <Route path="/vendor" page={HomePage} name="home" />
           <Route path="/vendor/products" page={ProductsPage} name="products" />
@@ -36,7 +36,7 @@ const Routes = () => {
         </Set>
       </Private>
 
-      <Private unauthenticated='forbidden' roles={"ADMIN"}>
+      <Private unauthenticated='login' roles={"ADMIN"}>
         <Set wrap={AdminNavLayout}>
             <Route path="/admin/users/new" page={AdminUserNewUserPage} name="adminNewUser" />
             <Route path="/admin/users/{id:Int}/edit" page={AdminUserEditUserPage} name="adminEditUser" />

@@ -3,7 +3,7 @@ import type {
   MutationResolvers,
   ProductRelationResolvers,
 } from "types/graphql";
-
+import { pusher } from "src/functions/broadcast/broadcast";
 import { db } from "src/lib/db";
 
 export const products: QueryResolvers["products"] = () => {
@@ -24,14 +24,25 @@ export const createProduct: MutationResolvers["createProduct"] = ({
   });
 };
 
-export const updateProduct: MutationResolvers["updateProduct"] = ({
+export const updateProduct: MutationResolvers["updateProduct"] = async ({
   id,
   input,
 }) => {
-  return db.product.update({
+
+  const updatedProduct = await db.product.update({
     data: input,
     where: { id },
   });
+
+  pusher.trigger(process.env.PUSHER_CHANNEL, "product-update", {
+    updatedProduct: {
+      __typename: "Product",
+      ...updatedProduct,
+    }
+  });
+
+  return updatedProduct
+
 };
 
 export const deleteProduct: MutationResolvers["deleteProduct"] = ({ id }) => {

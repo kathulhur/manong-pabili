@@ -32,7 +32,6 @@ export default async () => {
             //
             data.map(async (data: Prisma.UserCreateArgs['data']) => {
                 const record = await db.user.create({ data })
-                console.log(record)
             })
         )
 
@@ -63,7 +62,7 @@ export default async () => {
                     name: `User ${i}`,
                     username: `user${i}`,
                     email: `user${i}@mail.com`,
-                    mobileNumber: "09123456789",
+                    mobileNumber: `0912345678${i}`,
                     latitude: 0,
                     longitude: 0,
                     roles: i == 0 ? "ADMIN" : "VENDOR",
