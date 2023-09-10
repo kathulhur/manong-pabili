@@ -137,11 +137,17 @@ const IndexPage = () => {
             <div className="max-w-md flex flex-col space-y-8">
               <div className="flex flex-col justify-between items-stretch">
                 <p className="text-slate-700 mb-4">Want to be part of our growing family of vendors?</p>
-                <Button variant="outline" className="px-4 text-sm">Sign up</Button>
+                  <Link to={routes.signup()}>
+                    <Button variant="outline" className="px-4 text-sm w-full">
+                        Sign up
+                    </Button>
+                  </Link>
               </div>
               <div className="flex flex-col justify-between items-stretch">
                 <p className="text-slate-700 mb-4">Let people know where you are by sharing your location.</p>
-                <Button variant="secondary" className="px-4 text-sm">Login</Button>
+                <Link to={routes.signup()}>
+                  <Button variant="secondary" className="px-4 text-sm w-full">Login</Button>
+                </Link>
               </div>
             </div>
           </section>
