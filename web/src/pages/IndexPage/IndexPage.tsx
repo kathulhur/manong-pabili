@@ -164,7 +164,7 @@ const IndexPage = () => {
             <div className="flex items-center justify-between">
               <div className="flex flex-col space-y-2">
                 <span className="text-sm text-slate-900">2023. Manong Pabili.</span>
-                <a href="" target="_blank" className="text-sm text-slate-900 rw-link">Github Repository</a>
+                <a href="https://github.com/kathulhur/manong-pabili/" target="_blank" className="text-sm text-slate-900 rw-link">Github Repository</a>
               </div>
               <a
                 href="https://www.flaticon.com/free-icons/map"
