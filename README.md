@@ -1,4 +1,64 @@
-# README
+# Manong Pabili
+
+
+An app powered by RedwoodJS that aims to bridge consumers and mobile vendors by allow vendors to broadcast their location.
+
+## Test out the App!
+[https://manongpabili.tech](https://manongpabili.tech)
+
+#### To log in as vendor:
+```
+username: john
+password: password
+```
+
+#### To log in as admin:
+```
+username: admin
+password: adminpassword
+```
+
+#### To view the public map go to:
+[https://manongpabili.tech/map](https://manongpabili.tech/map)
+
+
+### Run the app locally
+
+To run the app locally you have to have all the following environment variables:
+(You can also see the list in the .env.example)
+
+```
+SESSION_SECRET=
+DATABASE_URL=
+TOMTOM_API_KEY=
+PUSHER_APP_KEY=
+PUSHER_APP_CLUSTER=
+PUSHER_APP_ID=
+PUSHER_APP_SECRET=
+PUSHER_CHANNEL=
+REDWOOD_ENV_FILESTACK_API_KEY=
+BREVO_SMTP_KEY=
+BREVO_SMTP_SERVER=
+BREVO_SMTP_PORT=
+BREVO_SMTP_LOGIN=
+```
+
+You will get the keys from:
+* [Brevo](https://app.brevo.com/)
+* [Pusher](https://pusher.com/)
+* [TomTom](https://developer.tomtom.com/)
+* [FileStack](https://www.filestack.com/)
+
+
+<br>
+<br>
+<br>
+<br>
+<br>
+
+
+
+-----
 
 Welcome to [RedwoodJS](https://redwoodjs.com)!
 
