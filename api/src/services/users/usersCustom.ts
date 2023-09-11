@@ -356,6 +356,7 @@ export const broadcastLocation: MutationResolvers['broadcastLocation']
           productsOffered: {
             where: {
               deleted: false,
+              availability: true
             }
           },
           featuredImages: {
