@@ -147,7 +147,7 @@ const IndexPage = () => {
               </div>
               <div className="flex flex-col justify-between items-stretch">
                 <p className="text-slate-700 mb-4">Let people know where you are by sharing your location.</p>
-                <Link to={routes.signup()}>
+                <Link to={routes.login()}>
                   <Button variant="secondary" className="px-4 text-sm w-full">Login</Button>
                 </Link>
               </div>
