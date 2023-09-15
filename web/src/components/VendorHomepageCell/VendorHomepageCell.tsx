@@ -434,7 +434,8 @@ export const Success = ({
                     setIsMarkerSelectModalOpen(false)
                     if (isLocationShown) {
                         broadcastLocationHandler({
-                            ...(await getCoordinates()),
+                            latitude: vendor.latitude,
+                            longitude: vendor.longitude,
                             locationBroadcastMode,
                         })
                     }
