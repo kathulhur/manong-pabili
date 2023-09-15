@@ -8,7 +8,7 @@ import type {
 import { db } from "src/lib/db";
 import { hashPassword } from "@redwoodjs/auth-dbauth-api";
 import { validate, validateWith, validateWithSync, validateUniqueness } from "@redwoodjs/api";
-import { pusher } from "src/functions/broadcast/broadcast";
+import { pusher } from "src/lib/pusher";
 import { sendVerificationEmail } from "src/lib/email";
 
 

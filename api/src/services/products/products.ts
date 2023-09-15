@@ -3,7 +3,7 @@ import type {
   MutationResolvers,
   ProductRelationResolvers,
 } from "types/graphql";
-import { pusher } from "src/functions/broadcast/broadcast";
+import { pusher } from "src/lib/pusher";
 import { db } from "src/lib/db";
 
 export const products: QueryResolvers["products"] = () => {

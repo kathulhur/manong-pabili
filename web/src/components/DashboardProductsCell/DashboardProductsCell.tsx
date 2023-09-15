@@ -25,9 +25,6 @@ export const QUERY = gql`
     }
 `
 
-
-
-
 export const Loading = () => <div>Loading...</div>
 
 export const Empty = () => {
@@ -51,7 +48,7 @@ export const Empty = () => {
                     fields: {
                         productsByUser: (existingDashboardProducts = []) => {
                             const newProductRef = cache.writeFragment({
-                                id: newProduct.__typename+":"+newProduct.id,
+                                id: newProduct.__typename + ':' + newProduct.id,
                                 data: newProduct,
                                 fragment: gql`
                                     fragment NewProduct on Product {
@@ -60,13 +57,13 @@ export const Empty = () => {
                                         availability
                                     }
                                 `,
-                            });
-                            return [newProductRef, ...existingDashboardProducts];
+                            })
+                            return [newProductRef, ...existingDashboardProducts]
                         },
                     },
-                });
+                })
             }
-        }
+        },
     })
 
     const onCreateProductModalSubmit = async (input: CreateProductInput) => {
@@ -74,8 +71,8 @@ export const Empty = () => {
             await createProduct({
                 variables: {
                     input,
-                }
-            });
+                },
+            })
         } catch (error) {
             console.error(error)
             alert('Error creating product')
@@ -83,8 +80,12 @@ export const Empty = () => {
     }
 
     return (
-        <div className='text-center'>
-            <p className='mb-6'>You haven't added a product yet.<br/>Give it a try by adding one.</p>
+        <div className="text-center">
+            <p className="mb-6">
+                You haven't added a product yet.
+                <br />
+                Give it a try by adding one.
+            </p>
             <Button
                 type="button"
                 onClick={() =>
@@ -106,7 +107,6 @@ export const Empty = () => {
 export const Failure = ({ error }: CellFailureProps) => (
     <div style={{ color: 'red' }}>Error: {error?.message}</div>
 )
-
 
 export const Success = ({
     dashboardProducts,
@@ -130,7 +130,7 @@ export const Success = ({
                     fields: {
                         productsByUser: (existingDashboardProducts = []) => {
                             const newProductRef = cache.writeFragment({
-                                id: newProduct.__typename+":"+newProduct.id,
+                                id: newProduct.__typename + ':' + newProduct.id,
                                 data: newProduct,
                                 fragment: gql`
                                     fragment NewProduct on Product {
@@ -139,13 +139,13 @@ export const Success = ({
                                         availability
                                     }
                                 `,
-                            });
-                            return [newProductRef, ...existingDashboardProducts];
+                            })
+                            return [newProductRef, ...existingDashboardProducts]
                         },
                     },
-                });
+                })
             }
-        }
+        },
     })
 
     const onCreateProductModalSubmit = async (input: CreateProductInput) => {
@@ -153,26 +153,25 @@ export const Success = ({
             await createProduct({
                 variables: {
                     input,
-                }
-            });
+                },
+            })
         } catch (error) {
             console.error(error)
         }
-
     }
-
+    console.log(dashboardProducts)
     return (
-        <div className='my-8'>
-            <div className='flex justify-between items-center'>
-                <h2 className='font-bold text-slate-900'>Products</h2>
+        <div className="my-8">
+            <div className="flex justify-between items-center">
+                <h2 className="font-bold text-slate-900">Products</h2>
                 <Button
                     type="button"
-                    aria-label='Add Product'
+                    aria-label="Add Product"
                     onClick={() =>
                         setIsCreateProductModalOpen(!isCreateProductModalOpen)
                     }
                 >
-                    <PlusIcon className="h-7 w-7 text-slate-100"/>
+                    <PlusIcon className="h-7 w-7 text-slate-100" />
                 </Button>
                 <CreateProductModal
                     isOpen={isCreateProductModalOpen}
@@ -180,15 +179,15 @@ export const Success = ({
                     onSubmit={onCreateProductModalSubmit}
                 />
             </div>
-            <ul className='my-8'>
+            <ul className="my-8">
                 {dashboardProducts.map((product) => (
-                    <li key={product.id} className='my-4'>
+                    <li key={product.id} className="my-4">
                         <DashboardProduct product={product} />
                     </li>
                 ))}
             </ul>
 
-            <Link to={routes.products()}>
+            <Link to={routes.vendorProducts()}>
                 <Button fullWidth>Manage products</Button>
             </Link>
         </div>

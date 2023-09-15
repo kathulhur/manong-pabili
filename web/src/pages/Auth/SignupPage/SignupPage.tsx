@@ -23,7 +23,7 @@ const SignupPage = () => {
 
     useEffect(() => {
         if (isAuthenticated) {
-            navigate(routes.home())
+            navigate(routes.vendorIndex())
         }
     }, [isAuthenticated])
 
@@ -39,7 +39,7 @@ const SignupPage = () => {
                 name: data.name,
                 email: data.email,
                 mobileNumber: data.mobileNumber,
-                roles: "VENDOR",
+                roles: 'VENDOR',
                 gender: data.gender,
                 username: data.username,
                 password: data.password,
@@ -67,7 +67,9 @@ const SignupPage = () => {
                 <div className="rw-scaffold rw-login-container">
                     <div className="mt-12 p-4">
                         <header>
-                            <h1 className='mb-4 font-bold text-xl text-green-700 text-center'>Manong Pabili</h1>
+                            <h1 className="mb-4 font-bold text-xl text-green-700 text-center">
+                                Manong Pabili
+                            </h1>
                             <h2 className="font-semibold">Sign up</h2>
                         </header>
 
@@ -82,7 +84,9 @@ const SignupPage = () => {
                                             name="name"
                                             className="rw-label"
                                             errorClassName="rw-label rw-label-error"
-                                        >Name</Label>
+                                        >
+                                            Name
+                                        </Label>
                                         <TextField
                                             name="name"
                                             className="rw-input"
@@ -105,7 +109,9 @@ const SignupPage = () => {
                                             name="email"
                                             className="rw-label"
                                             errorClassName="rw-label rw-label-error"
-                                        >Email</Label>
+                                        >
+                                            Email
+                                        </Label>
                                         <EmailField
                                             name="email"
                                             className="rw-input"
@@ -114,7 +120,8 @@ const SignupPage = () => {
                                             validation={{
                                                 required: {
                                                     value: true,
-                                                    message: 'email is required',
+                                                    message:
+                                                        'email is required',
                                                 },
                                             }}
                                         />
@@ -124,32 +131,38 @@ const SignupPage = () => {
                                         />
 
                                         {/* Gender */}
-                                        <fieldset className='mt-4'>
-                                            <legend className='rw-label'>Gender</legend>
-                                            <div className='flex items-center'>
+                                        <fieldset className="mt-4">
+                                            <legend className="rw-label">
+                                                Gender
+                                            </legend>
+                                            <div className="flex items-center">
                                                 <RadioField
                                                     required
-                                                    id='male'
-                                                    name='gender'
+                                                    id="male"
+                                                    name="gender"
                                                     className="rw-input"
                                                     errorClassName="rw-input rw-input-error"
-                                                    value='Male'
-                                                    />
-                                                <Label name="Male" htmlFor='male'
+                                                    value="Male"
+                                                />
+                                                <Label
+                                                    name="Male"
+                                                    htmlFor="male"
                                                     className="rw-label mt-0"
                                                     errorClassName="rw-label rw-label-error"
                                                 />
                                             </div>
-                                            <div className='flex items-center'>
+                                            <div className="flex items-center">
                                                 <RadioField
                                                     required
-                                                    id='female'
-                                                    value='Female'
-                                                    name='gender'
+                                                    id="female"
+                                                    value="Female"
+                                                    name="gender"
                                                     className="rw-input"
                                                     errorClassName="rw-input rw-input-error"
-                                                    />
-                                                <Label name="Female" htmlFor='female'
+                                                />
+                                                <Label
+                                                    name="Female"
+                                                    htmlFor="female"
                                                     className="rw-label mt-0"
                                                     errorClassName="rw-label rw-label-error"
                                                 />
@@ -171,7 +184,8 @@ const SignupPage = () => {
                                         validation={{
                                             required: {
                                                 value: true,
-                                                message: 'Mobile Number is required',
+                                                message:
+                                                    'Mobile Number is required',
                                             },
                                         }}
                                     />
@@ -182,7 +196,7 @@ const SignupPage = () => {
 
                                     <Label
                                         name="Username"
-                                        htmlFor='username'
+                                        htmlFor="username"
                                         className="rw-label"
                                         errorClassName="rw-label rw-label-error"
                                     />
@@ -206,7 +220,7 @@ const SignupPage = () => {
                                         name="password"
                                         className="rw-label"
                                         errorClassName="rw-label rw-label-error"
-                                        >
+                                    >
                                         Password
                                     </Label>
                                     <PasswordField
@@ -220,14 +234,14 @@ const SignupPage = () => {
                                                 message: 'Password is required',
                                             },
                                         }}
-                                        />
+                                    />
                                     <FieldError
                                         name="password"
                                         className="rw-field-error"
                                     />
 
                                     <div className="rw-button-group">
-                                        <Button type='submit' fullWidth>
+                                        <Button type="submit" fullWidth>
                                             Sign Up
                                         </Button>
                                     </div>
@@ -236,7 +250,7 @@ const SignupPage = () => {
                         </div>
                         <div className="rw-login-link">
                             <span>Already have an account?</span>{' '}
-                            <Link to={routes.login()} className="rw-link">
+                            <Link to={routes.authLogin()} className="rw-link">
                                 Log in!
                             </Link>
                         </div>

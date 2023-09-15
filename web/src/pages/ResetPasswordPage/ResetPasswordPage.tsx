@@ -24,7 +24,7 @@ const ResetPasswordPage = ({ resetToken }: { resetToken: string }) => {
 
     useEffect(() => {
         if (isAuthenticated) {
-            navigate(routes.home())
+            navigate(routes.vendorIndex())
         }
     }, [isAuthenticated])
 
@@ -57,7 +57,7 @@ const ResetPasswordPage = ({ resetToken }: { resetToken: string }) => {
         } else {
             toast.success('Password changed!')
             await reauthenticate()
-            navigate(routes.login())
+            navigate(routes.authLogin())
         }
     }
 

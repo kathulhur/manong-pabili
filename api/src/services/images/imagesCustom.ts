@@ -5,14 +5,17 @@ import type {
 } from "types/graphql";
 
 import { db } from "src/lib/db";
-import { pusher } from "src/functions/broadcast/broadcast";
+import { pusher } from "src/lib/pusher";
 
 const IMAGES_PER_PAGE = 5;
+
+
+
 export const imagePage: QueryResolvers["imagePage"] = async ({
   page = 1,
   filter
 }) => {
-  const filteredFilter = Object.fromEntries(
+    const filteredFilter = Object.fromEntries(
     Object.entries(filter || {}).filter(([_, value]) => value !== null && value !== undefined)
   );
 

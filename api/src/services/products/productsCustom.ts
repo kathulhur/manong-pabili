@@ -5,7 +5,7 @@ import type {
 } from 'types/graphql'
 
 import { db } from 'src/lib/db'
-import { pusher } from 'src/functions/broadcast/broadcast'
+import { pusher } from 'src/lib/pusher'
 
 export const productsByUser: QueryResolvers['productsByUser'] = ({
   userId,
