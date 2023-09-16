@@ -30,14 +30,13 @@ import {
     type UpdateEmailMutationVariables,
 } from 'types/graphql'
 import type { CellSuccessProps, CellFailureProps } from '@redwoodjs/web'
-import { Form, FormError } from '@redwoodjs/forms'
 import { useAuth } from 'src/auth'
 import ImageForm, { ImageFormProps } from '../ImageForm/ImageForm'
 import { toast } from '@redwoodjs/web/dist/toast'
 import { PlusIcon, XMarkIcon } from '@heroicons/react/20/solid'
 import FeaturedImage from '../FeaturedImage/FeaturedImage'
 import Button from '../Button/Button'
-import { DELETE_IMAGE_MUTATION } from '../Admin/Image/Image'
+import { DELETE_IMAGE_MUTATION } from '../Admin/Image/Image/Image'
 import { DELETE_MARKER_MUTATION } from '../Admin/Marker/Marker/Marker'
 import UpdateEmailModal from '../Modals/UpdateEmailModal'
 
