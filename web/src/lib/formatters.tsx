@@ -57,8 +57,24 @@ export const checkboxInputTag = (checked: boolean) => {
     return <input type="checkbox" checked={checked} disabled />
 }
 
-export const formatDatetime = (value) => {
-    if (value) {
-        return value.replace(/:\d{2}\.\d{3}\w/, '')
+export const formatDatetime = (dateTime?: string) => {
+    let output: string | JSX.Element = ''
+
+    if (dateTime) {
+        output = (
+            <time dateTime={dateTime} title={dateTime}>
+                {new Date(dateTime).toLocaleString(undefined, {
+                    weekday: 'short',
+                    year: 'numeric',
+                    month: 'short',
+                    day: 'numeric',
+                    hour: 'numeric',
+                    minute: 'numeric',
+                    timeZoneName: 'short',
+                })}
+            </time>
+        )
     }
+
+    return output
 }

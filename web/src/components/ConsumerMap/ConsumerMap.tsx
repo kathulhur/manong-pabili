@@ -1,8 +1,9 @@
 import {
-    ChevronDoubleRightIcon,
-    ChevronDoubleLeftIcon,
     QuestionMarkCircleIcon,
     XMarkIcon,
+    MapPinIcon,
+    ChevronLeftIcon,
+    ChevronRightIcon,
 } from '@heroicons/react/20/solid'
 import tt from '@tomtom-international/web-sdk-maps'
 import { Consumer, useEffect, useRef, useState } from 'react'
@@ -60,7 +61,7 @@ const ConsumerMap = ({ vendors, products, className }: ConsumerMapProps) => {
     const apolloClient = useApolloClient()
 
     const coordinates = useCoordinates()
-
+    const [userMarker, setUserMarker] = useState<tt.Marker>(null)
     const [selectedVendor, setSelectedVendor] =
         useState<(typeof vendors)[0]>(null)
     const [isLegendModalOpen, setIsLegendModalOpen] = useState(false)
@@ -118,11 +119,37 @@ const ConsumerMap = ({ vendors, products, className }: ConsumerMapProps) => {
 
     // center map on user's location
     useEffect(() => {
+        let marker: tt.Marker
         if (map && coordinates) {
             map.setCenter([coordinates.longitude, coordinates.latitude])
             map.zoomTo(15)
+            marker = new tt.Marker().setLngLat([
+                coordinates.longitude,
+                coordinates.latitude,
+            ])
+            marker.setPopup(
+                new tt.Popup({ offset: 35 }).setHTML(`<h3>You are here</h3>`)
+            )
+            marker.addTo(map)
+            marker.togglePopup()
+            setUserMarker(marker)
+        }
+
+        return () => {
+            if (marker) {
+                marker.remove()
+            }
         }
     }, [map, coordinates])
+
+    function focusLocationButtonHandler() {
+        if (userMarker) {
+            map.setCenter(userMarker.getLngLat())
+            if (!userMarker.getPopup().isOpen()) {
+                userMarker.togglePopup()
+            }
+        }
+    }
 
     // bind pusher events
     useEffect(() => {
@@ -320,45 +347,54 @@ const ConsumerMap = ({ vendors, products, className }: ConsumerMapProps) => {
                         <button
                             className="z-10 bg-green-400 text-white rounded-full p-2 shadow-md"
                             onClick={() => {
+                                let safeIndex =
+                                    focusedVendorIndex % filteredVendors.length
                                 map.setCenter([
-                                    filteredVendors[focusedVendorIndex]
-                                        .longitude,
-                                    filteredVendors[focusedVendorIndex]
-                                        .latitude,
+                                    filteredVendors[safeIndex].longitude,
+                                    filteredVendors[safeIndex].latitude,
                                 ])
 
                                 // move the focused vendor index to the previous vendor
                                 setFocusedVendorIndex(
-                                    (filteredVendors.length +
-                                        focusedVendorIndex -
-                                        1) %
+                                    (filteredVendors.length + safeIndex - 1) %
                                         filteredVendors.length
                                 )
                             }}
                         >
-                            <ChevronDoubleLeftIcon className="w-8 h-8" />
+                            <ChevronLeftIcon className="w-8 h-8" />
                         </button>
                         <button
                             className="z-10 bg-green-400 text-white rounded-full p-2 shadow-md"
                             onClick={() => {
+                                let safeIndex =
+                                    focusedVendorIndex % filteredVendors.length
                                 map.setCenter([
-                                    filteredVendors[focusedVendorIndex]
-                                        .longitude,
-                                    filteredVendors[focusedVendorIndex]
-                                        .latitude,
+                                    filteredVendors[safeIndex].longitude,
+                                    filteredVendors[safeIndex].latitude,
                                 ])
 
                                 // move the focused vendor index to the next vendor
                                 setFocusedVendorIndex(
-                                    (focusedVendorIndex + 1) %
-                                        filteredVendors.length
+                                    (safeIndex + 1) % filteredVendors.length
                                 )
                             }}
                         >
-                            <ChevronDoubleRightIcon className="w-8 h-8" />
+                            <ChevronRightIcon className="w-8 h-8" />
                         </button>
                     </div>
                 </div>
+            </div>
+            <div className="absolute z-10 bottom-20 right-5">
+                <button
+                    className="bg-white text-white rounded-full p-2 shadow-md"
+                    onClick={focusLocationButtonHandler}
+                >
+                    <MapPinIcon className="w-6 h-6 text-green-600"></MapPinIcon>
+                </button>
+                <LegendModal
+                    isOpen={isLegendModalOpen}
+                    onClose={() => setIsLegendModalOpen(false)}
+                />
             </div>
             <div className="absolute z-10 bottom-5 right-5">
                 <button
@@ -418,7 +454,7 @@ const VendorInfoModal = ({ vendor, isOpen, onClose }: VendorInfoModalProps) => {
             <div>
                 {vendor && (
                     <BaseModal onClose={onClose} isOpen={isOpen}>
-                        <div id="abcd">
+                        <div className="p-4">
                             <div className=" text-right">
                                 <button onClick={onClose}>
                                     <XMarkIcon className="w-6 h-6" />
@@ -460,11 +496,14 @@ const VendorInfoModal = ({ vendor, isOpen, onClose }: VendorInfoModalProps) => {
                                     vendor.featuredImages.length === 0 && (
                                         <p>No featured images</p>
                                     )}
-                                <div className="flex flex-col space-y-4">
+                                <div className="">
                                     {vendor.featuredImages.map((image) => (
-                                        <div key={image.id}>
+                                        <div key={image.id} className="mt-4">
                                             <p>{image.title}</p>
-                                            <img src={image.url} />
+                                            <img
+                                                src={image.url}
+                                                className="rounded-md"
+                                            />
                                         </div>
                                     ))}
                                 </div>
