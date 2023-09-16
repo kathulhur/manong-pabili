@@ -1,9 +1,9 @@
-import { useMutation } from "@redwoodjs/web";
-import { DashboardProductsQuery } from "types/graphql";
-import { QUERY } from "../DashboardProductsCell";
-import { useAuth } from "src/auth";
-import Button from "../Button/Button";
-import { toast } from "@redwoodjs/web/toast";
+import { useMutation } from '@redwoodjs/web'
+import { DashboardProductsQuery, Product } from 'types/graphql'
+import { QUERY } from '../DashboardProductsCell'
+import { useAuth } from 'src/auth'
+import Button from '../Button/Button'
+import { toast } from '@redwoodjs/web/toast'
 
 const UPDATE_PRODUCT_MUTATION = gql`
     mutation UpdateProductAvailabilityMutation(
@@ -18,9 +18,9 @@ const UPDATE_PRODUCT_MUTATION = gql`
 `
 
 const DashboardProduct = ({
-  product,
+    product,
 }: {
-  product: DashboardProductsQuery['dashboardProducts'][number]
+    product: Pick<Product, 'id' | 'name' | 'availability'>
 }) => {
     const { currentUser } = useAuth()
     const [updateProduct] = useMutation(UPDATE_PRODUCT_MUTATION, {
@@ -54,7 +54,9 @@ const DashboardProduct = ({
     return (
         <div>
             <div className="flex justify-between items-center">
-                <span className="font-semibold text-slate-700">{product.name}</span>
+                <span className="font-semibold text-slate-700">
+                    {product.name}
+                </span>
                 <Button
                     variant="subtle"
                     type="button"
@@ -65,6 +67,6 @@ const DashboardProduct = ({
             </div>
         </div>
     )
-};
+}
 
-export default DashboardProduct;
+export default DashboardProduct

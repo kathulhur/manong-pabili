@@ -500,6 +500,7 @@ export const Success = ({
                         Edit
                     </Button>
                     <UpdateUsernameModal
+                        defaultValue={vendorAccount?.name}
                         isOpen={isUpdateUsernameModalOpen}
                         onClose={() => setIsUpdateUsernameModalOpen(false)}
                         onSubmit={onSubmitUsername}
@@ -519,6 +520,7 @@ export const Success = ({
                         Edit
                     </Button>
                     <UpdateNameModal
+                        defaultValue={vendorAccount?.name}
                         isOpen={isUpdateNameModalOpen}
                         onClose={() => setIsUpdateNameModalOpen(false)}
                         onSubmit={onSubmitName}
