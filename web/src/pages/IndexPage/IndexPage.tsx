@@ -63,12 +63,14 @@ const IndexPage = () => {
                         <br />
                         nearby.
                     </p>
-                    <Link to={routes.consumerMap()}>
+                    <div className="w-auto">
                         <Button className="px-4 py-3">
-                            View vendors
-                            <ChevronDoubleRightIcon className="w-4" />
+                            <Link to={routes.consumerMap()} className="flex">
+                                View vendors
+                                <ChevronDoubleRightIcon className="w-4" />
+                            </Link>
                         </Button>
-                    </Link>
+                    </div>
                 </div>
             </section>
 
