@@ -39,8 +39,8 @@ const IndexPage = () => {
                         Manong Pabili
                     </h1>
                     <nav className="flex items-center justify-between gap-4">
-                        <Link to={routes.authLogin()}>Login</Link>
-                        <Link to={routes.authSignup()}>
+                        <Link to={routes.login()}>Login</Link>
+                        <Link to={routes.signup()}>
                             <Button>Sign up</Button>
                         </Link>
                     </nav>
@@ -208,7 +208,7 @@ const IndexPage = () => {
                                 Want to be part of our growing family of
                                 vendors?
                             </p>
-                            <Link to={routes.authSignup()}>
+                            <Link to={routes.signup()}>
                                 <Button
                                     variant="outline"
                                     className="px-4 text-sm w-full"
@@ -222,7 +222,7 @@ const IndexPage = () => {
                                 Let people know where you are by sharing your
                                 location.
                             </p>
-                            <Link to={routes.authLogin()}>
+                            <Link to={routes.login()}>
                                 <Button
                                     variant="secondary"
                                     className="px-4 text-sm w-full"

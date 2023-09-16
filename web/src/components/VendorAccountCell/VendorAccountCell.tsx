@@ -500,7 +500,7 @@ export const Success = ({
                         Edit
                     </Button>
                     <UpdateUsernameModal
-                        defaultValue={vendorAccount?.name}
+                        defaultValue={vendorAccount?.username}
                         isOpen={isUpdateUsernameModalOpen}
                         onClose={() => setIsUpdateUsernameModalOpen(false)}
                         onSubmit={onSubmitUsername}

@@ -1,19 +1,32 @@
 import tt from '@tomtom-international/web-sdk-maps'
 import { useEffect } from 'react'
-import {
-    FindVendorHomepageQuery,
-    LocationBroadcastMode,
-    User,
-} from 'types/graphql'
+import { User } from 'types/graphql'
 import clsx from 'clsx'
 
+export function getMarkerColor({
+    locationBroadcastMode,
+}: Pick<User, 'locationBroadcastMode'>) {
+    if (locationBroadcastMode === 'REALTIME') {
+        return 'red'
+    }
+
+    return 'gray'
+}
+
 export interface CreateMarkerProps {
-    vendor: Pick<User, 'id' | 'latitude' | 'longitude' | 'markerUrl'>
+    vendor: Pick<
+        User,
+        'id' | 'latitude' | 'longitude' | 'markerUrl' | 'locationBroadcastMode'
+    >
     pulseColor?: string
     draggable?: boolean
 }
 
-export const createMarker = ({ vendor, pulseColor }: CreateMarkerProps) => {
+export const createMarker = ({
+    vendor,
+    pulseColor,
+    draggable,
+}: CreateMarkerProps) => {
     let container = document.createElement('div')
     container.className = 'relative flex justify-center items-center'
 
@@ -33,18 +46,16 @@ export const createMarker = ({ vendor, pulseColor }: CreateMarkerProps) => {
 
     const marker = new tt.Marker({
         element: container,
+        draggable,
     }).setLngLat([vendor.longitude, vendor.latitude])
 
     marker.getElement().id = String(vendor.id)
     return marker
 }
 
-interface MarkerProps {
+export interface MarkerProps {
     map: any
-    vendor: Pick<
-        User,
-        'id' | 'latitude' | 'longitude' | 'markerUrl' | 'locationBroadcastMode'
-    >
+    vendor: CreateMarkerProps['vendor']
     onClick?: (vendor: any) => void
     draggable?: boolean
     onDragEnd?: ({
@@ -54,19 +65,9 @@ interface MarkerProps {
     }: {
         latitude: number
         longitude: number
-        locationBroadcastMode: LocationBroadcastMode
+        locationBroadcastMode: User['locationBroadcastMode']
     }) => void
     pulseColor?: string
-}
-
-const getMarkerColor = (
-    locationBroadcastMode: FindVendorHomepageQuery['vendor']['locationBroadcastMode']
-) => {
-    if (locationBroadcastMode === 'REALTIME') {
-        return 'red'
-    }
-
-    return 'gray'
 }
 
 const Marker = ({
@@ -84,7 +85,9 @@ const Marker = ({
         if (pingColor) {
             marker = createMarker({ vendor, draggable, pulseColor: pingColor })
         } else {
-            pingColor = getMarkerColor(vendor.locationBroadcastMode)
+            pingColor = getMarkerColor({
+                locationBroadcastMode: vendor.locationBroadcastMode,
+            })
             marker = createMarker({ vendor, draggable, pulseColor: pingColor })
         }
 

@@ -17,8 +17,8 @@ const Routes = () => {
         <Router useAuth={useAuth}>
             <Route path="/forbidden" page={ForbiddenPage} name="forbidden" />
             <Route path="/" page={IndexPage} name="index" />
-            <Route path="/auth/login" page={AuthLoginPage} name="authLogin" />
-            <Route path="/auth/signup" page={AuthSignupPage} name="authSignup" />
+            <Route path="/auth/login" page={AuthLoginPage} name="login" />
+            <Route path="/auth/signup" page={AuthSignupPage} name="signup" />
 
             <Route path="/forgot-password" page={ForgotPasswordPage} name="forgotPassword" />
             <Route path="/reset-password" page={ResetPasswordPage} name="resetPassword" />

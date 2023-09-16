@@ -1,58 +1,64 @@
-import React from "react";
+import React from 'react'
 
-import humanize from "humanize-string";
+import humanize from 'humanize-string'
 
-const MAX_STRING_LENGTH = 150;
+const MAX_STRING_LENGTH = 150
 
 export const formatEnum = (values: string | string[] | null | undefined) => {
-  let output = "";
+    let output = ''
 
-  if (Array.isArray(values)) {
-    const humanizedValues = values.map((value) => humanize(value));
-    output = humanizedValues.join(", ");
-  } else if (typeof values === "string") {
-    output = humanize(values);
-  }
+    if (Array.isArray(values)) {
+        const humanizedValues = values.map((value) => humanize(value))
+        output = humanizedValues.join(', ')
+    } else if (typeof values === 'string') {
+        output = humanize(values)
+    }
 
-  return output;
-};
+    return output
+}
 
 export const jsonDisplay = (obj: unknown) => {
-  return (
-    <pre>
-      <code>{JSON.stringify(obj, null, 2)}</code>
-    </pre>
-  );
-};
+    return (
+        <pre>
+            <code>{JSON.stringify(obj, null, 2)}</code>
+        </pre>
+    )
+}
 
 export const truncate = (value: string | number) => {
-  let output = value?.toString() ?? "";
+    let output = value?.toString() ?? ''
 
-  if (output.length > MAX_STRING_LENGTH) {
-    output = output.substring(0, MAX_STRING_LENGTH) + "...";
-  }
+    if (output.length > MAX_STRING_LENGTH) {
+        output = output.substring(0, MAX_STRING_LENGTH) + '...'
+    }
 
-  return output;
-};
+    return output
+}
 
 export const jsonTruncate = (obj: unknown) => {
-  return truncate(JSON.stringify(obj, null, 2));
-};
+    return truncate(JSON.stringify(obj, null, 2))
+}
 
 export const timeTag = (dateTime?: string) => {
-  let output: string | JSX.Element = "";
+    let output: string | JSX.Element = ''
 
-  if (dateTime) {
-    output = (
-      <time dateTime={dateTime} title={dateTime}>
-        {new Date(dateTime).toUTCString()}
-      </time>
-    );
-  }
+    if (dateTime) {
+        output = (
+            <time dateTime={dateTime} title={dateTime}>
+                {new Date(dateTime).toUTCString()}
+            </time>
+        )
+    }
 
-  return output;
-};
+    return output
+}
 
 export const checkboxInputTag = (checked: boolean) => {
-  return <input type="checkbox" checked={checked} disabled />;
-};
+    return <input type="checkbox" checked={checked} disabled />
+}
+
+export const formatDatetime = (value) => {
+    if (value) {
+        return value.replace(/:\d{2}\.\d{3}\w/, '')
+    }
+}

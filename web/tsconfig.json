@@ -1,13 +1,14 @@
 {
   "compilerOptions": {
     "noEmit": true,
-    "checkJs": true,// recommended to be added by tomtom (https://developer.tomtom.com/maps-sdk-web-js/tutorials/advanced/use-typescript-type-annotations)
+    "checkJs": true, // recommended to be added by tomtom (https://developer.tomtom.com/maps-sdk-web-js/tutorials/advanced/use-typescript-type-annotations)
     "allowJs": true,
     "esModuleInterop": true,
     "target": "esnext",
     "module": "esnext",
     "moduleResolution": "node",
     "baseUrl": "./",
+    "noErrorTruncation": true,
     "skipLibCheck": false,
     "rootDirs": [
       "./src",
@@ -22,12 +23,25 @@
         "../api/src/*",
         "../.redwood/types/mirror/api/src/*"
       ],
-      "$api/*": [ "../api/*" ],
-      "types/*": ["./types/*", "../types/*"],
-      "@redwoodjs/testing": ["../node_modules/@redwoodjs/testing/web"]
+      "$api/*": [
+        "../api/*"
+      ],
+      "types/*": [
+        "./types/*",
+        "../types/*"
+      ],
+      "@redwoodjs/testing": [
+        "../node_modules/@redwoodjs/testing/web"
+      ]
     },
-    "typeRoots": ["../node_modules/@types", "./node_modules/@types"],
-    "types": ["jest", "@testing-library/jest-dom"],
+    "typeRoots": [
+      "../node_modules/@types",
+      "./node_modules/@types"
+    ],
+    "types": [
+      "jest",
+      "@testing-library/jest-dom"
+    ],
     "jsx": "preserve"
   },
   "include": [

@@ -2,12 +2,11 @@ import { Link, routes } from '@redwoodjs/router'
 import { useMutation } from '@redwoodjs/web'
 import { toast } from '@redwoodjs/web/toast'
 
-import { QUERY } from 'src/components/Admin/Marker/MarkersCell'
 import { checkboxInputTag, timeTag, truncate } from 'src/lib/formatters'
 
 import type { DeleteMarkerMutationVariables, FindMarkers } from 'types/graphql'
 import { DELETE_MARKER_MUTATION } from '../Marker/Marker'
-import { formatDatetime } from 'src/pages/Consumer/MapPage/MapPage'
+import { formatDatetime } from 'src/lib/formatters'
 
 const MarkersList = ({
     markers,

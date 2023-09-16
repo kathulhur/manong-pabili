@@ -1,11 +1,8 @@
-import { useState } from 'react'
 import {
-    Product,
-    ProductsQuery,
+    Product as ProductType,
     UpdateProductAvailabilityMutationVariables,
 } from 'types/graphql'
 import { useMutation } from '@redwoodjs/web'
-import { QUERY as PRODUCTS_CELL_QUERY } from '../ProductsCell'
 import { toast } from '@redwoodjs/web/dist/toast'
 import { DELETE_PRODUCT_MUTATION } from '../Admin/Product/Product'
 import Button from '../Button/Button'
@@ -26,7 +23,7 @@ const UPDATE_PRODUCT_MUTATION = gql`
 const Product = ({
     product,
 }: {
-    product: Pick<Product, 'id' | 'name' | 'availability'>
+    product: Pick<ProductType, 'id' | 'name' | 'availability'>
 }) => {
     const [updateProduct] = useMutation(UPDATE_PRODUCT_MUTATION, {
         onError: (error) => {
