@@ -246,7 +246,6 @@ export const Success = ({
             if (!process.env.PUSHER_CHANNEL)
                 throw new Error('PUSHER_CHANNEL ENV is undefined')
             try {
-                console.log('id', vendor.id)
                 await broadcastLocation({
                     variables: {
                         id: vendor.id,
@@ -337,6 +336,7 @@ export const Success = ({
 
     const showLocationButtonHandler = () => {
         setIsLocationShown(true)
+        map.setCenter([vendor.longitude, vendor.latitude])
         if (
             locationBroadcastMode === 'STATIC' ||
             locationBroadcastMode === 'MANUAL'
