@@ -451,7 +451,7 @@ export const Success = ({
     }, [map, vendor])
 
     return (
-        <div className="max-w-7xl mx-auto p-8">
+        <div className="max-w-2xl mx-auto p-8">
             <MetaTags title="Home" description="Home page" />
             <div className="flex justify-between items-center mb-10">
                 <h1 className="font-extrabold text-lg text-green-700">
