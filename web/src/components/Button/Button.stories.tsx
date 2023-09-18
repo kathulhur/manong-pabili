@@ -10,16 +10,48 @@
 //
 // See https://storybook.js.org/docs/react/writing-stories/args.
 
-import type { Meta, StoryObj } from "@storybook/react";
+import type { Meta, StoryObj } from '@storybook/react'
 
-import Button from "./Button";
+import Button from './Button'
 
 const meta: Meta<typeof Button> = {
-  component: Button,
-};
+    component: Button,
+}
 
-export default meta;
+export default meta
 
-type Story = StoryObj<typeof Button>;
+type Story = StoryObj<typeof Button>
 
-export const Primary: Story = {};
+export const Primary: Story = {
+    args: {
+        children: 'Primary',
+    },
+}
+
+export const Secondary: Story = {
+    args: {
+        variant: 'secondary',
+        children: 'Secondary',
+    },
+}
+
+export const Outline: Story = {
+    args: {
+        variant: 'outline',
+        children: 'Outline',
+    },
+}
+
+export const Danger: Story = {
+    args: {
+        variant: 'danger',
+        children: 'Danger',
+    },
+}
+
+export const Subtle: Story = {
+    args: {
+        variant: 'subtle',
+        children: 'Subtle',
+    },
+}

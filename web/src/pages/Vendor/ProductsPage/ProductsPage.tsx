@@ -4,7 +4,7 @@ import { MetaTags } from '@redwoodjs/web'
 
 import { useAuth } from 'src/auth'
 import Button from 'src/components/Button/Button'
-import ProductsCell from 'src/components/ProductsCell'
+import ProductsCell from 'src/components/Vendor/ProductsCell'
 import FadeTransitionLayout from 'src/layouts/FadeTransitionLayout/FadeTransitionLayout'
 
 const ProductsPage = () => {

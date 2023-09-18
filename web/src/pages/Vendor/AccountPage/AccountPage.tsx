@@ -2,7 +2,7 @@ import { ChevronLeftIcon } from '@heroicons/react/20/solid'
 import { Link, navigate, routes } from '@redwoodjs/router'
 import { useAuth } from 'src/auth'
 import Button from 'src/components/Button/Button'
-import VendorAccountCell from 'src/components/VendorAccountCell'
+import VendorAccountCell from 'src/components/Vendor/VendorAccountCell'
 
 const VendorAccountPage = () => {
     const { currentUser } = useAuth()

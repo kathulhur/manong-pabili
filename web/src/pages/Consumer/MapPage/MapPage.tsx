@@ -1,4 +1,4 @@
-import ConsumerMapCell from 'src/components/ConsumerMapCell'
+import ConsumerMapCell from 'src/components/Consumer/ConsumerMapCell'
 
 const MapPage = () => {
     return <ConsumerMapCell />

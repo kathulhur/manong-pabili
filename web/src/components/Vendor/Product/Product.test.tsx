@@ -1,14 +1,15 @@
 import { render } from '@redwoodjs/testing/web'
 
-import Button from './Button'
+import Product from './Product'
+import { standard } from 'src/components/Vendor/ProductsCell/ProductsCell.mock'
 
 //   Improve this test with help from the Redwood Testing Doc:
 //    https://redwoodjs.com/docs/testing#testing-components
 
-describe('Button', () => {
+describe('Product', () => {
     it('renders successfully', () => {
         expect(() => {
-            render(<Button />)
+            render(<Product product={standard().products[0]} />)
         }).not.toThrow()
     })
 })
