@@ -37,7 +37,7 @@ export const Loading = () => <div>Loading...</div>
 
 export const Empty = () => {
     return (
-        <ConsumerMap vendors={[]} products={[]} className="h-screen w-screen" />
+        <ConsumerMap vendors={[]} products={[]} className="h-screen w-full" />
     )
 }
 
@@ -58,7 +58,7 @@ export const Success = ({
         <ConsumerMap
             vendors={mapVendors}
             products={vendorProducts}
-            className="h-screen w-screen"
+            className="h-screen w-full"
         />
     )
 }

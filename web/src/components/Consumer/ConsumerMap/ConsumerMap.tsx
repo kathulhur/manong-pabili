@@ -6,9 +6,9 @@ import {
     ChevronRightIcon,
 } from '@heroicons/react/20/solid'
 import tt from '@tomtom-international/web-sdk-maps'
-import { Consumer, useEffect, useRef, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import usePusher from 'src/hooks/usePusher'
-import { Product, User } from 'types/graphql'
+import { Product as ProductType, User as UserType } from 'types/graphql'
 import BaseModal from '../../Modals/BaseModal'
 import Marker, { MarkerProps } from '../../Marker/Marker'
 import useCoordinates from 'src/hooks/useCoordinates'
@@ -18,6 +18,7 @@ import Select from 'react-select'
 import '@tomtom-international/web-sdk-maps/dist/maps.css'
 import { formatDatetime } from 'src/lib/formatters'
 import Button from 'src/components/Button/Button'
+
 function removeSpacesAndHyphens(str: string) {
     return str.replace(/[\s-]/g, '')
 }
@@ -64,35 +65,51 @@ const ConsumerMap = ({ vendors, products, className }: ConsumerMapProps) => {
     const coordinates = useCoordinates()
     const [userMarker, setUserMarker] = useState<tt.Marker>(null)
     const [selectedVendor, setSelectedVendor] =
-        useState<(typeof vendors)[0]>(null)
+        useState<VendorInfoModalProps['vendor']>(null)
     const [isLegendModalOpen, setIsLegendModalOpen] = useState(false)
-    const [selectedProduct, setSelectedProduct] =
-        useState<ProductSearchOption>(null)
+    const [selectedOption, setSelectedOption] = useState<SearchOption>(null)
 
     const [focusedVendorIndex, setFocusedVendorIndex] = useState(0)
+    const [selectedSearchType, setSelectedSearchType] =
+        useState<SearchTypeOption>({ value: 'product', label: 'Product' })
 
     const [filteredVendors, setFilteredVendors] = useState(
         vendors.filter((products) => {
-            if (!selectedProduct) return true
+            if (!selectedOption) return true
 
             return products.productsOffered.some((product) =>
-                searchMatches(selectedProduct.label, product.name)
+                searchMatches(selectedOption.label, product.name)
             )
         })
     )
+    const [productOptions, setProductOptions] =
+        useState<ProductSearchProps['products']>(products)
+    const [vendorOptions, setVendorOptions] =
+        useState<VendorSearchProps['vendors']>(vendors)
+
+    useEffect(() => {
+        setProductOptions(products)
+    }, [products])
+
+    // set the vendor options when the vendors change
+    useEffect(() => {
+        setVendorOptions(vendors)
+    }, [vendors])
 
     // set the filtered vendors when the vendors change
     useEffect(() => {
         setFilteredVendors(
             vendors.filter((products) => {
-                if (!selectedProduct) return true
+                if (!selectedOption) return true
 
                 return products.productsOffered.some((product) =>
-                    searchMatches(selectedProduct.label, product.name)
+                    searchMatches(selectedOption.label, product.name)
                 )
             })
         )
+    }, [vendors])
 
+    useEffect(() => {
         // if there is a selected vendor, update it
         if (selectedVendor) {
             setSelectedVendor(
@@ -101,7 +118,7 @@ const ConsumerMap = ({ vendors, products, className }: ConsumerMapProps) => {
                 )
             )
         }
-    }, [vendors])
+    }, [filteredVendors])
 
     // initialize map
     useEffect(() => {
@@ -188,21 +205,24 @@ const ConsumerMap = ({ vendors, products, className }: ConsumerMapProps) => {
                 }
             )
 
-            channel.bind('hide-location', ({ vendor }: { vendor: User }) => {
-                // remove marker
-                apolloClient.cache.updateQuery(
-                    { query: CONSUMER_MAP_QUERY },
-                    (data) => ({
-                        mapVendors: data.mapVendors.filter(
-                            (v) => v.id !== vendor.id
-                        ),
-                    })
-                )
-            })
+            channel.bind(
+                'hide-location',
+                ({ vendor }: { vendor: UserType }) => {
+                    // remove marker
+                    apolloClient.cache.updateQuery(
+                        { query: CONSUMER_MAP_QUERY },
+                        (data) => ({
+                            mapVendors: data.mapVendors.filter(
+                                (v) => v.id !== vendor.id
+                            ),
+                        })
+                    )
+                }
+            )
 
             channel.bind(
                 'product-update',
-                ({ updatedProduct }: { updatedProduct: Product }) => {
+                ({ updatedProduct }: { updatedProduct: ProductType }) => {
                     if (updatedProduct.availability === true) {
                         apolloClient.cache.updateQuery(
                             { query: CONSUMER_MAP_QUERY },
@@ -246,7 +266,7 @@ const ConsumerMap = ({ vendors, products, className }: ConsumerMapProps) => {
 
             channel.bind(
                 'product-delete',
-                ({ deletedProduct }: { deletedProduct: Product }) => {
+                ({ deletedProduct }: { deletedProduct: ProductType }) => {
                     apolloClient.cache.updateQuery(
                         { query: CONSUMER_MAP_QUERY },
                         (data) => ({
@@ -353,23 +373,65 @@ const ConsumerMap = ({ vendors, products, className }: ConsumerMapProps) => {
 
     return (
         <div className={className}>
-            <ProductSearch
-                products={products}
-                onChange={(newValue) => {
-                    setSelectedProduct(newValue)
-                    setFilteredVendors(
-                        vendors.filter((vendor) => {
-                            if (!newValue) return true
+            <div className="flex p-2 space-x-4 bg-green-400">
+                <div className="flex-1">
+                    {selectedSearchType?.value === 'product' && (
+                        <ProductSearch
+                            products={productOptions}
+                            onChange={(newValue) => {
+                                setSelectedOption(newValue)
+                                setFilteredVendors(
+                                    vendors.filter((vendor) => {
+                                        if (!newValue) return true
 
-                            return vendor.productsOffered.some((product) =>
-                                searchMatches(newValue.label, product.name)
-                            )
-                        })
-                    )
-                }}
-                value={selectedProduct}
-            />
+                                        return vendor.productsOffered.some(
+                                            (product) =>
+                                                searchMatches(
+                                                    newValue.label,
+                                                    product.name
+                                                )
+                                        )
+                                    })
+                                )
+                            }}
+                            value={selectedOption}
+                        />
+                    )}
 
+                    {selectedSearchType?.value === 'vendor' && (
+                        <VendorSearch
+                            vendors={vendorOptions}
+                            onChange={(newValue) => {
+                                setSelectedOption(newValue)
+                                setFilteredVendors(
+                                    vendors.filter((vendor) => {
+                                        if (!newValue) return true
+
+                                        return searchMatches(
+                                            newValue.label,
+                                            vendor.name
+                                        )
+                                    })
+                                )
+                            }}
+                            value={selectedOption}
+                        />
+                    )}
+                </div>
+                <div>
+                    <Select
+                        defaultValue={selectedSearchType}
+                        onChange={(newValue) => {
+                            setSelectedSearchType(newValue)
+                            setSelectedOption(null)
+                        }}
+                        options={[
+                            { value: 'product', label: 'Product' },
+                            { value: 'vendor', label: 'Vendor' },
+                        ]}
+                    />
+                </div>
+            </div>
             <div id="map" ref={mapRef} className="w-full h-full">
                 <div className="absolute w-full h-full">
                     <div className="w-full h-full flex items-center p-4 justify-between">
@@ -415,29 +477,30 @@ const ConsumerMap = ({ vendors, products, className }: ConsumerMapProps) => {
             <div>
                 {filteredVendors.map((vendor) => (
                     <Marker
-                        onClick={() => setIsVendorInfoModalOpen(true)}
+                        onClick={() => {
+                            setSelectedVendor(vendor)
+                            setIsVendorInfoModalOpen(true)
+                        }}
                         key={vendor.id}
                         map={map}
                         vendor={vendor}
                     />
                 ))}
             </div>
-            {selectedVendor && (
-                <VendorInfoModal
-                    vendor={selectedVendor}
-                    isOpen={isVendorInfoModalOpen}
-                    onClose={() => setIsVendorInfoModalOpen(false)}
-                    onLeftButtonClicked={onLeftVendorButtonClicked}
-                    onRightButtonClicked={onRightVendorButtonClicked}
-                />
-            )}
+            <VendorInfoModal
+                vendor={selectedVendor}
+                isOpen={isVendorInfoModalOpen}
+                onClose={() => setIsVendorInfoModalOpen(false)}
+                onLeftButtonClicked={onLeftVendorButtonClicked}
+                onRightButtonClicked={onRightVendorButtonClicked}
+            />
         </div>
     )
 }
 
 interface VendorInfoModalProps {
     vendor: Pick<
-        User,
+        UserType,
         | 'id'
         | 'name'
         | 'latitude'
@@ -572,7 +635,7 @@ const LegendModal = ({ isOpen, onClose }: LegendModalProps) => {
         <>
             <BaseModal isOpen={isOpen} onClose={onClose}>
                 <div className="text-right">
-                    <button onClick={onClose}>
+                    <button autoFocus onClick={onClose}>
                         <XMarkIcon className="w-6 h-6" />
                     </button>
                 </div>
@@ -625,20 +688,22 @@ const LegendModal = ({ isOpen, onClose }: LegendModalProps) => {
     )
 }
 
-interface ProductSearchOption {
+interface SearchOption {
     value: number
     label: string
+}
+
+interface ProductSearchProps {
+    products: Pick<ProductType, 'id' | 'name'>[]
+    onChange: (newValue: SearchOption) => void
+    value: SearchOption
 }
 
 export const ProductSearch = ({
     products,
     onChange,
     value,
-}: {
-    products: ConsumerMapVendorProduct[]
-    onChange: (newValue: ProductSearchOption) => void
-    value: ProductSearchOption
-}) => {
+}: ProductSearchProps) => {
     return (
         <Select
             className="basic-single"
@@ -654,6 +719,39 @@ export const ProductSearch = ({
             }))}
         />
     )
+}
+
+interface VendorSearchProps {
+    vendors: Pick<UserType, 'id' | 'name'>[]
+    onChange: (newValue: SearchOption) => void
+    value: SearchOption
+}
+
+export const VendorSearch = ({
+    vendors,
+    onChange,
+    value,
+}: VendorSearchProps) => {
+    return (
+        <Select
+            className="basic-single"
+            classNamePrefix="select"
+            isSearchable={true}
+            name={'vendors'}
+            isClearable={true}
+            onChange={onChange}
+            value={value}
+            options={vendors.map((vendor) => ({
+                value: vendor.id,
+                label: vendor.name,
+            }))}
+        />
+    )
+}
+
+interface SearchTypeOption {
+    value: 'product' | 'vendor'
+    label: string
 }
 
 export default ConsumerMap
