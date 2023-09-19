@@ -26,6 +26,8 @@ export const schema = gql`
         vendorPage(page: Int, searchKey: String): VendorPage @requireAuth
         mapVendors: [User!]! @skipAuth
         userPage(page: Int): UserPage @requireAuth
+        consumerMapSearch(searchKey: String!): ConsumerMapSearchResult!
+            @skipAuth
     }
 
     type Mutation {
@@ -97,5 +99,11 @@ export const schema = gql`
         updateVendorMarker(id: Int!, input: UpdateVendorMarkerInput!): User!
             @requireAuth
         verifyUser(id: Int!): User! @requireAuth
+        triggerMorningNotification: Boolean @requireAuth
+    }
+
+    type ConsumerMapSearchResult {
+        vendors: [User!]!
+        products: [Product!]!
     }
 `

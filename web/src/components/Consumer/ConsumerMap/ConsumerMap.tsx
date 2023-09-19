@@ -17,6 +17,7 @@ import { QUERY as CONSUMER_MAP_QUERY } from '../ConsumerMapCell/ConsumerMapCell'
 import Select from 'react-select'
 import '@tomtom-international/web-sdk-maps/dist/maps.css'
 import { formatDatetime } from 'src/lib/formatters'
+import Button from 'src/components/Button/Button'
 function removeSpacesAndHyphens(str: string) {
     return str.replace(/[\s-]/g, '')
 }
@@ -59,7 +60,7 @@ const ConsumerMap = ({ vendors, products, className }: ConsumerMapProps) => {
     const mapRef = useRef(null)
     const [map, setMap] = useState<tt.Map>(null)
     const apolloClient = useApolloClient()
-
+    const [isVendorInfoModalOpen, setIsVendorInfoModalOpen] = useState(false)
     const coordinates = useCoordinates()
     const [userMarker, setUserMarker] = useState<tt.Marker>(null)
     const [selectedVendor, setSelectedVendor] =
@@ -95,7 +96,9 @@ const ConsumerMap = ({ vendors, products, className }: ConsumerMapProps) => {
         // if there is a selected vendor, update it
         if (selectedVendor) {
             setSelectedVendor(
-                vendors.find((vendor) => vendor.id === selectedVendor.id)
+                filteredVendors.find(
+                    (vendor) => vendor.id === selectedVendor.id
+                )
             )
         }
     }, [vendors])
@@ -322,6 +325,32 @@ const ConsumerMap = ({ vendors, products, className }: ConsumerMapProps) => {
         }
     }, [pusher, channel, map, vendors])
 
+    function onLeftVendorButtonClicked() {
+        let safeIndex = focusedVendorIndex % filteredVendors.length
+        map.setCenter([
+            filteredVendors[safeIndex].longitude,
+            filteredVendors[safeIndex].latitude,
+        ])
+
+        // move the focused vendor index to the previous vendor
+        setFocusedVendorIndex(
+            (filteredVendors.length + safeIndex - 1) % filteredVendors.length
+        )
+        setSelectedVendor(filteredVendors[safeIndex])
+    }
+
+    function onRightVendorButtonClicked() {
+        let safeIndex = focusedVendorIndex % filteredVendors.length
+        map.setCenter([
+            filteredVendors[safeIndex].longitude,
+            filteredVendors[safeIndex].latitude,
+        ])
+
+        // move the focused vendor index to the next vendor
+        setFocusedVendorIndex((safeIndex + 1) % filteredVendors.length)
+        setSelectedVendor(filteredVendors[safeIndex])
+    }
+
     return (
         <div className={className}>
             <ProductSearch
@@ -346,38 +375,13 @@ const ConsumerMap = ({ vendors, products, className }: ConsumerMapProps) => {
                     <div className="w-full h-full flex items-center p-4 justify-between">
                         <button
                             className="z-10 bg-green-400 text-white rounded-full p-2 shadow-md"
-                            onClick={() => {
-                                let safeIndex =
-                                    focusedVendorIndex % filteredVendors.length
-                                map.setCenter([
-                                    filteredVendors[safeIndex].longitude,
-                                    filteredVendors[safeIndex].latitude,
-                                ])
-
-                                // move the focused vendor index to the previous vendor
-                                setFocusedVendorIndex(
-                                    (filteredVendors.length + safeIndex - 1) %
-                                        filteredVendors.length
-                                )
-                            }}
+                            onClick={onLeftVendorButtonClicked}
                         >
                             <ChevronLeftIcon className="w-8 h-8" />
                         </button>
                         <button
                             className="z-10 bg-green-400 text-white rounded-full p-2 shadow-md"
-                            onClick={() => {
-                                let safeIndex =
-                                    focusedVendorIndex % filteredVendors.length
-                                map.setCenter([
-                                    filteredVendors[safeIndex].longitude,
-                                    filteredVendors[safeIndex].latitude,
-                                ])
-
-                                // move the focused vendor index to the next vendor
-                                setFocusedVendorIndex(
-                                    (safeIndex + 1) % filteredVendors.length
-                                )
-                            }}
+                            onClick={onRightVendorButtonClicked}
                         >
                             <ChevronRightIcon className="w-8 h-8" />
                         </button>
@@ -411,7 +415,7 @@ const ConsumerMap = ({ vendors, products, className }: ConsumerMapProps) => {
             <div>
                 {filteredVendors.map((vendor) => (
                     <Marker
-                        onClick={() => setSelectedVendor(vendor)}
+                        onClick={() => setIsVendorInfoModalOpen(true)}
                         key={vendor.id}
                         map={map}
                         vendor={vendor}
@@ -421,8 +425,10 @@ const ConsumerMap = ({ vendors, products, className }: ConsumerMapProps) => {
             {selectedVendor && (
                 <VendorInfoModal
                     vendor={selectedVendor}
-                    isOpen={!!selectedVendor}
-                    onClose={() => setSelectedVendor(null)}
+                    isOpen={isVendorInfoModalOpen}
+                    onClose={() => setIsVendorInfoModalOpen(false)}
+                    onLeftButtonClicked={onLeftVendorButtonClicked}
+                    onRightButtonClicked={onRightVendorButtonClicked}
                 />
             )}
         </div>
@@ -446,75 +452,108 @@ interface VendorInfoModalProps {
     }
     isOpen: boolean
     onClose: () => void
+    onLeftButtonClicked: () => void
+    onRightButtonClicked: () => void
 }
 
-const VendorInfoModal = ({ vendor, isOpen, onClose }: VendorInfoModalProps) => {
+const VendorInfoModal = ({
+    vendor,
+    isOpen,
+    onClose,
+    onLeftButtonClicked,
+    onRightButtonClicked,
+}: VendorInfoModalProps) => {
     return (
         <>
             <div>
                 {vendor && (
                     <BaseModal onClose={onClose} isOpen={isOpen}>
-                        <div className="p-4">
-                            <div className=" text-right">
-                                <button onClick={onClose}>
-                                    <XMarkIcon className="w-6 h-6" />
-                                </button>
+                        <div className=" text-right">
+                            <button onClick={onClose}>
+                                <XMarkIcon className="w-6 h-6" />
+                            </button>
+                        </div>
+                        <div className="flex">
+                            <div className="flex items-center">
+                                <Button
+                                    variant="subtle"
+                                    onClick={onLeftButtonClicked}
+                                >
+                                    <ChevronLeftIcon className="w-12 h-12" />
+                                </Button>
                             </div>
-                            <section className="mb-8">
-                                <div className="flex flex-col items-center">
-                                    <div className="flex items-center justify-center rounded-full p-4 w-24 h-24 bg-green-100 hover:bg-green-200">
-                                        <img
-                                            src={vendor?.markerUrl}
-                                            alt="marker icon"
-                                        />
-                                    </div>
-                                    <h2 className="font-bold text-lg">
-                                        {vendor.name}
-                                    </h2>
-                                </div>
-                            </section>
-
-                            <section className="mb-8">
-                                <h3 className="font-bold text-medium">
-                                    Available Products
-                                </h3>
-                                {vendor &&
-                                    vendor.productsOffered.length === 0 && (
-                                        <p>No available products</p>
-                                    )}
-                                <ul className="list-disc pl-4">
-                                    {vendor.productsOffered.map((product) => (
-                                        <li key={product.id}>{product.name}</li>
-                                    ))}
-                                </ul>
-                            </section>
-                            <section className="mb-8">
-                                <h3 className="font-bold text-medium">
-                                    Featured Images
-                                </h3>
-                                {vendor &&
-                                    vendor.featuredImages.length === 0 && (
-                                        <p>No featured images</p>
-                                    )}
-                                <div className="">
-                                    {vendor.featuredImages.map((image) => (
-                                        <div key={image.id} className="mt-4">
-                                            <p>{image.title}</p>
+                            <div className="p-4">
+                                <section className="mb-8">
+                                    <div className="flex flex-col items-center">
+                                        <div className="flex items-center justify-center rounded-full p-4 w-24 h-24 bg-green-100 hover:bg-green-200">
                                             <img
-                                                src={image.url}
-                                                className="rounded-md"
+                                                src={vendor?.markerUrl}
+                                                alt="marker icon"
                                             />
                                         </div>
-                                    ))}
-                                </div>
-                            </section>
+                                        <h2 className="font-bold text-lg">
+                                            {vendor.name}
+                                        </h2>
+                                    </div>
+                                </section>
 
-                            <footer className="mt-2">
-                                <h3 className="text-sm font-semibold">
-                                    Last location update
-                                </h3>
-                                {formatDatetime(vendor.lastLocationUpdate)}
-                            </footer>
+                                <section className="mb-8">
+                                    <h3 className="font-bold text-medium">
+                                        Available Products
+                                    </h3>
+                                    {vendor &&
+                                        vendor.productsOffered.length === 0 && (
+                                            <p>No available products</p>
+                                        )}
+                                    <ul className="list-disc pl-4">
+                                        {vendor.productsOffered.map(
+                                            (product) => (
+                                                <li key={product.id}>
+                                                    {product.name}
+                                                </li>
+                                            )
+                                        )}
+                                    </ul>
+                                </section>
+                                <section className="mb-8">
+                                    <h3 className="font-bold text-medium">
+                                        Featured Images
+                                    </h3>
+                                    {vendor &&
+                                        vendor.featuredImages.length === 0 && (
+                                            <p>No featured images</p>
+                                        )}
+                                    <div className="">
+                                        {vendor.featuredImages.map((image) => (
+                                            <div
+                                                key={image.id}
+                                                className="mt-4"
+                                            >
+                                                <p>{image.title}</p>
+                                                <img
+                                                    src={image.url}
+                                                    className="rounded-md"
+                                                />
+                                            </div>
+                                        ))}
+                                    </div>
+                                </section>
+
+                                <footer className="mt-2">
+                                    <h3 className="text-sm font-semibold">
+                                        Last location update
+                                    </h3>
+                                    {formatDatetime(vendor.lastLocationUpdate)}
+                                </footer>
+                            </div>
+                            <div className="flex items-center">
+                                <Button
+                                    variant="subtle"
+                                    onClick={onRightButtonClicked}
+                                >
+                                    <ChevronRightIcon className="w-12 h-12" />
+                                </Button>
+                            </div>
                         </div>
                     </BaseModal>
                 )}

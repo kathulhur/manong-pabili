@@ -10,8 +10,11 @@ import {
     VerifyUserMutation,
     VerifyUserMutationVariables,
     FindUsers,
+    TriggerMorningNotificationMutation,
+    TriggerMorningNotificationMutationVariables,
 } from 'types/graphql'
 import Button from 'src/components/Button/Button'
+import { BellIcon } from '@heroicons/react/20/solid'
 
 export const VERIFY_USER_MUTATION = gql`
     mutation VerifyUserMutation($id: Int!) {
@@ -19,6 +22,12 @@ export const VERIFY_USER_MUTATION = gql`
             id
             verified
         }
+    }
+`
+
+export const TRIGGER_MORNING_NOTIFICATION_MUTATION = gql`
+    mutation TriggerMorningNotificationMutation {
+        triggerMorningNotification
     }
 `
 
@@ -100,6 +109,12 @@ const UsersList = ({ users }: { users: FindUsers['userPage']['users'] }) => {
             })
         }
     }
+
+    const [triggerMorningNotificationMutation, { loading, error }] =
+        useMutation<
+            TriggerMorningNotificationMutation,
+            TriggerMorningNotificationMutationVariables
+        >(TRIGGER_MORNING_NOTIFICATION_MUTATION)
 
     return (
         <div className="rw-table-wrapper-responsive">
@@ -212,6 +227,13 @@ const UsersList = ({ users }: { users: FindUsers['userPage']['users'] }) => {
                             <td className="flex space-x-4">
                                 <Button onClick={() => onVerifyUser(user.id)}>
                                     Verify user
+                                </Button>
+                                <Button
+                                    onClick={async () =>
+                                        await triggerMorningNotificationMutation()
+                                    }
+                                >
+                                    <BellIcon className="h-5 w-5" />
                                 </Button>
                                 <button
                                     type="button"
