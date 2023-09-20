@@ -30,12 +30,9 @@ import clsx from 'clsx'
 import DashboardProductsCell from '../DashboardProductsCell'
 import { useCallback, useEffect, useRef, useState } from 'react'
 import { getCurrentPositionAsync } from 'src/hooks/useCoordinates'
-import usePusher from 'src/hooks/usePusher'
-import { createMarker } from 'src/components/Marker/Marker'
-import tt, { LngLatLike } from '@tomtom-international/web-sdk-maps'
+import tt from '@tomtom-international/web-sdk-maps'
 import { toast } from '@redwoodjs/web/dist/toast'
 import Marker from 'src/components/Marker/Marker'
-import { get } from '@redwoodjs/forms'
 
 import LoadingComponent from 'src/components/Loading/Loading'
 export const beforeQuery = ({ userId }) => {

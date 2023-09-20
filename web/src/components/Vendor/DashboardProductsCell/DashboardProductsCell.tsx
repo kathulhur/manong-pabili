@@ -159,7 +159,6 @@ export const Success = ({
             console.error(error)
         }
     }
-    console.log(dashboardProducts)
     return (
         <div className="my-8">
             <div className="flex justify-between items-center">

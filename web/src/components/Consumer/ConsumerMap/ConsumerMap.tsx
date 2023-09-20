@@ -99,15 +99,19 @@ const ConsumerMap = ({ vendors, products, className }: ConsumerMapProps) => {
     // set the filtered vendors when the vendors change
     useEffect(() => {
         setFilteredVendors(
-            vendors.filter((products) => {
+            vendors.filter((vendor) => {
                 if (!selectedOption) return true
 
-                return products.productsOffered.some((product) =>
-                    searchMatches(selectedOption.label, product.name)
-                )
+                if (selectedSearchType.value === 'vendor') {
+                    return searchMatches(selectedOption.label, vendor.name)
+                } else if (selectedSearchType.value === 'product') {
+                    return vendor.productsOffered.some((product) =>
+                        searchMatches(selectedOption.label, product.name)
+                    )
+                }
             })
         )
-    }, [vendors])
+    }, [vendors, selectedOption])
 
     useEffect(() => {
         // if there is a selected vendor, update it
