@@ -11,27 +11,7 @@ import './index.css'
 import { Toaster } from '@redwoodjs/web/toast'
 
 export const cache = new InMemoryCache({
-    typePolicies: {
-        User: {
-            fields: {
-                productsOffered: {
-                    merge(existing = [], incoming) {
-                        return incoming
-                    },
-                },
-                mapVendors: {
-                    merge(existing = [], incoming) {
-                        return incoming
-                    },
-                },
-                featuredImages: {
-                    merge(existing = [], incoming) {
-                        return incoming
-                    },
-                },
-            },
-        },
-    },
+    typePolicies: {},
 })
 
 const App = () => (
@@ -40,7 +20,40 @@ const App = () => (
             <AuthProvider>
                 <RedwoodApolloProvider
                     useAuth={useAuth}
-                    graphQLClientConfig={{ cache }}
+                    graphQLClientConfig={{
+                        cacheConfig: {
+                            typePolicies: {
+                                User: {
+                                    fields: {
+                                        productsOffered: {
+                                            merge(existing = [], incoming) {
+                                                return incoming
+                                            },
+                                        },
+                                        mapVendors: {
+                                            merge(existing = [], incoming) {
+                                                return incoming
+                                            },
+                                        },
+                                        featuredImages: {
+                                            merge(existing = [], incoming) {
+                                                return incoming
+                                            },
+                                        },
+                                    },
+                                },
+                                Query: {
+                                    fields: {
+                                        mapVendors: {
+                                            merge(existing = [], incoming) {
+                                                return incoming
+                                            },
+                                        },
+                                    },
+                                },
+                            },
+                        },
+                    }}
                 >
                     <Toaster />
                     <Routes />

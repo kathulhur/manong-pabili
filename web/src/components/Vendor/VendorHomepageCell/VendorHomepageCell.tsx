@@ -190,6 +190,7 @@ export const Success = ({
     useEffect(() => {
         ;(async () => {
             if (isLocationShown && map && vendor) {
+                map.setCenter([vendor.longitude, vendor.latitude])
                 broadcastLocationHandler({
                     latitude: vendor.latitude,
                     longitude: vendor.longitude,
@@ -334,15 +335,14 @@ export const Success = ({
         }
     }, [locationBroadcastMode, broadcastLocationHandler, isLocationShown])
 
-    const showLocationButtonHandler = () => {
+    const showLocationButtonHandler = async () => {
         setIsLocationShown(true)
         map.setCenter([vendor.longitude, vendor.latitude])
-        if (
-            locationBroadcastMode === 'STATIC' ||
-            locationBroadcastMode === 'MANUAL'
-        ) {
-            updateLocationButtonHandler(locationBroadcastMode)
-        }
+        await broadcastLocationHandler({
+            latitude: vendor.latitude,
+            longitude: vendor.longitude,
+            locationBroadcastMode,
+        })
     }
 
     const hideLocationButtonHandler = useCallback(async () => {
