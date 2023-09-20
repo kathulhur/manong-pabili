@@ -1,4 +1,4 @@
-import { Link, routes } from '@redwoodjs/router'
+import { Link, routes, useParams } from '@redwoodjs/router'
 import { useMutation } from '@redwoodjs/web'
 import { toast } from '@redwoodjs/web/toast'
 
@@ -10,11 +10,11 @@ import {
     VerifyUserMutation,
     VerifyUserMutationVariables,
     FindUsers,
-    TriggerMorningNotificationMutation,
-    TriggerMorningNotificationMutationVariables,
 } from 'types/graphql'
 import Button from 'src/components/Button/Button'
 import { BellIcon } from '@heroicons/react/20/solid'
+import Table, { TableProps } from './Table/Table'
+import Pagination from 'src/components/Pagination/Pagination'
 
 export const VERIFY_USER_MUTATION = gql`
     mutation VerifyUserMutation($id: Int!) {
@@ -25,13 +25,12 @@ export const VERIFY_USER_MUTATION = gql`
     }
 `
 
-export const TRIGGER_MORNING_NOTIFICATION_MUTATION = gql`
-    mutation TriggerMorningNotificationMutation {
-        triggerMorningNotification
-    }
-`
+export interface UsersProps {
+    users: TableProps['users']
+    count: number
+}
 
-const UsersList = ({ users }: { users: FindUsers['userPage']['users'] }) => {
+const UsersList = ({ users, count }: UsersProps) => {
     const [deleteUser] = useMutation(DELETE_USER_MUTATION, {
         onCompleted: () => {
             toast.success('User deleted')
@@ -110,144 +109,19 @@ const UsersList = ({ users }: { users: FindUsers['userPage']['users'] }) => {
         }
     }
 
-    const [triggerMorningNotificationMutation, { loading, error }] =
-        useMutation<
-            TriggerMorningNotificationMutation,
-            TriggerMorningNotificationMutationVariables
-        >(TRIGGER_MORNING_NOTIFICATION_MUTATION)
-
     return (
-        <div className="rw-table-wrapper-responsive">
-            <table className="rw-table">
-                <thead>
-                    <tr className="whitespace-nowrap">
-                        <th>Verified</th>
-                        <th>Id</th>
-                        <th>Email</th>
-                        <th>Username</th>
-                        <th>Name</th>
-                        <th>Gender</th>
-                        <th>Mobile number</th>
-                        <th>Hashed password</th>
-                        <th>Salt</th>
-                        <th>Reset token</th>
-                        <th>Reset token expires at</th>
-                        <th>Latitude</th>
-                        <th>Longitude</th>
-                        <th>Roles</th>
-                        <th>Last location update</th>
-                        <th>Location hidden</th>
-                        <th>Location Broadcast Mode</th>
-                        <th>Marker url</th>
-                        <th>Created at</th>
-                        <th>Updated at</th>
-                        <th>Deleted at</th>
-                        <th>Deleted</th>
-                        <th>Links</th>
-                        <th>Actions</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    {users.map((user) => (
-                        <tr key={user.id} className="whitespace-nowrap">
-                            <td>{checkboxInputTag(user.verified)}</td>
-                            <td>{truncate(user.id)}</td>
-                            <td>{truncate(user.email)}</td>
-                            <td>{truncate(user.username)}</td>
-                            <td>{truncate(user.name)}</td>
-                            <td>{truncate(user.gender)}</td>
-                            <td>{truncate(user.mobileNumber)}</td>
-                            <td>{truncate(user.hashedPassword)}</td>
-                            <td>{truncate(user.salt)}</td>
-                            <td>{truncate(user.resetToken)}</td>
-                            <td>{timeTag(user.resetTokenExpiresAt)}</td>
-                            <td>{truncate(user.latitude)}</td>
-                            <td>{truncate(user.longitude)}</td>
-                            <td>{truncate(user.roles)}</td>
-                            <td>{timeTag(user.lastLocationUpdate)}</td>
-                            <td>{checkboxInputTag(user.locationHidden)}</td>
-                            <td>{user.locationBroadcastMode}</td>
-                            <td>{truncate(user.markerUrl)}</td>
-                            <td>{timeTag(user.createdAt)}</td>
-                            <td>{timeTag(user.updatedAt)}</td>
-                            <td>{timeTag(user.deletedAt)}</td>
-                            <td>{checkboxInputTag(user.deleted)}</td>
-                            <td>
-                                <nav className="rw-table-actions">
-                                    <Link
-                                        to={routes.adminUser({ id: user.id })}
-                                        title={
-                                            'Show user ' + user.id + ' detail'
-                                        }
-                                        className="rw-button rw-button-small"
-                                    >
-                                        Show
-                                    </Link>
-                                    <Link
-                                        to={routes.adminEditUser({
-                                            id: user.id,
-                                        })}
-                                        title={'Edit user ' + user.id}
-                                        className="rw-button rw-button-small rw-button-blue"
-                                    >
-                                        Edit
-                                    </Link>
-                                    <Link
-                                        to={routes.adminUserProducts({
-                                            page: 1,
-                                            id: user.id,
-                                        })}
-                                        title={'Edit user ' + user.id}
-                                        className="rw-button rw-button-small rw-button-blue"
-                                    >
-                                        view products
-                                    </Link>
-                                    <Link
-                                        to={routes.adminUserImages({
-                                            page: 1,
-                                            id: user.id,
-                                        })}
-                                        title={'Edit user ' + user.id}
-                                        className="rw-button rw-button-small rw-button-blue"
-                                    >
-                                        view featured images
-                                    </Link>
-                                    <Link
-                                        to={routes.adminMarkers({
-                                            page: 1,
-                                            id: user.id,
-                                        })}
-                                        title={'Edit user ' + user.id}
-                                        className="rw-button rw-button-small rw-button-blue"
-                                    >
-                                        view custom markers
-                                    </Link>
-                                </nav>
-                            </td>
-                            <td className="flex space-x-4">
-                                <Button onClick={() => onVerifyUser(user.id)}>
-                                    Verify user
-                                </Button>
-                                <Button
-                                    onClick={async () =>
-                                        await triggerMorningNotificationMutation()
-                                    }
-                                >
-                                    <BellIcon className="h-5 w-5" />
-                                </Button>
-                                <button
-                                    type="button"
-                                    title={'Delete user ' + user.id}
-                                    className="rw-button rw-button-small rw-button-red flex items-center"
-                                    onClick={() => onDeleteClick(user.id)}
-                                >
-                                    Delete
-                                </button>
-                            </td>
-                        </tr>
-                    ))}
-                </tbody>
-            </table>
+        <div className="space-y-4">
+            <Table
+                users={users}
+                onDelete={onDeleteClick}
+                onVerify={onVerifyUser}
+            />
+            <Pagination
+                count={count}
+                paginate={(page) => {
+                    routes.adminUsers({ page })
+                }}
+            />
         </div>
     )
 }

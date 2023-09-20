@@ -41,13 +41,11 @@ const Routes = () => {
                     <Route path="/admin/users/{id:Int}" page={AdminUserUserPage} name="adminUser" />
                     <Route path="/admin/users" page={AdminUserUsersPage} name="adminUsers" />
 
-                    <Route path="/admin/users/{id:Int}/products" page={AdminUserUserProductsPage} name="adminUserProducts" />
                     <Route path="/admin/products/new" page={AdminProductNewProductPage} name="adminNewProduct" />
                     <Route path="/admin/products/{id:Int}/edit" page={AdminProductEditProductPage} name="adminEditProduct" />
                     <Route path="/admin/products/{id:Int}" page={AdminProductProductPage} name="adminProduct" />
                     <Route path="/admin/products" page={AdminProductProductsPage} name="adminProducts" />
 
-                    <Route path="/admin/users/{id:Int}/images" page={AdminUserUserImagesPage} name="adminUserImages" />
                     <Route path="/admin/images/new" page={AdminImageNewImagePage} name="adminNewImage" />
                     <Route path="/admin/images/{id:Int}/edit" page={AdminImageEditImagePage} name="adminEditImage" />
                     <Route path="/admin/images/{id:Int}" page={AdminImageImagePage} name="adminImage" />

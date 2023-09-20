@@ -1,19 +1,19 @@
-import { Link, routes } from "@redwoodjs/router";
-import { MetaTags } from "@redwoodjs/web";
-import UsersCell from "src/components/Admin/User/UsersCell";
-import FadeTransitionLayout from "src/layouts/FadeTransitionLayout/FadeTransitionLayout";
+import { Link, routes } from '@redwoodjs/router'
+import { MetaTags } from '@redwoodjs/web'
+import UsersCell from 'src/components/Admin/User/UsersCell'
+import FadeTransitionLayout from 'src/layouts/FadeTransitionLayout/FadeTransitionLayout'
+import { PaginationContextProvider } from 'src/pages/Admin/User/UsersPage/Context'
+const UsersPage = ({ page = 1, pageSize = 10 }) => {
+    return (
+        <PaginationContextProvider page={page} pageSize={pageSize}>
+            <FadeTransitionLayout>
+                <div>
+                    <MetaTags title="Users" description="Users page" />
+                    <UsersCell />
+                </div>
+            </FadeTransitionLayout>
+        </PaginationContextProvider>
+    )
+}
 
-const UsersPage = ({ page = 1 }) => {
-  return (
-      <FadeTransitionLayout>
-      <div>
-          <MetaTags title="Users" description="Users page" />
-          <UsersCell page={page} paginate={(page) => routes.adminUsers({
-            page
-          })} />
-      </div>
-      </FadeTransitionLayout>
-  );
-};
-
-export default UsersPage;
+export default UsersPage

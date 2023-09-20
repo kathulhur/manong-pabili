@@ -53,14 +53,14 @@ export const Success = ({ product }: CellSuccessProps<FindProductById>) => {
                     </Link>
                     <span>&gt;</span>
                     <Link
-                        to={routes.adminUserProducts({ id: product.userId })}
+                        to={routes.adminProducts({ id: product.userId })}
                         className="hover:underline hover:underline-offset-1"
                     >
                         Products
                     </Link>
                     <span>&gt;</span>
                     <Link
-                        to={routes.adminUserProducts({ id: product.userId })}
+                        to={routes.adminProduct({ id: product.userId })}
                         className="hover:underline hover:underline-offset-1"
                     >
                         {product.name}

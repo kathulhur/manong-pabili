@@ -45,16 +45,15 @@ export const vendor: QueryResolvers['vendor'] = ({ id }) => {
     })
 }
 
-const USERS_PER_PAGE = 5
-
-export const userPage: QueryResolvers['userPage'] = async ({ page = 1 }) => {
-    const offset = (page - 1) * USERS_PER_PAGE
-
+export const userPage: QueryResolvers['userPage'] = async ({
+    limit,
+    offset,
+}) => {
     const users = await db.user.findMany({
         where: {
             deleted: false,
         },
-        take: USERS_PER_PAGE,
+        take: limit,
         skip: offset,
     })
 
@@ -504,7 +503,6 @@ export const triggerMorningNotification: MutationResolvers['triggerMorningNotifi
                 }
             )
 
-            console.log(response.data)
             return true
         } catch (err) {
             console.log(err)

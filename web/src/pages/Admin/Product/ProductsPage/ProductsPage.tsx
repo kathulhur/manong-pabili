@@ -1,22 +1,26 @@
-import { routes } from "@redwoodjs/router";
-import ProductsCell from "src/components/Admin/Product/ProductsCell";
-import FadeTransitionLayout from "src/layouts/FadeTransitionLayout/FadeTransitionLayout";
+import { routes } from '@redwoodjs/router'
+import ProductsCell from 'src/components/Admin/Product/ProductsCell'
+import FadeTransitionLayout from 'src/layouts/FadeTransitionLayout/FadeTransitionLayout'
+import { PaginationContextProvider } from '../../User/UsersPage/Context'
+import { ProductsPageContextProvider } from './Context'
 
 export interface ProductsPageProps {
-  page: number
-  userId: number
+    page: number
+    userId: number
 }
 
-const ProductsPage = ({ page }) => {
-  return (
-    <FadeTransitionLayout>
-      <div>
-        <ProductsCell page={page} paginate={(page) => routes.adminProducts({
-          page,
-        })}/>
-      </div>
-    </FadeTransitionLayout>
-  );
-};
+const ProductsPage = ({ page = 1, pageSize = 10, userId = null }) => {
+    return (
+        <ProductsPageContextProvider userId={userId}>
+            <PaginationContextProvider page={page} pageSize={pageSize}>
+                <FadeTransitionLayout>
+                    <div>
+                        <ProductsCell />
+                    </div>
+                </FadeTransitionLayout>
+            </PaginationContextProvider>
+        </ProductsPageContextProvider>
+    )
+}
 
-export default ProductsPage;
+export default ProductsPage

@@ -141,14 +141,14 @@ const User = ({ user }: Props) => {
             </div>
             <nav className="rw-button-group">
                 <Link
-                    to={routes.adminUserProducts({ page: 1, id: user.id })}
+                    to={routes.adminProducts({ page: 1, userId: user.id })}
                     title={'Edit user ' + user.id}
                     className="rw-button rw-button-blue"
                 >
                     view products
                 </Link>
                 <Link
-                    to={routes.adminUserImages({ page: 1, id: user.id })}
+                    to={routes.adminImages({ page: 1, userId: user.id })}
                     title={'Edit user ' + user.id}
                     className="rw-button rw-button-blue"
                 >

@@ -1,18 +1,22 @@
-import { Link, routes } from '@redwoodjs/router'
+import { routes } from '@redwoodjs/router'
 import { useMutation } from '@redwoodjs/web'
 import { toast } from '@redwoodjs/web/toast'
-
-import { checkboxInputTag, timeTag, truncate } from 'src/lib/formatters'
-
-import type { DeleteMarkerMutationVariables, FindMarkers } from 'types/graphql'
+import type {
+    DeleteMarkerMutationVariables,
+    MarkersCellQuery,
+} from 'types/graphql'
 import { DELETE_MARKER_MUTATION } from '../Marker/Marker'
-import { formatDatetime } from 'src/lib/formatters'
+import Table, { TableProps } from './Table/Table'
+import Pagination from 'src/components/Pagination/Pagination'
+import { PaginationContext } from 'src/pages/Admin/User/UsersPage/Context'
+import { useContext } from 'react'
 
-const MarkersList = ({
-    markers,
-}: {
-    markers: FindMarkers['markerPage']['markers']
-}) => {
+export interface MarkersListProps {
+    markers: TableProps['markers']
+    count: number
+}
+
+const MarkersList = ({ markers, count }: MarkersListProps) => {
     const [deleteMarker] = useMutation(DELETE_MARKER_MUTATION, {
         onCompleted: () => {
             toast.success('Marker deleted')
@@ -25,9 +29,9 @@ const MarkersList = ({
             cache.modify({
                 fields: {
                     markerPage: (
-                        existingMarkerPage: FindMarkers['markerPage'],
+                        existingMarkerPage: MarkersCellQuery['markerPage'],
                         { readField }
-                    ): FindMarkers['markerPage'] => {
+                    ): MarkersCellQuery['markerPage'] => {
                         return {
                             ...existingMarkerPage,
                             markers: existingMarkerPage.markers.filter(
@@ -42,79 +46,23 @@ const MarkersList = ({
         },
     })
 
-    const onDeleteClick = (id: DeleteMarkerMutationVariables['id']) => {
+    const onDelete = (id: DeleteMarkerMutationVariables['id']) => {
         if (confirm('Are you sure you want to delete marker ' + id + '?')) {
             deleteMarker({ variables: { id } })
         }
     }
 
+    const { pageSize } = useContext(PaginationContext)
+
     return (
-        <div className="rw-table-wrapper-responsive">
-            <table className="rw-table whitespace-nowrap">
-                <thead>
-                    <tr>
-                        <th>Id</th>
-                        <th>Url</th>
-                        <th>Marker Image</th>
-                        <th>User id</th>
-                        <th>Created at</th>
-                        <th>Updated at</th>
-                        <th>Deleted</th>
-                        <th>Deleted at</th>
-                        <th>&nbsp;</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    {markers.map((marker) => (
-                        <tr key={marker.id}>
-                            <td>{truncate(marker.id)}</td>
-                            <td>{truncate(marker.url)}</td>
-                            <td>
-                                <img src={marker.url} />
-                            </td>
-                            <td>{truncate(marker.userId)}</td>
-                            <td>{formatDatetime(marker.createdAt)}</td>
-                            <td>{formatDatetime(marker.updatedAt)}</td>
-                            <td>{checkboxInputTag(marker.deleted)}</td>
-                            <td>{formatDatetime(marker.deletedAt)}</td>
-                            <td>
-                                <nav className="rw-table-actions">
-                                    <Link
-                                        to={routes.adminMarker({
-                                            id: marker.id,
-                                        })}
-                                        title={
-                                            'Show marker ' +
-                                            marker.id +
-                                            ' detail'
-                                        }
-                                        className="rw-button rw-button-small"
-                                    >
-                                        Show
-                                    </Link>
-                                    <Link
-                                        to={routes.adminEditMarker({
-                                            id: marker.id,
-                                        })}
-                                        title={'Edit marker ' + marker.id}
-                                        className="rw-button rw-button-small rw-button-blue"
-                                    >
-                                        Edit
-                                    </Link>
-                                    <button
-                                        type="button"
-                                        title={'Delete marker ' + marker.id}
-                                        className="rw-button rw-button-small rw-button-red"
-                                        onClick={() => onDeleteClick(marker.id)}
-                                    >
-                                        Delete
-                                    </button>
-                                </nav>
-                            </td>
-                        </tr>
-                    ))}
-                </tbody>
-            </table>
+        <div className="space-y-4">
+            <Table markers={markers} onDelete={onDelete} />
+            <Pagination
+                count={count}
+                paginate={(page) => {
+                    routes.adminMarkers({ page, pageSize })
+                }}
+            />
         </div>
     )
 }
