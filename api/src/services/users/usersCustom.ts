@@ -498,7 +498,7 @@ export const triggerMorningNotification: MutationResolvers['triggerMorningNotifi
                 {
                     headers: {
                         'Content-Type': 'application/json',
-                        Authorization: `Bearer ${process.env.REDWOOD_ENV_BEAM_PRIMARY_KEY}`,
+                        Authorization: `Bearer ${process.env.BEAM_PRIMARY_KEY}`,
                     },
                 }
             )
