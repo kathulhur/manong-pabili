@@ -484,7 +484,7 @@ export const triggerMorningNotification: MutationResolvers['triggerMorningNotifi
     async () => {
         try {
             const response = await axios.post(
-                `https://${process.env.BEAM_INSTANCE_ID}.pushnotifications.pusher.com/publish_api/v1/instances/${process.env.BEAM_INSTANCE_ID}/publishes/interests`,
+                `https://${process.env.REDWOOD_ENV_BEAM_INSTANCE_ID}.pushnotifications.pusher.com/publish_api/v1/instances/${process.env.REDWOOD_ENV_BEAM_INSTANCE_ID}/publishes/interests`,
                 {
                     interests: ['morning-greeting'],
                     web: {
@@ -498,7 +498,7 @@ export const triggerMorningNotification: MutationResolvers['triggerMorningNotifi
                 {
                     headers: {
                         'Content-Type': 'application/json',
-                        Authorization: `Bearer ${process.env.BEAM_PRIMARY_KEY}`,
+                        Authorization: `Bearer ${process.env.REDWOOD_ENV_BEAM_PRIMARY_KEY}`,
                     },
                 }
             )
