@@ -15,6 +15,8 @@ import Button from 'src/components/Button/Button'
 import { BellIcon } from '@heroicons/react/20/solid'
 import Table, { TableProps } from './Table/Table'
 import Pagination from 'src/components/Pagination/Pagination'
+import { useContext } from 'react'
+import { PaginationContext } from 'src/pages/Admin/User/UsersPage/Context'
 
 export const VERIFY_USER_MUTATION = gql`
     mutation VerifyUserMutation($id: Int!) {
@@ -109,18 +111,13 @@ const UsersList = ({ users, count }: UsersProps) => {
         }
     }
 
+    const { pageSize } = useContext(PaginationContext)
     return (
         <div className="space-y-4">
-            <Table
-                users={users}
-                onDelete={onDeleteClick}
-                onVerify={onVerifyUser}
-            />
+            <Table users={users} onVerify={onVerifyUser} />
             <Pagination
                 count={count}
-                paginate={(page) => {
-                    routes.adminUsers({ page })
-                }}
+                paginate={(page) => routes.adminUsers({ page, pageSize })}
             />
         </div>
     )

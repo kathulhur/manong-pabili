@@ -1,78 +1,133 @@
+import {
+    ArrowTopRightOnSquareIcon,
+    ArrowUpOnSquareIcon,
+    PencilSquareIcon,
+} from '@heroicons/react/20/solid'
 import { Link, routes } from '@redwoodjs/router'
 import { checkboxInputTag, truncate } from 'src/lib/formatters'
-import { Product } from 'types/graphql'
+import { Product, User as UserType } from 'types/graphql'
 
 export interface TableProps {
-    products: Pick<Product, 'id' | 'name' | 'availability' | 'userId'>[]
-    onDelete: (id: number) => void
+    products: Pick<Product, 'id' | 'name' | 'availability' | 'user'>[]
+    user: Pick<UserType, 'username'>
 }
 
-const Table = ({ products, onDelete }: TableProps) => {
+const Table = ({ products, user }: TableProps) => {
     return (
-        <div className="rw-table-wrapper-responsive">
-            <table className="rw-table">
-                <thead>
-                    <tr>
-                        <th>Id</th>
-                        <th>Name</th>
-                        <th>Availability</th>
-                        <th>User id</th>
-                        <th>&nbsp;</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    {products.map((product) => (
-                        <tr key={product.id}>
-                            <td>{truncate(product.id)}</td>
-                            <td>{truncate(product.name)}</td>
-                            <td>{checkboxInputTag(product.availability)}</td>
-                            <td>
-                                <Link
-                                    to={routes.adminUser({
-                                        id: product.userId,
-                                    })}
+        <div className="my-8">
+            <div className="sm:flex sm:items-center">
+                <div className="sm:flex-auto">
+                    <h1 className="text-base font-semibold leading-6 text-gray-900">
+                        Users
+                    </h1>
+                    <p className="mt-2 text-sm text-gray-700">
+                        Lorem ipsum dolor sit amet consectetur adipisicing
+                    </p>
+                </div>
+                <div className="mt-4 sm:ml-16 sm:mt-0 sm:flex-none">
+                    <button
+                        type="button"
+                        className="block rounded-md bg-indigo-600 px-3 py-2 text-center text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
+                    >
+                        Add user
+                    </button>
+                </div>
+            </div>
+            <div className="mt-8 sm:-mx-0">
+                <table className="min-w-full divide-y divide-gray-300">
+                    <thead>
+                        <tr>
+                            <th
+                                scope="col"
+                                className="relative py-3.5 pl-4 pr-3 text-left text-sm font-semibold text-gray-900 sm:pl-0"
+                            >
+                                <span className="sr-only">Links</span>
+                            </th>
+                            <th
+                                scope="col"
+                                className="py-3.5 pl-4 pr-3 text-left text-sm font-semibold text-gray-900 sm:pl-0"
+                            >
+                                Name
+                            </th>
+                            <th
+                                scope="col"
+                                className="hidden px-3 py-3.5 text-left text-sm font-semibold text-gray-900 sm:table-cell"
+                            >
+                                Available
+                            </th>
+                            {!user && (
+                                <th
+                                    scope="col"
+                                    className="px-3 py-3.5 text-left text-sm font-semibold text-gray-900"
                                 >
-                                    {truncate(product.userId)}
-                                </Link>
-                            </td>
-                            <td>
-                                <nav className="rw-table-actions">
-                                    <Link
-                                        to={routes.adminProduct({
-                                            id: product.id,
-                                        })}
-                                        title={
-                                            'Show product ' +
-                                            product.id +
-                                            ' detail'
-                                        }
-                                        className="rw-button rw-button-small"
-                                    >
-                                        Show
-                                    </Link>
-                                    <Link
-                                        to={routes.adminEditProduct({
-                                            id: product.id,
-                                        })}
-                                        title={'Edit product ' + product.id}
-                                        className="rw-button rw-button-small rw-button-blue"
-                                    >
-                                        Edit
-                                    </Link>
-                                    <button
-                                        type="button"
-                                        title={'Delete product ' + product.id}
-                                        className="rw-button rw-button-small rw-button-red"
-                                        onClick={() => onDelete(product.id)}
-                                    >
-                                        Delete
-                                    </button>
-                                </nav>
-                            </td>
+                                    Owner
+                                </th>
+                            )}
                         </tr>
-                    ))}
-                </tbody>
-            </table>
+                    </thead>
+                    <tbody className="divide-y divide-gray-200 bg-white">
+                        {products.map((product) => (
+                            <tr key={product.id}>
+                                <td>
+                                    <div className="flex flex-col">
+                                        <Link
+                                            to={routes.adminProduct({
+                                                id: product.id,
+                                            })}
+                                        >
+                                            <ArrowTopRightOnSquareIcon
+                                                className="h-5 w-5 text-gray-400 hover:text-gray-500"
+                                                aria-hidden="true"
+                                            />
+                                        </Link>
+                                        <Link
+                                            to={routes.adminEditProduct({
+                                                id: product.id,
+                                            })}
+                                        >
+                                            <PencilSquareIcon className="h-5 w-5 text-gray-400 hover:text-gray-500" />
+                                        </Link>
+                                    </div>
+                                </td>
+                                <td className="w-full max-w-0 py-4 pl-4 pr-3 text-sm font-medium text-gray-900 sm:w-auto sm:max-w-none sm:pl-0">
+                                    {product.name}
+                                    <dl className="font-normal sm:hidden">
+                                        <dt className="sr-only">
+                                            Availability
+                                        </dt>
+                                        <dd className="mt-1 truncate text-gray-700">
+                                            {product.availability
+                                                ? 'Available'
+                                                : 'Unavailable'}
+                                        </dd>
+                                    </dl>
+                                </td>
+                                <td className="hidden px-3 py-4 text-sm text-gray-700 sm:table-cell">
+                                    {product.availability ? 'Yes' : 'No'}
+                                </td>
+                                {!user && (
+                                    <td className="px-3 py-4 text-sm font-medium text-gray-500">
+                                        <Link
+                                            to={routes.adminUser({
+                                                id: product.user.id,
+                                            })}
+                                            className="hover:underline hover:text-gray-600"
+                                        >
+                                            <span className="flex">
+                                                {product.user.username}
+                                                <ArrowTopRightOnSquareIcon
+                                                    className="h-5 w-5 text-gray-400"
+                                                    aria-hidden="true"
+                                                />
+                                            </span>
+                                        </Link>
+                                    </td>
+                                )}
+                            </tr>
+                        ))}
+                    </tbody>
+                </table>
+            </div>
         </div>
     )
 }

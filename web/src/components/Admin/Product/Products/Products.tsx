@@ -19,9 +19,10 @@ import { ProductsPageContext } from 'src/pages/Admin/Product/ProductsPage/Contex
 export interface ProductsListProps {
     products: TableProps['products']
     count: number
+    user: TableProps['user']
 }
 
-const ProductsList = ({ products, count }: ProductsListProps) => {
+const ProductsList = ({ products, count, user }: ProductsListProps) => {
     const [deleteProduct] = useMutation(DELETE_PRODUCT_MUTATION, {
         onCompleted: () => {
             toast.success('Product deleted')
@@ -54,15 +55,12 @@ const ProductsList = ({ products, count }: ProductsListProps) => {
         },
     })
 
-    const onDelete = (id: DeleteProductMutationVariables['id']) => {
-        if (confirm('Are you sure you want to delete product ' + id + '?')) {
-            deleteProduct({ variables: { id } })
-        }
-    }
     const { pageSize } = useContext(PaginationContext)
     const productsPageContext = useContext(ProductsPageContext)
+
     return (
         <div className="space-y-4">
+            <Table products={products} user={user} />
             <Pagination
                 count={count}
                 paginate={(page) => {
@@ -76,7 +74,6 @@ const ProductsList = ({ products, count }: ProductsListProps) => {
                     return routes.adminProducts({ page, pageSize })
                 }}
             />
-            <Table products={products} onDelete={onDelete} />
         </div>
     )
 }

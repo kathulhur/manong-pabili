@@ -10,9 +10,8 @@ const MarkersPage = ({ page = 1, pageSize = 10, userId = null }) => {
         <MarkersPageContextProvider userId={userId}>
             <PaginationContextProvider page={page} pageSize={pageSize}>
                 <FadeTransitionLayout>
-                    <div>
+                    <div className="px-4 sm:px-6 lg:px-8">
                         <MetaTags title="Markers" description="Markers page" />
-
                         <MarkersCell />
                     </div>
                 </FadeTransitionLayout>

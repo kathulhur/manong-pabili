@@ -6,6 +6,7 @@ import type { CellSuccessProps, CellFailureProps } from '@redwoodjs/web'
 import Users from 'src/components/Admin/User/Users'
 import { useContext, useEffect } from 'react'
 import { PaginationContext } from 'src/pages/Admin/User/UsersPage/Context'
+import Breadcrumb from 'src/components/Breadcrumb/Breadcrumb'
 export const beforeQuery = () => {
     const { page, pageSize } = useContext(PaginationContext)
     return { variables: { limit: pageSize, offset: (page - 1) * pageSize } }
@@ -63,28 +64,21 @@ export const Failure = ({ error }: CellFailureProps) => (
 export const Success = ({
     userPage: { users, count },
 }: CellSuccessProps<FindUsers>) => {
-    console.log(users)
     return (
-        <div className="m-8">
-            <div className="flex justify-between items-end">
-                <div className="font-semibold">
-                    <Link
-                        to={routes.adminUsers()}
-                        className="hover:underline hover:underline-offset-1 "
-                    >
-                        Users
-                    </Link>
-                </div>
-                <Link
-                    to={routes.adminNewUser()}
-                    className="flex items-center font-semibold border px-4 py-2 rounded-md"
-                >
-                    <div className="rw-button-icon">+</div> New User
-                </Link>
-            </div>
-            <div className="mt-8">
-                <Users users={users} count={count} />
-            </div>
+        <div>
+            <Breadcrumb
+                pages={[
+                    {
+                        name: 'Users',
+                        to: routes.adminUsers({
+                            page: 1,
+                            pageSize: 10,
+                        }),
+                        current: false,
+                    },
+                ]}
+            />
+            <Users users={users} count={count} />
         </div>
     )
 }

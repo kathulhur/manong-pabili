@@ -14,9 +14,10 @@ import { useContext } from 'react'
 export interface MarkersListProps {
     markers: TableProps['markers']
     count: number
+    user: TableProps['user']
 }
 
-const MarkersList = ({ markers, count }: MarkersListProps) => {
+const MarkersList = ({ markers, count, user }: MarkersListProps) => {
     const [deleteMarker] = useMutation(DELETE_MARKER_MUTATION, {
         onCompleted: () => {
             toast.success('Marker deleted')
@@ -56,12 +57,10 @@ const MarkersList = ({ markers, count }: MarkersListProps) => {
 
     return (
         <div className="space-y-4">
-            <Table markers={markers} onDelete={onDelete} />
+            <Table markers={markers} user={user} />
             <Pagination
                 count={count}
-                paginate={(page) => {
-                    routes.adminMarkers({ page, pageSize })
-                }}
+                paginate={(page) => routes.adminMarkers({ page, pageSize })}
             />
         </div>
     )

@@ -191,8 +191,8 @@ const AdminNavLayout = ({ children }: AdminNavLayoutProps) => {
                                     {Object.values(navigation).map((item) => (
                                         <Disclosure.Button
                                             key={item.name}
-                                            as="a"
-                                            href={item.href}
+                                            as={Link}
+                                            to={item.href}
                                             className={classNames(
                                                 item.current
                                                     ? 'bg-gray-900 text-white'
@@ -255,7 +255,7 @@ const AdminNavLayout = ({ children }: AdminNavLayoutProps) => {
                     )}
                 </Disclosure>
             </div>
-            <main className="max-w-7xl mx-auto">{children}</main>
+            <main className="max-w-7xl mx-auto my-8">{children}</main>
         </>
     )
 }

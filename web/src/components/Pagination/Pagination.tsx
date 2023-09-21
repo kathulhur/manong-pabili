@@ -64,7 +64,7 @@ const Pagination = ({ count, paginate }: PaginationProps) => {
     const totalRecords = count
 
     return (
-        <div className="hidden sm:flex sm:flex-1 sm:items-center sm:justify-between">
+        <div className="flex flex-col gap-y-4 items-end  sm:flex-row sm:flex-1 sm:items-center sm:justify-between">
             <div>
                 <p className="text-sm text-gray-700">
                     Showing{' '}

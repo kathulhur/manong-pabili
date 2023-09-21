@@ -1,4 +1,4 @@
-import type { FindProducts } from 'types/graphql'
+import type { ProductscellQuery } from 'types/graphql'
 import { Link, routes } from '@redwoodjs/router'
 import type { CellSuccessProps, CellFailureProps } from '@redwoodjs/web'
 
@@ -6,38 +6,48 @@ import Products from 'src/components/Admin/Product/Products'
 import { PaginationContext } from 'src/pages/Admin/User/UsersPage/Context'
 import { useContext } from 'react'
 import { ProductsPageContext } from 'src/pages/Admin/Product/ProductsPage/Context'
+import Breadcrumb from 'src/components/Breadcrumb/Breadcrumb'
 export const beforeQuery = () => {
     const { page, pageSize } = useContext(PaginationContext)
     const productsPageContext = useContext(ProductsPageContext)
+    const userId = productsPageContext?.userId || -1
     return {
         variables: {
             limit: pageSize,
             offset: (page - 1) * pageSize,
             filter: { userId: productsPageContext?.userId },
+            userId,
         },
     }
 }
 
 export const isEmpty = ({
     productPage: { count },
-}: CellSuccessProps<FindProducts>) => {
+}: CellSuccessProps<ProductsCellQuery>) => {
     return count === 0
 }
 
 export const QUERY = gql`
-    query FindProducts(
+    query ProductsCellQuery(
         $limit: Int!
         $offset: Int!
         $filter: ProductPageFilterInput
+        $userId: Int!
     ) {
         productPage(limit: $limit, offset: $offset, filter: $filter) {
             products {
                 id
                 name
                 availability
-                userId
+                user {
+                    id
+                    username
+                }
             }
             count
+        }
+        user(id: $userId) {
+            name
         }
     }
 `
@@ -61,65 +71,54 @@ export const Failure = ({ error }: CellFailureProps) => (
 
 export const Success = ({
     productPage: { products, count },
-}: CellSuccessProps<FindProducts>) => {
+    user,
+}: CellSuccessProps<ProductsCellQuery>) => {
     const { userId } = useContext(ProductsPageContext)
+    let pages = []
+    if (user) {
+        pages = [
+            {
+                name: 'Users',
+                to: routes.adminUsers({
+                    page: 1,
+                    pageSize: 10,
+                }),
+                current: false,
+            },
+            {
+                name: user.name,
+                to: routes.adminUser({
+                    id: userId,
+                }),
+                current: false,
+            },
+            {
+                name: 'Products',
+                to: routes.adminProducts({
+                    page: 1,
+                    pageSize: 10,
+                    userId,
+                }),
+                current: true,
+            },
+        ]
+    } else {
+        pages = [
+            {
+                name: 'Products',
+                to: routes.adminProducts({
+                    page: 1,
+                    pageSize: 10,
+                    userId,
+                }),
+                current: true,
+            },
+        ]
+    }
     return (
-        <div className="m-8">
-            <div className="flex justify-between items-end">
-                <div className="font-semibold space-x-2">
-                    {!userId && (
-                        <Link
-                            to={routes.adminProducts()}
-                            className="hover:underline hover:underline-offset-1"
-                        >
-                            Products
-                        </Link>
-                    )}
-                    {userId && (
-                        <>
-                            <Link
-                                to={routes.adminUsers()}
-                                className="hover:underline hover:underline-offset-1"
-                            >
-                                Users
-                            </Link>
-                            <span>&gt;</span>
-                            <Link
-                                to={routes.adminUser({ id: userId })}
-                                className="hover:underline hover:underline-offset-1"
-                            >
-                                {userId}
-                            </Link>
-                            <span>&gt;</span>
-                            <Link
-                                to={routes.adminProducts({ userId })}
-                                className="hover:underline hover:underline-offset-1"
-                            >
-                                Products
-                            </Link>
-                        </>
-                    )}
-                </div>
-                {userId && (
-                    <Link
-                        to={routes.adminNewProduct({ userId })}
-                        className="flex items-center font-semibold border px-4 py-2 rounded-md"
-                    >
-                        <div className="rw-button-icon">+</div> Add Product
-                    </Link>
-                )}
-                {!userId && (
-                    <Link
-                        to={routes.adminNewProduct()}
-                        className="flex items-center font-semibold border px-4 py-2 rounded-md"
-                    >
-                        <div className="rw-button-icon">+</div> Add Product
-                    </Link>
-                )}
-            </div>
-            <div className="mt-8">
-                <Products products={products} count={count} />
-            </div>
+        <div>
+            <Breadcrumb pages={pages} />
+            <Products products={products} count={count} user={user} />
         </div>
     )
 }

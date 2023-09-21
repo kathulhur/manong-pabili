@@ -1,6 +1,11 @@
+import {
+    ArrowTopRightOnSquareIcon,
+    EyeIcon,
+    LinkIcon,
+    PencilSquareIcon,
+} from '@heroicons/react/20/solid'
 import { Link, routes } from '@redwoodjs/router'
-import Button from 'src/components/Button'
-import { checkboxInputTag, formatDatetime, truncate } from 'src/lib/formatters'
+import clsx from 'clsx'
 import { User as UserType } from 'types/graphql'
 
 export interface TableProps {
@@ -13,176 +18,259 @@ export interface TableProps {
         | 'name'
         | 'gender'
         | 'mobileNumber'
-        | 'latitude'
-        | 'longitude'
         | 'roles'
         | 'lastLocationUpdate'
         | 'locationHidden'
         | 'locationBroadcastMode'
         | 'markerUrl'
-        | 'createdAt'
-        | 'updatedAt'
-        | 'deletedAt'
-        | 'deleted'
     >[]
-    onDelete: (id: number) => void
     onVerify: (id: number) => void
 }
 
-const Table = ({ users, onDelete, onVerify }: TableProps) => {
+const Table = ({ users, onVerify }: TableProps) => {
     return (
-        <div className="overflow-x-scroll">
-            <table className="table-auto whitespace-nowrap">
-                <thead className="border">
-                    <tr>
-                        <th className="px-8 py-4">Verified</th>
-                        <th className="px-8 py-4">Id</th>
-                        <th className="px-8 py-4">Email</th>
-                        <th className="px-8 py-4">Username</th>
-                        <th className="px-8 py-4">Name</th>
-                        <th className="px-8 py-4">Gender</th>
-                        <th className="px-8 py-4">Mobile number</th>
-                        <th className="px-8 py-4">Latitude</th>
-                        <th className="px-8 py-4">Longitude</th>
-                        <th className="px-8 py-4">Roles</th>
-                        <th className="px-8 py-4">Last location update</th>
-                        <th className="px-8 py-4">Location hidden</th>
-                        <th className="px-8 py-4">Location Broadcast Mode</th>
-                        <th className="px-8 py-4">Marker url</th>
-                        <th className="px-8 py-4">Created at</th>
-                        <th className="px-8 py-4">Updated at</th>
-                        <th className="px-8 py-4">Deleted at</th>
-                        <th className="px-8 py-4">Deleted</th>
-                        <th className="px-8 py-4">Links</th>
-                        <th className="px-8 py-4">Actions</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    {users.map((user) => (
-                        <tr key={user.id} className="border">
-                            <td className="px-8 py-4">
-                                {checkboxInputTag(user.verified)}
-                            </td>
-                            <td className="px-8 py-4">{truncate(user.id)}</td>
-                            <td className="px-8 py-4">
-                                {truncate(user.email)}
-                            </td>
-                            <td className="px-8 py-4">
-                                {truncate(user.username)}
-                            </td>
-                            <td className="px-8 py-4">{truncate(user.name)}</td>
-                            <td className="px-8 py-4">
-                                {truncate(user.gender)}
-                            </td>
-                            <td className="px-8 py-4">
-                                {truncate(user.mobileNumber)}
-                            </td>
-                            <td className="px-8 py-4">
-                                {truncate(user.latitude)}
-                            </td>
-                            <td className="px-8 py-4">
-                                {truncate(user.longitude)}
-                            </td>
-                            <td className="px-8 py-4">
-                                {truncate(user.roles)}
-                            </td>
-                            <td className="px-8 py-4">
-                                {formatDatetime(user.lastLocationUpdate)}
-                            </td>
-                            <td className="px-8 py-4">
-                                {checkboxInputTag(user.locationHidden)}
-                            </td>
-                            <td className="px-8 py-4">
-                                {user.locationBroadcastMode}
-                            </td>
-                            <td className="px-8 py-4">
-                                {truncate(user.markerUrl)}
-                            </td>
-                            <td className="px-8 py-4">
-                                {formatDatetime(user.createdAt)}
-                            </td>
-                            <td className="px-8 py-4">
-                                {formatDatetime(user.updatedAt)}
-                            </td>
-                            <td className="px-8 py-4">
-                                {formatDatetime(user.deletedAt)}
-                            </td>
-                            <td className="px-8 py-4">
-                                {checkboxInputTag(user.deleted)}
-                            </td>
-                            <td className="px-8 py-4">
-                                <div className="flex space-x-4">
-                                    <Link
-                                        to={routes.adminUser({ id: user.id })}
-                                        title={
-                                            'Show user ' + user.id + ' detail'
-                                        }
-                                        className=""
+        <div className="my-8">
+            <div className="sm:flex sm:items-center">
+                <div className="sm:flex-auto">
+                    <h1 className="text-base font-semibold leading-6 text-gray-900">
+                        Users
+                    </h1>
+                    <p className="mt-2 text-sm text-gray-700">
+                        A list of all the users in your account including their
+                        name, title, email and role.
+                    </p>
+                </div>
+                <div className="mt-4 sm:ml-16 sm:mt-0 sm:flex-none">
+                    <Link
+                        to={routes.adminNewUser()}
+                        className="block rounded-md bg-indigo-600 px-3 py-2 text-center text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
+                    >
+                        Add user
+                    </Link>
+                </div>
+            </div>
+            <div className="mt-8 flow-root">
+                <div className="overflow-x-auto sm:-mx-6 lg:-mx-8">
+                    <div className="inline-block min-w-full py-2 align-middle sm:px-6 lg:px-8">
+                        <table className="min-w-full divide-y divide-gray-300">
+                            <thead>
+                                <tr>
+                                    <th
+                                        scope="col"
+                                        className="px-3 py-3.5 text-left text-sm font-semibold text-gray-900 sm:pl-0"
                                     >
-                                        Show
-                                    </Link>
-                                    <Link
-                                        to={routes.adminEditUser({
-                                            id: user.id,
-                                        })}
-                                        title={'Edit user ' + user.id}
-                                        className=""
+                                        <LinkIcon className="w-5 h-5" />
+                                    </th>
+                                    <th
+                                        scope="col"
+                                        className="py-3.5 pl-4 pr-3 text-left text-sm font-semibold text-gray-900 sm:pl-0"
                                     >
-                                        Edit
-                                    </Link>
-                                    <Link
-                                        to={routes.adminProducts({
-                                            page: 1,
-                                            userId: user.id,
-                                        })}
-                                        title={'Edit user ' + user.id}
-                                        className=""
+                                        Name
+                                    </th>
+                                    <th
+                                        scope="col"
+                                        className="px-3 py-3.5 text-left text-sm font-semibold text-gray-900"
                                     >
-                                        view products
-                                    </Link>
-                                    <Link
-                                        to={routes.adminImages({
-                                            page: 1,
-                                            userId: user.id,
-                                        })}
-                                        title={'Edit user ' + user.id}
-                                        className=""
+                                        Username
+                                    </th>
+                                    <th
+                                        scope="col"
+                                        className="px-3 py-3.5 text-left text-sm font-semibold text-gray-900"
                                     >
-                                        view featured images
-                                    </Link>
-                                    <Link
-                                        to={routes.adminMarkers({
-                                            page: 1,
-                                            userId: user.id,
-                                        })}
-                                        title={'Edit user ' + user.id}
-                                        className=""
+                                        Verification Status
+                                    </th>
+                                    <th
+                                        scope="col"
+                                        className="px-3 py-3.5 text-left text-sm font-semibold text-gray-900"
                                     >
-                                        view custom markers
-                                    </Link>
-                                </div>
-                            </td>
-                            <td className="px-8 flex space-x-4 py-4">
-                                <Button
-                                    className=""
-                                    onClick={() => onVerify(user.id)}
-                                >
-                                    Verify user
-                                </Button>
+                                        Role
+                                    </th>
+                                    <th
+                                        scope="col"
+                                        className="px-3 py-3.5 text-left text-sm font-semibold text-gray-900"
+                                    >
+                                        Visibility
+                                    </th>
+                                    <th
+                                        scope="col"
+                                        className="px-3 py-3.5 text-left text-sm font-semibold text-gray-900"
+                                    >
+                                        Location broadcast mode
+                                    </th>
+                                    <th
+                                        scope="col"
+                                        className="px-3 py-3.5 text-left text-sm font-semibold text-gray-900"
+                                    >
+                                        Products
+                                    </th>
+                                    <th
+                                        scope="col"
+                                        className="px-3 py-3.5 text-left text-sm font-semibold text-gray-900"
+                                    >
+                                        Featured Images
+                                    </th>
+                                    <th
+                                        scope="col"
+                                        className="px-3 py-3.5 text-left text-sm font-semibold text-gray-900"
+                                    >
+                                        Markers
+                                    </th>
+                                </tr>
+                            </thead>
+                            <tbody className="divide-y divide-gray-200 bg-white">
+                                {users.map((user) => (
+                                    <tr key={user.email}>
+                                        <td className="whitespace-nowrap px-3 py-5 text-sm text-gray-500 sm:pl-0">
+                                            <div className="flex flex-col text-gray-400">
+                                                <Link
+                                                    className="hover:text-gray-500"
+                                                    to={routes.adminUser({
+                                                        id: user.id,
+                                                    })}
+                                                >
+                                                    <ArrowTopRightOnSquareIcon className="w-5 h-5" />
+                                                </Link>
+                                                <Link
+                                                    className="hover:text-gray-500"
+                                                    to={routes.adminEditUser({
+                                                        id: user.id,
+                                                    })}
+                                                >
+                                                    <PencilSquareIcon className="w-5 h-5" />
+                                                </Link>
+                                            </div>
+                                        </td>
+                                        <td className="whitespace-nowrap py-5 pl-4 pr-3 text-sm sm:pl-0">
+                                            <div className="flex items-center">
+                                                <div className="h-11 w-11 flex-shrink-0">
+                                                    <img
+                                                        className="h-11 w-11 rounded-full"
+                                                        src={user.markerUrl}
+                                                        alt=""
+                                                    />
+                                                </div>
+                                                <div className="ml-4">
+                                                    <div className="font-medium text-gray-900">
+                                                        {user.name}
+                                                    </div>
+                                                    <div className="mt-1 text-gray-500">
+                                                        {user.mobileNumber}
+                                                    </div>
+                                                    <div className="mt-1 text-gray-500">
+                                                        {user.email}
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </td>
+                                        <td className="whitespace-nowrap px-3 py-5 text-sm text-gray-500">
+                                            <div className="text-gray-900">
+                                                {user.username}
+                                            </div>
+                                        </td>
+                                        <td className="whitespace-nowrap px-3 py-5 text-sm text-gray-500">
+                                            <div className="text-gray-900">
+                                                <span
+                                                    className={clsx({
+                                                        'inline-flex items-center rounded-md px-2 py-1 text-xs font-medium ':
+                                                            true,
+                                                        'text-green-700 ring-1 ring-inset ring-green-600/20 bg-green-50':
+                                                            user.verified,
+                                                        'text-red-700 ring-1 ring-inset ring-red-600/20 bg-red-50':
+                                                            !user.verified,
+                                                    })}
+                                                >
+                                                    {user.verified
+                                                        ? 'Verified'
+                                                        : 'Unverified'}
+                                                </span>
+                                            </div>
+                                        </td>
+                                        <td className="whitespace-nowrap px-3 py-5 text-sm text-gray-500">
+                                            <div className="text-gray-900">
+                                                {user.roles}
+                                            </div>
+                                        </td>
+                                        <td className="whitespace-nowrap px-3 py-5 text-sm text-gray-500">
+                                            <span
+                                                className={clsx({
+                                                    'inline-flex items-center rounded-md px-2 py-1 text-xs font-medium ':
+                                                        true,
+                                                    'text-green-700 ring-1 ring-inset ring-green-600/20 bg-green-50':
+                                                        !user.locationHidden,
+                                                    'text-gray-700 ring-1 ring-inset ring-gray-600/20 bg-gray-50':
+                                                        user.locationHidden,
+                                                })}
+                                            >
+                                                {user.locationHidden
+                                                    ? 'Hidden'
+                                                    : 'Visible'}
+                                            </span>
+                                        </td>
+                                        <td className="whitespace-nowrap px-3 py-5 text-sm text-gray-500">
+                                            <span
+                                                className={clsx({
+                                                    'inline-flex items-center rounded-md px-2 py-1 text-xs font-medium ':
+                                                        true,
+                                                    'text-green-700 ring-1 ring-inset ring-green-600/20 bg-green-50':
+                                                        user.locationBroadcastMode ===
+                                                        'REALTIME',
+                                                    'text-gray-700 ring-1 ring-inset ring-gray-600/20 bg-gray-50':
+                                                        user.locationBroadcastMode ===
+                                                            'STATIC' ||
+                                                        user.locationBroadcastMode ===
+                                                            'MANUAL',
+                                                })}
+                                            >
+                                                {user.locationBroadcastMode}
+                                            </span>
+                                        </td>
 
-                                <Button
-                                    type="button"
-                                    title={'Delete user ' + user.id}
-                                    className=""
-                                    onClick={() => onDelete(user.id)}
-                                >
-                                    Delete
-                                </Button>
-                            </td>
-                        </tr>
-                    ))}
-                </tbody>
-            </table>
+                                        <td className="relative whitespace-nowrap px-3 py-5 text-sm font-medium">
+                                            <Link
+                                                to={routes.adminProducts({
+                                                    userId: user.id,
+                                                })}
+                                                className="text-indigo-600 hover:text-indigo-900"
+                                            >
+                                                View Products
+                                                <span className="sr-only">
+                                                    , {user.name}
+                                                </span>
+                                            </Link>
+                                        </td>
+                                        <td className="relative whitespace-nowrap px-3 py-5 text-sm font-medium">
+                                            <Link
+                                                to={routes.adminImages({
+                                                    userId: user.id,
+                                                })}
+                                                className="text-indigo-600 hover:text-indigo-900"
+                                            >
+                                                View Images
+                                                <span className="sr-only">
+                                                    , {user.name}
+                                                </span>
+                                            </Link>
+                                        </td>
+                                        <td className="relative whitespace-nowrap px-3 py-5 text-sm font-medium">
+                                            <Link
+                                                to={routes.adminMarkers({
+                                                    userId: user.id,
+                                                })}
+                                                className="text-indigo-600 hover:text-indigo-900"
+                                            >
+                                                View Markers
+                                                <span className="sr-only">
+                                                    , {user.name}
+                                                </span>
+                                            </Link>
+                                        </td>
+                                    </tr>
+                                ))}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
         </div>
     )
 }

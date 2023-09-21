@@ -12,19 +12,14 @@
 
 import type { Meta, StoryObj } from '@storybook/react'
 
-import Table from './Table'
-import { dummyData } from './Table.test'
+import Breadcrumb from './Breadcrumb'
 
-const meta: Meta<typeof Table> = {
-    component: Table,
+const meta: Meta<typeof Breadcrumb> = {
+    component: Breadcrumb,
 }
 
 export default meta
 
-type Story = StoryObj<typeof Table>
+type Story = StoryObj<typeof Breadcrumb>
 
-export const Primary: Story = {
-    args: {
-        ...dummyData,
-    },
-}
+export const Primary: Story = {}

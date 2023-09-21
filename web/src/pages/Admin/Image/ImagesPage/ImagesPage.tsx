@@ -10,7 +10,7 @@ const ImagesPage = ({ page = 1, pageSize = 10, userId = null }) => {
         <ImagesPageContextProvider userId={userId}>
             <PaginationContextProvider page={page} pageSize={pageSize}>
                 <FadeTransitionLayout>
-                    <div>
+                    <div className="px-4 sm:px-6 lg:px-8">
                         <MetaTags title="Images" description="Images page" />
                         <ImagesCell />
                     </div>
