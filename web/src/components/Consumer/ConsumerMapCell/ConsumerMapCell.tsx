@@ -4,6 +4,10 @@ import type {
 } from 'types/graphql'
 import type { CellSuccessProps, CellFailureProps } from '@redwoodjs/web'
 import ConsumerMap from '../ConsumerMap/ConsumerMap'
+import {
+    ConsumerMapCellContext,
+    ConsumerMapCellContextProvider,
+} from './Context'
 
 export const QUERY = gql`
     query ConsumerMapCellQuery {
@@ -36,9 +40,7 @@ export const QUERY = gql`
 export const Loading = () => <div>Loading...</div>
 
 export const Empty = () => {
-    return (
-        <ConsumerMap vendors={[]} products={[]} className="h-screen w-full" />
-    )
+    return <ConsumerMap className="h-screen w-full" />
 }
 
 export const Failure = ({ error }: CellFailureProps<ConsumerMapCellQuery>) => (
@@ -48,17 +50,18 @@ export const Failure = ({ error }: CellFailureProps<ConsumerMapCellQuery>) => (
 export const Success = ({
     mapVendors,
 }: CellSuccessProps<ConsumerMapCellQuery, ConsumerMapCellQueryVariables>) => {
-    const vendorProducts = mapVendors.flatMap((vendor) =>
+    const products = mapVendors.flatMap((vendor) =>
         vendor.productsOffered.map((product) => ({
             ...product,
             vendorId: vendor.id,
         }))
     )
     return (
-        <ConsumerMap
+        <ConsumerMapCellContextProvider
             vendors={mapVendors}
-            products={vendorProducts}
-            className="h-screen w-full"
-        />
+            products={products}
+        >
+            <ConsumerMap className="h-screen w-full" />
+        </ConsumerMapCellContextProvider>
     )
 }

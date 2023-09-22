@@ -5,387 +5,46 @@ import {
     ChevronLeftIcon,
     ChevronRightIcon,
 } from '@heroicons/react/20/solid'
-import tt from '@tomtom-international/web-sdk-maps'
-import { useEffect, useRef, useState } from 'react'
-import usePusher from 'src/hooks/usePusher'
-import { Product as ProductType, User as UserType } from 'types/graphql'
+import { useContext } from 'react'
+import { Image, Product as ProductType, User as UserType } from 'types/graphql'
 import BaseModal from '../../Modals/BaseModal'
 import Marker, { MarkerProps } from '../../Marker/Marker'
-import useCoordinates from 'src/hooks/useCoordinates'
-import { useApolloClient } from '@apollo/client'
-import { QUERY as CONSUMER_MAP_QUERY } from '../ConsumerMapCell/ConsumerMapCell'
+
 import Select from 'react-select'
 import '@tomtom-international/web-sdk-maps/dist/maps.css'
 import { formatDatetime } from 'src/lib/formatters'
 import Button from 'src/components/Button/Button'
-
-function removeSpacesAndHyphens(str: string) {
-    return str.replace(/[\s-]/g, '')
-}
-
-function searchMatches(query: string, target: string) {
-    query = query.toLowerCase()
-    target = target.toLowerCase()
-
-    const sanitizedQuery = removeSpacesAndHyphens(query)
-    const sanitizedTarget = removeSpacesAndHyphens(target)
-
-    return sanitizedTarget.includes(sanitizedQuery)
-}
+import {
+    ConsumerMapCellContext,
+    searchMatches,
+} from '../ConsumerMapCell/Context'
 
 export type ConsumerMapVendor = VendorInfoModalProps['vendor'] &
     MarkerProps['vendor']
 
-export interface ConsumerMapVendorImage {
-    id: number
-    title: string
-    url: string
-    userId: number
-}
+export interface ConsumerMapVendorImage
+    extends Pick<Image, 'id' | 'title' | 'url' | 'userId'> {}
 
-export interface ConsumerMapVendorProduct {
-    id: number
-    name: string
-    availability: boolean
-    userId: number
-}
+export interface ConsumerMapVendorProduct
+    extends Pick<ProductType, 'id' | 'name' | 'availability' | 'userId'> {}
 
 export interface ConsumerMapProps {
-    vendors: ConsumerMapVendor[]
-    products: ConsumerMapVendorProduct[]
     className?: string
 }
 
-const ConsumerMap = ({ vendors, products, className }: ConsumerMapProps) => {
-    const [pusher, channel] = usePusher()
-    const mapRef = useRef(null)
-    const [map, setMap] = useState<tt.Map>(null)
-    const apolloClient = useApolloClient()
-    const [isVendorInfoModalOpen, setIsVendorInfoModalOpen] = useState(false)
-    const coordinates = useCoordinates()
-    const [userMarker, setUserMarker] = useState<tt.Marker>(null)
-    const [selectedVendor, setSelectedVendor] =
-        useState<VendorInfoModalProps['vendor']>(null)
-    const [isLegendModalOpen, setIsLegendModalOpen] = useState(false)
-    const [selectedOption, setSelectedOption] = useState<SearchOption>(null)
-
-    const [focusedVendorIndex, setFocusedVendorIndex] = useState(0)
-    const [selectedSearchType, setSelectedSearchType] =
-        useState<SearchTypeOption>({ value: 'product', label: 'Product' })
-
-    const [filteredVendors, setFilteredVendors] = useState(
-        vendors.filter((products) => {
-            if (!selectedOption) return true
-
-            return products.productsOffered.some((product) =>
-                searchMatches(selectedOption.label, product.name)
-            )
-        })
-    )
-    const [productOptions, setProductOptions] =
-        useState<ProductSearchProps['products']>(products)
-    const [vendorOptions, setVendorOptions] =
-        useState<VendorSearchProps['vendors']>(vendors)
-
-    useEffect(() => {
-        setProductOptions(products)
-    }, [products])
-
-    // set the vendor options when the vendors change
-    useEffect(() => {
-        setVendorOptions(vendors)
-    }, [vendors])
-
-    // set the filtered vendors when the vendors change
-    useEffect(() => {
-        setFilteredVendors(
-            vendors.filter((vendor) => {
-                if (!selectedOption) return true
-
-                if (selectedSearchType.value === 'vendor') {
-                    return searchMatches(selectedOption.label, vendor.name)
-                } else if (selectedSearchType.value === 'product') {
-                    return vendor.productsOffered.some((product) =>
-                        searchMatches(selectedOption.label, product.name)
-                    )
-                }
-            })
-        )
-    }, [vendors, selectedOption])
-
-    useEffect(() => {
-        // if there is a selected vendor, update it
-        if (selectedVendor) {
-            setSelectedVendor(
-                filteredVendors.find(
-                    (vendor) => vendor.id === selectedVendor.id
-                )
-            )
-        }
-    }, [filteredVendors])
-
-    // initialize map
-    useEffect(() => {
-        if (!mapRef.current) return
-        const map = tt.map({
-            key: process.env.TOMTOM_API_KEY,
-            container: mapRef.current,
-            zoom: 15,
-        })
-        setMap(map)
-
-        return () => {
-            if (map) {
-                map.remove()
-            }
-        }
-    }, [mapRef])
-
-    // center map on user's location
-    useEffect(() => {
-        let marker: tt.Marker
-        if (map && coordinates) {
-            map.setCenter([coordinates.longitude, coordinates.latitude])
-            map.zoomTo(15)
-            marker = new tt.Marker().setLngLat([
-                coordinates.longitude,
-                coordinates.latitude,
-            ])
-            marker.setPopup(
-                new tt.Popup({ offset: 35 }).setHTML(`<h3>You are here</h3>`)
-            )
-            marker.addTo(map)
-            marker.togglePopup()
-            setUserMarker(marker)
-        }
-
-        return () => {
-            if (marker) {
-                marker.remove()
-            }
-        }
-    }, [map, coordinates])
-
-    function focusLocationButtonHandler() {
-        if (userMarker) {
-            map.setCenter(userMarker.getLngLat())
-            if (!userMarker.getPopup().isOpen()) {
-                userMarker.togglePopup()
-            }
-        }
-    }
-
-    // bind pusher events
-    useEffect(() => {
-        if (pusher && channel) {
-            channel.bind(
-                'location-broadcast',
-                ({ vendor }: { vendor: ConsumerMapVendor }) => {
-                    // check if marker already exists, if it does, update it, else add it as a new one
-                    apolloClient.cache.updateQuery(
-                        { query: CONSUMER_MAP_QUERY },
-                        (data) => {
-                            const vendorIndex = data.mapVendors.findIndex(
-                                (v) => v.id === vendor.id
-                            )
-                            if (vendorIndex !== -1) {
-                                return {
-                                    mapVendors: data.mapVendors.map((v) => {
-                                        if (v.id === vendor.id) {
-                                            return vendor
-                                        }
-                                        return v
-                                    }),
-                                }
-                            } else {
-                                return {
-                                    mapVendors: data.mapVendors.concat({
-                                        ...vendor,
-                                    }),
-                                }
-                            }
-                        }
-                    )
-                }
-            )
-
-            channel.bind(
-                'hide-location',
-                ({ vendor }: { vendor: UserType }) => {
-                    // remove marker
-                    apolloClient.cache.updateQuery(
-                        { query: CONSUMER_MAP_QUERY },
-                        (data) => ({
-                            mapVendors: data.mapVendors.filter(
-                                (v) => v.id !== vendor.id
-                            ),
-                        })
-                    )
-                }
-            )
-
-            channel.bind(
-                'product-update',
-                ({ updatedProduct }: { updatedProduct: ProductType }) => {
-                    if (updatedProduct.availability === true) {
-                        apolloClient.cache.updateQuery(
-                            { query: CONSUMER_MAP_QUERY },
-                            (data) => ({
-                                mapVendors: data.mapVendors.map((vendor) => {
-                                    if (vendor.id !== updatedProduct.userId)
-                                        return vendor
-                                    return {
-                                        ...vendor,
-                                        productsOffered: vendor.productsOffered
-                                            .filter(
-                                                (p) =>
-                                                    p.id !== updatedProduct.id
-                                            )
-                                            .concat({ ...updatedProduct }),
-                                    }
-                                }),
-                            })
-                        )
-                    } else {
-                        apolloClient.cache.updateQuery(
-                            { query: CONSUMER_MAP_QUERY },
-                            (data) => ({
-                                mapVendors: data.mapVendors.map((vendor) => {
-                                    if (vendor.id !== updatedProduct.userId)
-                                        return vendor
-                                    return {
-                                        ...vendor,
-                                        productsOffered:
-                                            vendor.productsOffered.filter(
-                                                (p) =>
-                                                    p.id !== updatedProduct.id
-                                            ),
-                                    }
-                                }),
-                            })
-                        )
-                    }
-                }
-            )
-
-            channel.bind(
-                'product-delete',
-                ({ deletedProduct }: { deletedProduct: ProductType }) => {
-                    apolloClient.cache.updateQuery(
-                        { query: CONSUMER_MAP_QUERY },
-                        (data) => ({
-                            mapVendors: data.mapVendors.map((vendor) => {
-                                if (vendor.id !== deletedProduct.userId)
-                                    return vendor
-                                return {
-                                    ...vendor,
-                                    productsOffered:
-                                        vendor.productsOffered.filter(
-                                            (p) => p.id !== deletedProduct.id
-                                        ),
-                                }
-                            }),
-                        })
-                    )
-                }
-            )
-
-            channel.bind(
-                'image-create',
-                ({ newImage }: { newImage: ConsumerMapVendorImage }) => {
-                    apolloClient.cache.updateQuery(
-                        { query: CONSUMER_MAP_QUERY },
-                        (data) => ({
-                            mapVendors: data.mapVendors.map((vendor) => {
-                                if (vendor.id !== newImage.userId) return vendor
-                                return {
-                                    ...vendor,
-                                    featuredImages: vendor.featuredImages
-                                        .filter((i) => i.id !== newImage.id)
-                                        .concat({ ...newImage }),
-                                }
-                            }),
-                        })
-                    )
-                }
-            )
-
-            channel.bind(
-                'image-delete',
-                ({
-                    deletedImage,
-                }: {
-                    deletedImage: ConsumerMapVendorImage
-                }) => {
-                    apolloClient.cache.updateQuery(
-                        { query: CONSUMER_MAP_QUERY },
-                        (data) => ({
-                            mapVendors: data.mapVendors.map((vendor) => {
-                                if (vendor.id !== deletedImage.userId)
-                                    return vendor
-                                return {
-                                    ...vendor,
-                                    featuredImages:
-                                        vendor.featuredImages.filter(
-                                            (i) => i.id !== deletedImage.id
-                                        ),
-                                }
-                            }),
-                        })
-                    )
-                }
-            )
-        }
-
-        return () => {
-            if (pusher && channel) {
-                channel.unbind('location-broadcast')
-                channel.unbind('hide-location')
-                channel.unbind('product-update')
-                channel.unbind('product-delete')
-                channel.unbind('image-create')
-                channel.unbind('image-delete')
-            }
-        }
-    }, [pusher, channel, map, vendors])
-
-    function onLeftVendorButtonClicked() {
-        let safeIndex = focusedVendorIndex % filteredVendors.length
-        map.setCenter([
-            filteredVendors[safeIndex].longitude,
-            filteredVendors[safeIndex].latitude,
-        ])
-
-        // move the focused vendor index to the previous vendor
-        setFocusedVendorIndex(
-            (filteredVendors.length + safeIndex - 1) % filteredVendors.length
-        )
-        setSelectedVendor(filteredVendors[safeIndex])
-    }
-
-    function onRightVendorButtonClicked() {
-        let safeIndex = focusedVendorIndex % filteredVendors.length
-        map.setCenter([
-            filteredVendors[safeIndex].longitude,
-            filteredVendors[safeIndex].latitude,
-        ])
-
-        // move the focused vendor index to the next vendor
-        setFocusedVendorIndex((safeIndex + 1) % filteredVendors.length)
-        setSelectedVendor(filteredVendors[safeIndex])
-    }
-
+const ConsumerMap = ({ className }: ConsumerMapProps) => {
+    const context = useContext(ConsumerMapCellContext)
     return (
         <div className={className}>
             <div className="flex p-2 space-x-4 bg-green-400">
                 <div className="flex-1">
-                    {selectedSearchType?.value === 'product' && (
+                    {context?.selectedSearchType?.value === 'product' && (
                         <ProductSearch
-                            products={productOptions}
+                            products={context?.productOptions}
                             onChange={(newValue) => {
-                                setSelectedOption(newValue)
-                                setFilteredVendors(
-                                    vendors.filter((vendor) => {
+                                context?.setSelectedOption(newValue)
+                                context?.setFilteredVendors(
+                                    context?.vendors.filter((vendor) => {
                                         if (!newValue) return true
 
                                         return vendor.productsOffered.some(
@@ -398,17 +57,17 @@ const ConsumerMap = ({ vendors, products, className }: ConsumerMapProps) => {
                                     })
                                 )
                             }}
-                            value={selectedOption}
+                            value={context?.selectedOption}
                         />
                     )}
 
-                    {selectedSearchType?.value === 'vendor' && (
+                    {context?.selectedSearchType?.value === 'vendor' && (
                         <VendorSearch
-                            vendors={vendorOptions}
+                            vendors={context?.vendorOptions}
                             onChange={(newValue) => {
-                                setSelectedOption(newValue)
-                                setFilteredVendors(
-                                    vendors.filter((vendor) => {
+                                context?.setSelectedOption(newValue)
+                                context?.setFilteredVendors(
+                                    context?.vendors.filter((vendor) => {
                                         if (!newValue) return true
 
                                         return searchMatches(
@@ -418,16 +77,16 @@ const ConsumerMap = ({ vendors, products, className }: ConsumerMapProps) => {
                                     })
                                 )
                             }}
-                            value={selectedOption}
+                            value={context?.selectedOption}
                         />
                     )}
                 </div>
                 <div>
                     <Select
-                        defaultValue={selectedSearchType}
+                        defaultValue={context?.selectedSearchType}
                         onChange={(newValue) => {
-                            setSelectedSearchType(newValue)
-                            setSelectedOption(null)
+                            context?.setSelectedSearchType(newValue)
+                            context?.setSelectedOption(null)
                         }}
                         options={[
                             { value: 'product', label: 'Product' },
@@ -436,18 +95,18 @@ const ConsumerMap = ({ vendors, products, className }: ConsumerMapProps) => {
                     />
                 </div>
             </div>
-            <div id="map" ref={mapRef} className="w-full h-full">
+            <div id="map" ref={context?.onRefSet} className="w-full h-full">
                 <div className="absolute w-full h-full">
                     <div className="w-full h-full flex items-center p-4 justify-between">
                         <button
                             className="z-10 bg-green-400 text-white rounded-full p-2 shadow-md"
-                            onClick={onLeftVendorButtonClicked}
+                            onClick={context?.onLeftVendorButtonClicked}
                         >
                             <ChevronLeftIcon className="w-8 h-8" />
                         </button>
                         <button
                             className="z-10 bg-green-400 text-white rounded-full p-2 shadow-md"
-                            onClick={onRightVendorButtonClicked}
+                            onClick={context?.onRightVendorButtonClicked}
                         >
                             <ChevronRightIcon className="w-8 h-8" />
                         </button>
@@ -457,52 +116,52 @@ const ConsumerMap = ({ vendors, products, className }: ConsumerMapProps) => {
             <div className="absolute z-10 bottom-20 right-5">
                 <button
                     className="bg-white text-white rounded-full p-2 shadow-md"
-                    onClick={focusLocationButtonHandler}
+                    onClick={context?.focusLocationButtonHandler}
                 >
                     <MapPinIcon className="w-6 h-6 text-green-600"></MapPinIcon>
                 </button>
                 <LegendModal
-                    isOpen={isLegendModalOpen}
-                    onClose={() => setIsLegendModalOpen(false)}
+                    isOpen={context?.isLegendModalOpen}
+                    onClose={() => context?.setIsLegendModalOpen(false)}
                 />
             </div>
             <div className="absolute z-10 bottom-5 right-5">
                 <button
                     className="bg-green-400 text-white rounded-full p-2 shadow-md"
-                    onClick={() => setIsLegendModalOpen(true)}
+                    onClick={() => context?.setIsLegendModalOpen(true)}
                 >
                     <QuestionMarkCircleIcon className="w-6 h-6" />
                 </button>
                 <LegendModal
-                    isOpen={isLegendModalOpen}
-                    onClose={() => setIsLegendModalOpen(false)}
+                    isOpen={context?.isLegendModalOpen}
+                    onClose={() => context?.setIsLegendModalOpen(false)}
                 />
             </div>
             <div>
-                {filteredVendors.map((vendor) => (
+                {context?.filteredVendors.map((vendor) => (
                     <Marker
                         onClick={() => {
-                            setSelectedVendor(vendor)
-                            setIsVendorInfoModalOpen(true)
+                            context?.setSelectedVendor(vendor)
+                            context?.setIsVendorInfoModalOpen(true)
                         }}
                         key={vendor.id}
-                        map={map}
+                        map={context?.map}
                         vendor={vendor}
                     />
                 ))}
             </div>
             <VendorInfoModal
-                vendor={selectedVendor}
-                isOpen={isVendorInfoModalOpen}
-                onClose={() => setIsVendorInfoModalOpen(false)}
-                onLeftButtonClicked={onLeftVendorButtonClicked}
-                onRightButtonClicked={onRightVendorButtonClicked}
+                vendor={context?.selectedVendor}
+                isOpen={context?.isVendorInfoModalOpen}
+                onClose={() => context?.setIsVendorInfoModalOpen(false)}
+                onLeftButtonClicked={context?.onLeftVendorButtonClicked}
+                onRightButtonClicked={context?.onRightVendorButtonClicked}
             />
         </div>
     )
 }
 
-interface VendorInfoModalProps {
+export interface VendorInfoModalProps {
     vendor: Pick<
         UserType,
         | 'id'
@@ -629,7 +288,7 @@ const VendorInfoModal = ({
     )
 }
 
-interface LegendModalProps {
+export interface LegendModalProps {
     isOpen: boolean
     onClose: () => void
 }
@@ -692,12 +351,12 @@ const LegendModal = ({ isOpen, onClose }: LegendModalProps) => {
     )
 }
 
-interface SearchOption {
+export interface SearchOption {
     value: number
     label: string
 }
 
-interface ProductSearchProps {
+export interface ProductSearchProps {
     products: Pick<ProductType, 'id' | 'name'>[]
     onChange: (newValue: SearchOption) => void
     value: SearchOption
@@ -725,7 +384,7 @@ export const ProductSearch = ({
     )
 }
 
-interface VendorSearchProps {
+export interface VendorSearchProps {
     vendors: Pick<UserType, 'id' | 'name'>[]
     onChange: (newValue: SearchOption) => void
     value: SearchOption
@@ -753,7 +412,7 @@ export const VendorSearch = ({
     )
 }
 
-interface SearchTypeOption {
+export interface SearchTypeOption {
     value: 'product' | 'vendor'
     label: string
 }

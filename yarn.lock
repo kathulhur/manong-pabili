@@ -7912,6 +7912,15 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@tailwindcss/aspect-ratio@npm:^0.4.2":
+  version: 0.4.2
+  resolution: "@tailwindcss/aspect-ratio@npm:0.4.2"
+  peerDependencies:
+    tailwindcss: ">=2.0.0 || >=3.0.0 || >=3.0.0-alpha.1"
+  checksum: c821a8061f80200b20db26f9cf2a711ffb17814adf847a72d4d4632804d1cabf6671df8e99e06cedfb2ba97b968d7843cd435d1201519c86acdde702efca418b
+  languageName: node
+  linkType: hard
+
 "@testing-library/dom@npm:^8.11.1":
   version: 8.20.1
   resolution: "@testing-library/dom@npm:8.20.1"
@@ -22855,6 +22864,7 @@ __metadata:
     "@redwoodjs/auth-dbauth-setup": 6.1.0
     "@redwoodjs/cli-storybook": 6.1.0
     "@redwoodjs/core": 6.1.0
+    "@tailwindcss/aspect-ratio": ^0.4.2
     prettier: ^3.0.2
     prettier-plugin-tailwindcss: ^0.5.3
   languageName: unknown

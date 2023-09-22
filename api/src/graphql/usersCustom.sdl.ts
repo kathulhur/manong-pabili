@@ -28,6 +28,7 @@ export const schema = gql`
         userPage(limit: Int!, offset: Int!): UserPage @requireAuth
         consumerMapSearch(searchKey: String!): ConsumerMapSearchResult!
             @skipAuth
+        detailedUser(id: Int!): User! @requireAuth
     }
 
     type Mutation {

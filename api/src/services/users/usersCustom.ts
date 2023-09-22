@@ -510,3 +510,29 @@ export const triggerMorningNotification: MutationResolvers['triggerMorningNotifi
 
         return false
     }
+
+export const detailedUser: QueryResolvers['detailedUser'] = async ({ id }) => {
+    return db.user.findUnique({
+        where: {
+            id,
+            deleted: false,
+        },
+        include: {
+            productsOffered: {
+                where: {
+                    deleted: false,
+                },
+            },
+            featuredImages: {
+                where: {
+                    deleted: false,
+                },
+            },
+            Markers: {
+                where: {
+                    deleted: false,
+                },
+            },
+        },
+    })
+}
