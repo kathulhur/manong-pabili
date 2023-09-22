@@ -7,6 +7,8 @@ import { toast } from '@redwoodjs/web/dist/toast'
 import { DELETE_PRODUCT_MUTATION } from 'src/components/Admin/Product/Product'
 import Button from 'src/components/Button/Button'
 import { XMarkIcon } from '@heroicons/react/20/solid'
+import ConfirmationModal from 'src/components/Modals/ConfirmationModal'
+import { useState } from 'react'
 
 const UPDATE_PRODUCT_MUTATION = gql`
     mutation UpdateProductAvailabilityMutation(
@@ -25,6 +27,9 @@ const Product = ({
 }: {
     product: Pick<ProductType, 'id' | 'name' | 'availability'>
 }) => {
+    const [isConfirmationModalOpen, setIsCreateProductModalOpen] =
+        useState(false)
+
     const [updateProduct] = useMutation(UPDATE_PRODUCT_MUTATION, {
         onError: (error) => {
             toast.error('Error updating product availability')
@@ -64,13 +69,11 @@ const Product = ({
 
     const deleteProductHandler = async () => {
         try {
-            if (confirm('Are you sure you want to delete this product?')) {
-                await deleteProduct({
-                    variables: {
-                        id: product.id,
-                    },
-                })
-            }
+            await deleteProduct({
+                variables: {
+                    id: product.id,
+                },
+            })
         } catch (error) {
             toast.error('Error deleting product')
         }
@@ -119,8 +122,16 @@ const Product = ({
                         variant="subtle"
                         className="text-red-700"
                         aria-label="Delete"
-                        onClick={deleteProductHandler}
+                        onClick={() => setIsCreateProductModalOpen(true)}
                     ></Button>
+                    <ConfirmationModal
+                        title="Delete product"
+                        description="Are you sure you want to delete this product?"
+                        confirmationButtonTitle="Delete"
+                        isOpen={isConfirmationModalOpen}
+                        onClose={() => setIsCreateProductModalOpen(false)}
+                        onConfirm={deleteProductHandler}
+                    />
                 </div>
             </div>
         </div>
