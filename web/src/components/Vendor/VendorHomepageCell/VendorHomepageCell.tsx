@@ -508,7 +508,7 @@ export const Success = ({
                 </Switch>
             </div>
 
-            <section className="relative rounded-lg mb-4 h-48 bg-green-100/80 overflow-hidden">
+            <section className="relative rounded-lg mb-4 h-48 bg-green-100/80 overflow-hidden lg:h-72">
                 <div
                     id="map"
                     ref={mapRef}
