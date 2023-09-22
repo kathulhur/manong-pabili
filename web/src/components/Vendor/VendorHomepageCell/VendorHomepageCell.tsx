@@ -508,7 +508,7 @@ export const Success = ({
                 </Switch>
             </div>
 
-            <section className="relative rounded-lg mb-4 h-48 bg-green-100/80 overflow-hidden lg:h-72">
+            <section className="relative rounded-md mb-4 h-48 bg-green-100/80 overflow-hidden lg:h-72">
                 <div
                     id="map"
                     ref={mapRef}
@@ -566,7 +566,7 @@ export const Success = ({
                     }
                 }}
             >
-                <Tab.List className="flex space-x-1 rounded-lg bg-green-300/20 p-1 mb-4">
+                <Tab.List className="flex space-x-1 rounded-md bg-green-300/20 p-1 mb-4">
                     {['Manual', 'Static', 'Realtime'].map((tab) => {
                         return (
                             <Tab
