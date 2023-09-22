@@ -1,14 +1,14 @@
 import {
     ArrowTopRightOnSquareIcon,
-    ArrowUpOnSquareIcon,
     PencilSquareIcon,
 } from '@heroicons/react/20/solid'
 import { Link, navigate, routes } from '@redwoodjs/router'
-import { checkboxInputTag, truncate } from 'src/lib/formatters'
 import { Product, User as UserType } from 'types/graphql'
 
 export interface TableProps {
-    products: Pick<Product, 'id' | 'name' | 'availability' | 'user'>[]
+    products: (Pick<Product, 'id' | 'name' | 'availability'> & {
+        user: Pick<UserType, 'id' | 'username'>
+    })[]
     user: Pick<UserType, 'username'>
 }
 

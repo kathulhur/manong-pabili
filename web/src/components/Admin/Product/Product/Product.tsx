@@ -1,105 +1,168 @@
-import { Link, routes, navigate } from "@redwoodjs/router";
-import { useMutation } from "@redwoodjs/web";
-import { toast } from "@redwoodjs/web/toast";
-
-import { checkboxInputTag, timeTag } from "src/lib/formatters";
+import { useContext } from 'react'
+import { formatDatetime } from 'src/lib/formatters'
 
 import type {
-  DeleteProductMutationVariables,
-  FindProductById,
-} from "types/graphql";
+    DeleteProductMutationVariables,
+    Product as ProductType,
+} from 'types/graphql'
+import { ProductCellContext } from '../ProductCell/Context'
+import SingleInputModalString from 'src/components/Modals/SingleInputModalString'
+import Button from 'src/components/Button'
+import ConfirmationModal from 'src/components/Modals/ConfirmationModal'
 
-export const DELETE_PRODUCT_MUTATION = gql`
-  mutation DeleteProductMutation($id: Int!) {
-    softDeleteProduct(id: $id) {
-      id
+export interface ProductProps {
+    product: Pick<
+        ProductType,
+        | 'id'
+        | 'name'
+        | 'availability'
+        | 'userId'
+        | 'createdAt'
+        | 'updatedAt'
+        | 'deletedAt'
+    > & {
+        user: Pick<ProductType['user'], 'id' | 'username'>
     }
-  }
-`;
-
-interface Props {
-  product: NonNullable<FindProductById["product"]>;
 }
 
-const Product = ({ product }: Props) => {
-  const [deleteProduct] = useMutation(DELETE_PRODUCT_MUTATION, {
-    onCompleted: () => {
-      toast.success("Product deleted");
-      navigate(routes.adminProducts());
-    },
-    onError: (error) => {
-      toast.error(error.message);
-    },
-  });
+const Product = () => {
+    const context = useContext(ProductCellContext)
+    return (
+        <div>
+            <div className="px-4 sm:px-0">
+                <h3 className="text-base font-semibold leading-7 text-gray-900">
+                    Product Information
+                </h3>
+                <p className="mt-1 max-w-2xl text-sm leading-6 text-gray-500">
+                    Product details
+                </p>
+            </div>
+            <div className="mt-6 border-t border-gray-100">
+                <dl className="divide-y divide-gray-100">
+                    <div className="px-4 py-6 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-0">
+                        <dt className="text-sm font-medium leading-6 text-gray-900">
+                            Product ID
+                        </dt>
+                        <dd className="mt-1 flex text-sm leading-6 text-gray-700 sm:col-span-2 sm:mt-0">
+                            <span className="flex-grow">
+                                {context?.product.id}
+                            </span>
+                        </dd>
+                    </div>
+                    <div className="px-4 py-6 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-0">
+                        <dt className="text-sm font-medium leading-6 text-gray-900">
+                            Product Name
+                        </dt>
+                        <dd className="mt-1 flex text-sm leading-6 text-gray-700 sm:col-span-2 sm:mt-0">
+                            <span className="flex-grow">
+                                {context?.product.name}
+                            </span>
+                            <span className="ml-4 flex-shrink-0">
+                                <button
+                                    type="button"
+                                    className="rounded-md bg-white font-medium text-orange-600 hover:text-orange-500"
+                                    onClick={() => {
+                                        context.setIsUpdateNameModalOpen(true)
+                                    }}
+                                >
+                                    Update
+                                </button>
+                                <SingleInputModalString
+                                    isOpen={context?.isUpdateNameModalOpen}
+                                    label="Update Product Name"
+                                    defaultValue={context?.product?.name}
+                                    onClose={() => {
+                                        context?.onUpdateNameModalClose()
+                                    }}
+                                    onSubmit={context?.onUpdateName}
+                                />
+                            </span>
+                        </dd>
+                    </div>
+                    <div className="px-4 py-6 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-0">
+                        <dt className="text-sm font-medium leading-6 text-gray-900">
+                            Available
+                        </dt>
+                        <dd className="mt-1 flex text-sm leading-6 text-gray-700 sm:col-span-2 sm:mt-0">
+                            <span className="flex-grow">
+                                {context?.product.availability ? 'Yes' : 'No'}
+                            </span>
+                            <span className="ml-4 flex-shrink-0">
+                                <button
+                                    type="button"
+                                    className="rounded-md bg-white font-medium text-orange-600 hover:text-orange-500"
+                                >
+                                    Update
+                                </button>
+                            </span>
+                        </dd>
+                    </div>
+                    <div className="px-4 py-6 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-0">
+                        <dt className="text-sm font-medium leading-6 text-gray-900">
+                            Other Details
+                        </dt>
+                        <dd className="mt-1 text-sm leading-6 text-gray-700 col-span-2 sm:mt-0">
+                            <dl className="grid gap-y-4 lg:grid-cols-2 xl:grid-cols-3">
+                                <div>
+                                    <dt className="text-sm font-medium leading-6 text-gray-900">
+                                        Created At
+                                    </dt>
+                                    <dd className="mt-1 flex text-sm leading-6 text-gray-700 sm:col-span-2 sm:mt-0">
+                                        {formatDatetime(
+                                            context?.product.createdAt
+                                        )}
+                                    </dd>
+                                </div>
+                                <div>
+                                    <dt className="text-sm font-medium leading-6 text-gray-900">
+                                        Updated At
+                                    </dt>
+                                    <dd className="mt-1 flex text-sm leading-6 text-gray-700 sm:col-span-2 sm:mt-0">
+                                        {formatDatetime(
+                                            context?.product.updatedAt
+                                        )}
+                                    </dd>
+                                </div>
+                                <div>
+                                    <dt className="text-sm font-medium leading-6 text-gray-900">
+                                        Deleted At
+                                    </dt>
+                                    <dd className="mt-1 flex text-sm leading-6 text-gray-700 sm:col-span-2 sm:mt-0">
+                                        {formatDatetime(
+                                            context?.product.deletedAt
+                                        ) || (
+                                            <span className="text-gray-400">
+                                                Not deleted
+                                            </span>
+                                        )}
+                                    </dd>
+                                </div>
+                            </dl>
+                        </dd>
+                    </div>
+                </dl>
+                <section className="p-4 border border-dashed border-red-700 rounded-lg mt-16">
+                    <h2 className="mb-4 font-semibold text-red-700">
+                        Danger Zone
+                    </h2>
+                    <Button
+                        variant="danger"
+                        onClick={() => context?.setIsDeleteModalOpen(true)}
+                    >
+                        Delete Product
+                    </Button>
+                    <ConfirmationModal
+                        isOpen={context?.isDeleteModalOpen}
+                        onClose={() => context?.setIsDeleteModalOpen(false)}
+                        onConfirm={() => context?.onDelete()}
+                        title="Delete Product"
+                        description="Are you sure you want to delete this product? This action cannot be undone."
+                        confirmationButtonTitle="Delete"
+                    />
+                </section>
+            </div>
+        </div>
+    )
+}
 
-  const onDeleteClick = (id: DeleteProductMutationVariables["id"]) => {
-    if (confirm("Are you sure you want to delete product " + id + "?")) {
-      deleteProduct({ variables: { id } });
-    }
-  };
-
-  return (
-    <>
-      <div className="">
-        <header className="rw-segment-header">
-          <h2 className="rw-heading rw-heading-secondary">
-            Product {product.id} Detail
-          </h2>
-        </header>
-        <table className="rw-table">
-          <tbody>
-            <tr>
-              <th>Id</th>
-              <td>{product.id}</td>
-            </tr>
-            <tr>
-              <th>Name</th>
-              <td>{product.name}</td>
-            </tr>
-            <tr>
-              <th>Availability</th>
-              <td>{checkboxInputTag(product.availability)}</td>
-            </tr>
-            <tr>
-              <th>User id</th>
-              <td>{product.userId}</td>
-            </tr>
-            <tr>
-              <th>Created at</th>
-              <td>{timeTag(product.createdAt) }</td>
-            </tr>
-            <tr>
-              <th>Updated at</th>
-              <td>{timeTag(product.updatedAt)}</td>
-            </tr>
-            <tr>
-              <th>Deleted at</th>
-              <td>{timeTag(product.deletedAt)}</td>
-            </tr>
-            <tr>
-              <th>Deleted</th>
-              <td>{checkboxInputTag(product.deleted)}</td>
-            </tr>
-          </tbody>
-        </table>
-      </div>
-      <nav className="rw-button-group">
-        <Link
-          to={routes.adminEditProduct({ id: product.id })}
-          className="rw-button rw-button-blue"
-        >
-          Edit
-        </Link>
-        <button
-          type="button"
-          className="rw-button rw-button-red"
-          onClick={() => onDeleteClick(product.id)}
-        >
-          Delete
-        </button>
-      </nav>
-    </>
-  );
-};
-
-export default Product;
+export default Product

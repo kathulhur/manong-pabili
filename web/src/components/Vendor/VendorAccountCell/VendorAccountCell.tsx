@@ -24,8 +24,8 @@ import {
     type UploadImageMutationVariables,
     type DeleteImageMutation,
     type DeleteImageMutationVariables,
-    type DeleteMarkerMutation,
-    type DeleteMarkerMutationVariables,
+    type DeleteVendorMarkerMutation,
+    type DeleteVendorMarkerMutationVariables,
     type UpdateEmailMutation,
     type UpdateEmailMutationVariables,
 } from 'types/graphql'
@@ -39,7 +39,6 @@ import { PlusIcon, XMarkIcon } from '@heroicons/react/20/solid'
 import FeaturedImage from 'src/components/Vendor/FeaturedImage/FeaturedImage'
 import Button from '../../Button/Button'
 import { DELETE_IMAGE_MUTATION } from '../../Admin/Image/Image/Image'
-import { DELETE_MARKER_MUTATION } from '../../Admin/Marker/Marker/Marker'
 import UpdateEmailModal from '../../Modals/UpdateEmailModal'
 
 export const QUERY = gql`
@@ -60,6 +59,14 @@ export const QUERY = gql`
                 id
                 url
             }
+        }
+    }
+`
+
+const DELETE_MARKER_MUTATION = gql`
+    mutation DeleteVendorMarkerMutation($id: Int!) {
+        softDeleteMarker(id: $id) {
+            id
         }
     }
 `
@@ -188,8 +195,8 @@ export const Success = ({
         DeleteImageMutationVariables
     >(DELETE_IMAGE_MUTATION)
     const [deleteMarker, { loading: deleteMarkerLoading }] = useMutation<
-        DeleteMarkerMutation,
-        DeleteMarkerMutationVariables
+        DeleteVendorMarkerMutation,
+        DeleteVendorMarkerMutationVariables
     >(DELETE_MARKER_MUTATION)
     const [isUpdateUsernameModalOpen, setIsUpdateUsernameModalOpen] =
         useState(false)

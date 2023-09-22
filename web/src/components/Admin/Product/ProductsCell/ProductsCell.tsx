@@ -1,4 +1,4 @@
-import type { ProductscellQuery } from 'types/graphql'
+import type { ProductsCellQuery } from 'types/graphql'
 import { Link, routes } from '@redwoodjs/router'
 import type { CellSuccessProps, CellFailureProps } from '@redwoodjs/web'
 
@@ -6,7 +6,9 @@ import Products from 'src/components/Admin/Product/Products'
 import { PaginationContext } from 'src/pages/Admin/User/UsersPage/Context'
 import { useContext } from 'react'
 import { ProductsPageContext } from 'src/pages/Admin/Product/ProductsPage/Context'
-import Breadcrumb from 'src/components/Breadcrumb/Breadcrumb'
+import Breadcrumb, {
+    BreadcrumbProps,
+} from 'src/components/Breadcrumb/Breadcrumb'
 export const beforeQuery = () => {
     const { page, pageSize } = useContext(PaginationContext)
     const productsPageContext = useContext(ProductsPageContext)
@@ -47,7 +49,8 @@ export const QUERY = gql`
             count
         }
         user(id: $userId) {
-            name
+            id
+            username
         }
     }
 `
@@ -74,7 +77,7 @@ export const Success = ({
     user,
 }: CellSuccessProps<ProductsCellQuery>) => {
     const { userId } = useContext(ProductsPageContext)
-    let pages = []
+    let pages: BreadcrumbProps['pages'] = []
     if (user) {
         pages = [
             {
@@ -86,7 +89,7 @@ export const Success = ({
                 current: false,
             },
             {
-                name: user.name,
+                name: user.username,
                 to: routes.adminUser({
                     id: userId,
                 }),
@@ -110,6 +113,7 @@ export const Success = ({
                     page: 1,
                     pageSize: 10,
                     userId,
+                    current: true,
                 }),
                 current: true,
             },

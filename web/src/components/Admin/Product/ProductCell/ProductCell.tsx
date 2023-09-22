@@ -1,25 +1,57 @@
-import type { FindProductById } from 'types/graphql'
+import type { ProductCellQuery } from 'types/graphql'
 
-import {
-    type CellSuccessProps,
-    type CellFailureProps,
-    MetaTags,
-} from '@redwoodjs/web'
+import { type CellSuccessProps, type CellFailureProps } from '@redwoodjs/web'
 
 import Product from 'src/components/Admin/Product/Product'
-import { Link, routes } from '@redwoodjs/router'
-import LoadingComponent from 'src/components/Loading/Loading'
+import { routes } from '@redwoodjs/router'
+import Breadcrumb, {
+    BreadcrumbProps,
+} from 'src/components/Breadcrumb/Breadcrumb'
+import { ProductCellContextProvider } from './Context'
 export const QUERY = gql`
-    query FindProductById($id: Int!) {
-        product: product(id: $id) {
+    query ProductCellQuery($id: Int!) {
+        product(id: $id) {
             id
             name
             availability
             userId
+            user {
+                id
+                username
+            }
             createdAt
             updatedAt
             deletedAt
             deleted
+        }
+    }
+`
+
+export const DELETE_PRODUCT_MUTATION = gql`
+    mutation DeleteProductMutation($id: Int!) {
+        softDeleteProduct(id: $id) {
+            id
+        }
+    }
+`
+
+export const UPDATE_PRODUCT_NAME_MUTATION = gql`
+    mutation UpdateProductNameMutation($id: Int!, $name: String!) {
+        updateProduct(id: $id, input: { name: $name }) {
+            id
+            name
+        }
+    }
+`
+
+export const UPDATE_PRODUCT_AVAILABILITY_MUTATION = gql`
+    mutation UpdateAdminProductAvailabilityMutation(
+        $id: Int!
+        $availability: Boolean!
+    ) {
+        updateProduct(id: $id, input: { availability: $availability }) {
+            id
+            availability
         }
     }
 `
@@ -32,44 +64,32 @@ export const Failure = ({ error }: CellFailureProps) => (
     <div className="rw-cell-error">{error?.message}</div>
 )
 
-export const Success = ({ product }: CellSuccessProps<FindProductById>) => {
+export const Success = ({ product }: CellSuccessProps<ProductCellQuery>) => {
+    const pages: BreadcrumbProps['pages'] = [
+        {
+            name: 'Users',
+            to: routes.adminUsers(),
+        },
+        {
+            name: product.user.username,
+            to: routes.adminUser({ id: product.userId }),
+        },
+        {
+            name: 'Products',
+            to: routes.adminProducts(),
+        },
+        {
+            name: product.name,
+            to: routes.adminProduct({ id: product.id }),
+            current: true,
+        },
+    ]
     return (
-        <div className="m-8">
-            <MetaTags title="User Product" description="UserProducts page" />
-            <div className="p-2">
-                <div className="font-semibold space-x-2">
-                    <Link
-                        to={routes.adminUsers()}
-                        className="hover:underline hover:underline-offset-1"
-                    >
-                        Users
-                    </Link>
-                    <span>&gt;</span>
-                    <Link
-                        to={routes.adminUser({ id: product.userId })}
-                        className="hover:underline hover:underline-offset-1"
-                    >
-                        {product.userId}
-                    </Link>
-                    <span>&gt;</span>
-                    <Link
-                        to={routes.adminProducts({ id: product.userId })}
-                        className="hover:underline hover:underline-offset-1"
-                    >
-                        Products
-                    </Link>
-                    <span>&gt;</span>
-                    <Link
-                        to={routes.adminProduct({ id: product.userId })}
-                        className="hover:underline hover:underline-offset-1"
-                    >
-                        {product.name}
-                    </Link>
-                </div>
+        <ProductCellContextProvider product={product}>
+            <div className="space-y-8">
+                <Breadcrumb pages={pages} />
+                <Product />
             </div>
-            <div className="mt-8">
-                <Product product={product} />
-            </div>
-        </div>
+        </ProductCellContextProvider>
     )
 }

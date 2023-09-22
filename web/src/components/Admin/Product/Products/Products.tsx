@@ -3,13 +3,9 @@ import { useMutation } from '@redwoodjs/web'
 import { toast } from '@redwoodjs/web/toast'
 
 import { QUERY } from 'src/components/Admin/Product/ProductsCell'
-import { checkboxInputTag, truncate } from 'src/lib/formatters'
-import { DELETE_PRODUCT_MUTATION } from '../Product'
+import { DELETE_PRODUCT_MUTATION } from '../ProductCell'
 
-import type {
-    DeleteProductMutationVariables,
-    FindProducts,
-} from 'types/graphql'
+import type { ProductsCellQuery } from 'types/graphql'
 import Table, { TableProps } from './Table/Table'
 import Pagination from 'src/components/Pagination/Pagination'
 import { PaginationContext } from 'src/pages/Admin/User/UsersPage/Context'
@@ -36,9 +32,9 @@ const ProductsList = ({ products, count, user }: ProductsListProps) => {
                 cache.modify({
                     fields: {
                         productPage: (
-                            existingProductPage: FindProducts['productPage'],
+                            existingProductPage: ProductsCellQuery['productPage'],
                             { readField }
-                        ): FindProducts['productPage'] => {
+                        ): ProductsCellQuery['productPage'] => {
                             return {
                                 ...existingProductPage,
                                 products: existingProductPage.products.filter(

@@ -4,7 +4,7 @@ import {
 } from 'types/graphql'
 import { useMutation } from '@redwoodjs/web'
 import { toast } from '@redwoodjs/web/dist/toast'
-import { DELETE_PRODUCT_MUTATION } from 'src/components/Admin/Product/Product'
+
 import Button from 'src/components/Button/Button'
 import { XMarkIcon } from '@heroicons/react/20/solid'
 import ConfirmationModal from 'src/components/Modals/ConfirmationModal'
@@ -18,6 +18,14 @@ const UPDATE_PRODUCT_MUTATION = gql`
         updateProduct(id: $id, input: $input) {
             id
             availability
+        }
+    }
+`
+
+const DELETE_PRODUCT_MUTATION = gql`
+    mutation DeleteVendorProductMutation($id: Int!) {
+        softDeleteProduct(id: $id) {
+            id
         }
     }
 `

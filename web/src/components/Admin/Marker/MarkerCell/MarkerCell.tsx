@@ -1,57 +1,74 @@
-import type { FindMarkerById } from "types/graphql";
+import type { MarkerCellQuery } from 'types/graphql'
 
-import type { CellSuccessProps, CellFailureProps } from "@redwoodjs/web";
-import LoadingComponent from "src/components/Loading/Loading";
-import Marker from "src/components/Admin/Marker/Marker";
-import { Link, routes } from "@redwoodjs/router";
+import type { CellSuccessProps, CellFailureProps } from '@redwoodjs/web'
+import LoadingComponent from 'src/components/Loading/Loading'
+import Marker from 'src/components/Admin/Marker/Marker'
+import { Link, routes } from '@redwoodjs/router'
+import Breadcrumb, {
+    BreadcrumbProps,
+} from 'src/components/Breadcrumb/Breadcrumb'
+import { MarkerCellContextProvider } from './Context'
 
 export const QUERY = gql`
-  query FindMarkerById($id: Int!) {
-    marker: marker(id: $id) {
-      id
-      url
-      userId
-      createdAt
-      updatedAt
-      deleted
-      deletedAt
+    query MarkerCellQuery($id: Int!) {
+        marker(id: $id) {
+            id
+            url
+            userId
+            createdAt
+            updatedAt
+            deleted
+            deletedAt
+            user {
+                id
+                username
+            }
+        }
     }
-  }
-`;
+`
 
-export const Loading = () => null;
+export const DELETE_MARKER_MUTATION = gql`
+    mutation DeleteAdminMarkerMutation($id: Int!) {
+        softDeleteMarker(id: $id) {
+            id
+        }
+    }
+`
 
-export const Empty = () => <div>Marker not found</div>;
+export const Loading = () => null
+
+export const Empty = () => <div>Marker not found</div>
 
 export const Failure = ({ error }: CellFailureProps) => (
-  <div className="rw-cell-error">{error?.message}</div>
-);
+    <div className="rw-cell-error">{error?.message}</div>
+)
 
-export const Success = ({ marker }: CellSuccessProps<FindMarkerById>) => {
-  return (
-    <div className="m-8">
-    <div className="p-2">
-        <div className="font-semibold space-x-2">
-            <Link to={routes.adminUsers()} className="hover:underline hover:underline-offset-1">
-            Users
-            </Link>
-            <span>&gt;</span>
-            <Link to={routes.adminUser({ id: marker.userId })} className="hover:underline hover:underline-offset-1">
-            { marker.userId }
-            </Link>
-            <span>&gt;</span>
-            <Link to={routes.adminMarkers({ id: marker.userId })} className="hover:underline hover:underline-offset-1">
-              Markers
-            </Link>
-            <span>&gt;</span>
-            <Link to={routes.adminImage({ id: marker.userId })} className="hover:underline hover:underline-offset-1">
-              { marker.id }
-            </Link>
-        </div>
-      </div>
-      <div className="mt-8">
-        <Marker marker={marker} />
-      </div>
-    </div>
-  );
-};
+export const Success = ({ marker }: CellSuccessProps<MarkerCellQuery>) => {
+    const pages: BreadcrumbProps['pages'] = [
+        {
+            name: 'Users',
+            to: routes.adminUsers(),
+        },
+        {
+            name: marker.user.username,
+            to: routes.adminMarker({ id: marker.id }),
+        },
+        {
+            name: 'Markers',
+            to: routes.adminMarkers(),
+        },
+        {
+            name: String(marker.id),
+            to: routes.adminMarker({ id: marker.id }),
+            current: true,
+        },
+    ]
+    return (
+        <MarkerCellContextProvider marker={marker}>
+            <div className="space-y-4">
+                <Breadcrumb pages={pages} />
+                <Marker />
+            </div>
+        </MarkerCellContextProvider>
+    )
+}

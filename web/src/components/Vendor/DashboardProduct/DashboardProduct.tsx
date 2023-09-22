@@ -6,7 +6,7 @@ import Button from '../../Button/Button'
 import { toast } from '@redwoodjs/web/toast'
 
 const UPDATE_PRODUCT_MUTATION = gql`
-    mutation UpdateProductAvailabilityMutation(
+    mutation UpdateDashboardProductAvailabilityMutation(
         $id: Int!
         $input: UpdateProductInput!
     ) {

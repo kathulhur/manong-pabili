@@ -11,7 +11,7 @@ export interface BreadcrumbProps {
 
 export default function Breadcrumb({ pages }: BreadcrumbProps) {
     return (
-        <nav className="flex" aria-label="Breadcrumb">
+        <nav className="flex overflow-auto" aria-label="Breadcrumb">
             <ol role="list" className="flex items-center space-x-4">
                 <li>
                     <div>
