@@ -165,12 +165,12 @@ export const Success = ({
                 <h2 className="font-bold text-slate-900">Products</h2>
                 <Button
                     type="button"
-                    aria-label="Add Product"
+                    icon={<PlusIcon />}
                     onClick={() =>
                         setIsCreateProductModalOpen(!isCreateProductModalOpen)
                     }
                 >
-                    <PlusIcon className="h-7 w-7 text-slate-100" />
+                    Add Product
                 </Button>
                 <CreateProductModal
                     isOpen={isCreateProductModalOpen}
@@ -187,7 +187,9 @@ export const Success = ({
             </ul>
 
             <Link to={routes.vendorProducts()}>
-                <Button fullWidth>Manage products</Button>
+                <Button variant="secondary" fullWidth>
+                    Manage products
+                </Button>
             </Link>
         </div>
     )

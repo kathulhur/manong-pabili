@@ -455,11 +455,10 @@ export const Success = ({
                     Manong Pabili
                 </h1>
                 <Button
-                    className="bg-transparent hover:bg-slate-100"
+                    variant="subtle"
+                    icon={<Bars2Icon className="w-7 h-7 text-gray-900" />}
                     onClick={() => setIsVendorProfileModalOpen(true)}
-                >
-                    <Bars2Icon className="h-7 w-7 text-slate-900" />
-                </Button>
+                ></Button>
                 <VendorProfileModal
                     isOpen={isVendorProfileModalOpen}
                     onClose={() => setIsVendorProfileModalOpen(false)}
@@ -574,8 +573,8 @@ export const Success = ({
                                 key={tab}
                                 className={({ selected }) =>
                                     clsx(
-                                        'w-full rounded-lg py-2.5 text-sm font-semibold leading-5 text-green-700',
-                                        'ring-white ring-opacity-60 ring-offset-2 ring-offset-green-400 focus:outline-none focus:ring-2',
+                                        'w-full rounded-md px-3 py-2 text-sm font-semibold leading-5 text-green-700',
+                                        'ring-white ring-opacity-60 ring-offset-2 ring-offset-green-400 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-green-600',
                                         selected
                                             ? 'bg-white'
                                             : 'text-green-500 hover:bg-white/[0.12] hover:text-green-600'
@@ -591,6 +590,7 @@ export const Success = ({
                     <Tab.Panel></Tab.Panel>
                     <Tab.Panel>
                         <Button
+                            variant="secondary"
                             fullWidth
                             onClick={() =>
                                 updateLocationButtonHandler(
