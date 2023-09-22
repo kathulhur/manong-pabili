@@ -14,7 +14,7 @@ const ProductsPage = () => {
         <FadeTransitionLayout>
             <div>
                 <MetaTags title="Products" description="Products page" />
-                <div className="max-w-7xl mx-auto p-8">
+                <div className="max-w-2xl mx-auto p-8">
                     <Link to={routes.vendorIndex()}>
                         <Button variant="subtle" icon={<ChevronLeftIcon />}>
                             Go back
