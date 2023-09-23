@@ -84,22 +84,28 @@ export const Success = ({
         pages = [
             {
                 name: 'Users',
-                to: routes.admin(),
+                to: routes.admin({
+                    tab: 'users',
+                }),
             },
             {
                 name: user.username,
-                to: routes.adminUser({ id: user.id }),
+                to: routes.adminUser({ id: user.id, tab: 'users' }),
             },
             {
                 name: 'Markers',
-                to: routes.adminMarkers(),
+                to: routes.adminMarkers({
+                    tab: 'markers',
+                }),
             },
         ]
     } else {
         pages = [
             {
                 name: 'Markers',
-                to: routes.adminMarkers(),
+                to: routes.adminMarkers({
+                    tab: 'markers',
+                }),
             },
         ]
     }

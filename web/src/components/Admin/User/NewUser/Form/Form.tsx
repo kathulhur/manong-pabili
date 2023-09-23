@@ -230,6 +230,7 @@ const Form = ({ onSubmit, onCancel }: FormProps) => {
                         <button
                             type="button"
                             className="text-sm font-semibold leading-6 text-gray-900"
+                            onClick={onCancel}
                         >
                             Cancel
                         </button>

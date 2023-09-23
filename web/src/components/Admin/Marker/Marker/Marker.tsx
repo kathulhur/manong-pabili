@@ -68,6 +68,7 @@ const Marker = () => {
                             <Link
                                 to={routes.adminUser({
                                     id: context?.marker.user.id,
+                                    tab: 'users',
                                 })}
                             >
                                 <span>

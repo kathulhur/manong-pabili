@@ -79,6 +79,7 @@ const Table = ({ products, user }: TableProps) => {
                                         <Link
                                             to={routes.adminProduct({
                                                 id: product.id,
+                                                tab: 'products',
                                             })}
                                         >
                                             <ArrowTopRightOnSquareIcon
@@ -109,6 +110,7 @@ const Table = ({ products, user }: TableProps) => {
                                         <Link
                                             to={routes.adminUser({
                                                 id: product.user.id,
+                                                tab: 'users',
                                             })}
                                             className="hover:underline hover:text-gray-600"
                                         >

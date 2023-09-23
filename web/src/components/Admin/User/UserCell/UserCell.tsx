@@ -75,11 +75,13 @@ export const Success = ({ user }: CellSuccessProps<UserCellQuery>) => {
     const pages: BreadcrumbProps['pages'] = [
         {
             name: 'Users',
-            to: routes.adminUsers(),
+            to: routes.adminUsers({
+                tab: 'users',
+            }),
         },
         {
             name: user.name,
-            to: routes.adminUser({ id: user.id }),
+            to: routes.adminUser({ id: user.id, tab: 'users' }),
             current: true,
         },
     ]

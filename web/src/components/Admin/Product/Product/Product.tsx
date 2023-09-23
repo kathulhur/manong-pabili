@@ -107,6 +107,7 @@ const Product = () => {
                             <Link
                                 to={routes.adminUser({
                                     id: context?.product.user.id,
+                                    tab: 'users',
                                 })}
                             >
                                 <span>

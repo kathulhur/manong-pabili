@@ -117,6 +117,7 @@ const Image = () => {
                             <Link
                                 to={routes.adminUser({
                                     id: context?.image.user.id,
+                                    tab: 'users',
                                 })}
                             >
                                 <span>

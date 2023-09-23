@@ -73,6 +73,7 @@ export const Success = ({
                         to: routes.adminUsers({
                             page: 1,
                             pageSize: 10,
+                            tab: 'users',
                         }),
                         current: false,
                     },

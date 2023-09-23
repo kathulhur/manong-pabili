@@ -272,6 +272,7 @@ const User = () => {
                             <Link
                                 to={routes.adminImages({
                                     id: context?.user.id,
+                                    tab: 'images',
                                 })}
                                 className="hover:text-gray-500"
                             >
@@ -326,6 +327,7 @@ const User = () => {
                             <Link
                                 to={routes.adminMarkers({
                                     id: context?.user.id,
+                                    tab: 'markers',
                                 })}
                                 className="hover:text-gray-500"
                             >

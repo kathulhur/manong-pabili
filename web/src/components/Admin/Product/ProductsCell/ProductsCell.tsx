@@ -85,6 +85,7 @@ export const Success = ({
                 to: routes.adminUsers({
                     page: 1,
                     pageSize: 10,
+                    tab: 'users',
                 }),
                 current: false,
             },
@@ -92,6 +93,7 @@ export const Success = ({
                 name: user.username,
                 to: routes.adminUser({
                     id: userId,
+                    tab: 'users',
                 }),
                 current: false,
             },
@@ -101,6 +103,7 @@ export const Success = ({
                     page: 1,
                     pageSize: 10,
                     userId,
+                    tab: 'products',
                 }),
                 current: true,
             },
@@ -114,6 +117,7 @@ export const Success = ({
                     pageSize: 10,
                     userId,
                     current: true,
+                    tab: 'products',
                 }),
                 current: true,
             },

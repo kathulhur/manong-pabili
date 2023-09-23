@@ -84,12 +84,32 @@ export const Success = ({
     let pages: BreadcrumbProps['pages'] = []
     if (user) {
         pages = [
-            { name: 'Users', to: routes.adminImages() },
-            { name: user.username, to: routes.adminUser({ id: user.id }) },
-            { name: 'Images', to: routes.adminImages() },
+            {
+                name: 'Users',
+                to: routes.adminImages({
+                    tab: 'users',
+                }),
+            },
+            {
+                name: user.username,
+                to: routes.adminUser({ id: user.id, tab: 'users' }),
+            },
+            {
+                name: 'Images',
+                to: routes.adminImages({
+                    tab: 'images',
+                }),
+            },
         ]
     } else {
-        pages = [{ name: 'Images', to: routes.adminImages() }]
+        pages = [
+            {
+                name: 'Images',
+                to: routes.adminImages({
+                    tab: 'images',
+                }),
+            },
+        ]
     }
     return (
         <div>

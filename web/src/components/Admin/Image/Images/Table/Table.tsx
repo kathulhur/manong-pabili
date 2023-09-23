@@ -87,6 +87,7 @@ const Table = ({ images, user }: TableProps) => {
                                                 <Link
                                                     to={routes.adminImage({
                                                         id: image.id,
+                                                        tab: 'images',
                                                     })}
                                                     className="text-gray-700 hover:text-gray-500"
                                                 >
@@ -117,6 +118,7 @@ const Table = ({ images, user }: TableProps) => {
                                                 <Link
                                                     to={routes.adminUser({
                                                         id: image.user.id,
+                                                        tab: 'users',
                                                     })}
                                                     className="text-gray-700 hover:text-gray-500"
                                                 >

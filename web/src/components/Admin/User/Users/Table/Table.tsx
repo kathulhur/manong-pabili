@@ -124,6 +124,7 @@ const Table = ({ users }: TableProps) => {
                                                     className="hover:text-gray-500"
                                                     to={routes.adminUser({
                                                         id: user.id,
+                                                        tab: 'users',
                                                     })}
                                                 >
                                                     <ArrowTopRightOnSquareIcon className="w-5 h-5" />
@@ -219,6 +220,7 @@ const Table = ({ users }: TableProps) => {
                                             <Link
                                                 to={routes.adminProducts({
                                                     userId: user.id,
+                                                    tab: 'products',
                                                 })}
                                                 className="text-gray-700 hover:text-gray-500"
                                             >
@@ -236,6 +238,7 @@ const Table = ({ users }: TableProps) => {
                                             <Link
                                                 to={routes.adminImages({
                                                     userId: user.id,
+                                                    tab: 'images',
                                                 })}
                                                 className="text-gray-700 hover:text-gray-500"
                                             >
@@ -252,6 +255,7 @@ const Table = ({ users }: TableProps) => {
                                             <Link
                                                 to={routes.adminMarkers({
                                                     userId: user.id,
+                                                    tab: 'markers',
                                                 })}
                                                 className="text-gray-700 hover:text-gray-500"
                                             >

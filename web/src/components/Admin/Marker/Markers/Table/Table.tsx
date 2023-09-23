@@ -86,6 +86,7 @@ const Table = ({ markers, user }: TableProps) => {
                                                 <Link
                                                     to={routes.adminMarker({
                                                         id: marker.id,
+                                                        tab: 'markers',
                                                     })}
                                                     className="text-gray-400 hover:text-gray-700"
                                                 >
@@ -118,6 +119,7 @@ const Table = ({ markers, user }: TableProps) => {
                                                 <Link
                                                     to={routes.adminUser({
                                                         id: marker.user.id,
+                                                        tab: 'users',
                                                     })}
                                                     className="text-gray-700 hover:text-gray-500"
                                                 >
