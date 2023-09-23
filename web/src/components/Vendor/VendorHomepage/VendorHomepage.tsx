@@ -187,12 +187,3 @@ const VendorHomepage = () => {
 }
 
 export default VendorHomepage
-function getCoordinates():
-    | { latitude: any; longitude: any; locationBroadcastMode: any }
-    | PromiseLike<{
-          latitude: any
-          longitude: any
-          locationBroadcastMode: any
-      }> {
-    throw new Error('Function not implemented.')
-}

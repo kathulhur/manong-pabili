@@ -5,6 +5,7 @@ import ConfirmationModal from 'src/components/Modals/ConfirmationModal'
 import { formatDatetime } from 'src/lib/formatters'
 import type { Image as ImageType } from 'types/graphql'
 import { ImageCellContext } from '../ImageCell/Context'
+import { Link, routes } from '@redwoodjs/router'
 
 interface Props {
     image: Pick<
@@ -93,12 +94,16 @@ const Image = () => {
                             Owner
                         </dt>
                         <dd className="mt-1 text-sm leading-6 text-gray-700 sm:col-span-2 sm:mt-0 hover:text-gray-500">
-                            <a href={context?.image.user.username}>
+                            <Link
+                                to={routes.adminUser({
+                                    id: context?.image.user.id,
+                                })}
+                            >
                                 <span>
                                     {context?.image.user.username}
                                     <ArrowUpRightIcon className="inline-block w-4 h-4 ml-1 -mt-1" />
                                 </span>
-                            </a>
+                            </Link>
                         </dd>
                     </div>
                     <div className="px-4 py-6 col-span-2 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-0">

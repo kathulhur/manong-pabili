@@ -18,6 +18,7 @@ import {
 } from 'src/components/Vendor/VendorHomepageCell/VendorHomepageCell'
 import { useMutation } from '@redwoodjs/web'
 import tt from '@tomtom-international/web-sdk-maps'
+import { getCurrentPositionAsync } from 'src/hooks/useCoordinates'
 
 export interface VendorHomepageContetProps {
     vendor: VendorHomepageCellQuery['vendor']
@@ -381,12 +382,35 @@ export const VendorHomepageContextProvider = ({
         </VendorHomepageContext.Provider>
     )
 }
-function getCoordinates():
-    | { latitude: any; longitude: any; locationBroadcastMode: any }
-    | PromiseLike<{
-          latitude: any
-          longitude: any
-          locationBroadcastMode: any
-      }> {
-    throw new Error('Function not implemented.')
+
+const getCoordinates = async () => {
+    try {
+        const { coords } = await getCurrentPositionAsync({
+            enableHighAccuracy: true,
+            timeout: 5000,
+            maximumAge: 10000,
+        })
+        return {
+            latitude: coords.latitude,
+            longitude: coords.longitude,
+        }
+    } catch (err) {
+        if (err.code === 1) {
+            alert(
+                'You have denied access to your location. Please enable your browser location settings.'
+            )
+        }
+
+        if (err.code === 2) {
+            alert(
+                'Please turn on your device location settings and try again. '
+            )
+        }
+
+        if (err.code === 3) {
+            alert(
+                'Location request timed out. Please try again or try moving to a location with better signal.'
+            )
+        }
+    }
 }
