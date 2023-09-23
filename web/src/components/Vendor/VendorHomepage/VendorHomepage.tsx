@@ -19,7 +19,7 @@ const VendorHomepage = () => {
     return (
         <div className="max-w-2xl mx-auto p-8">
             <div className="flex justify-between items-center mb-10">
-                <h1 className="font-extrabold text-lg text-emerald-700">
+                <h1 className="font-bold text-lg text-emerald-600">
                     Manong Pabili
                 </h1>
                 <Button
@@ -80,7 +80,7 @@ const VendorHomepage = () => {
                 </Switch>
             </div>
 
-            <section className="relative rounded-md mb-4 h-48 bg-emerald-100/80 overflow-hidden lg:h-72">
+            <section className="relative rounded-md mb-4 h-48 bg-emerald-200/40 overflow-hidden lg:h-72">
                 <div
                     id="map"
                     ref={context?.onRefSet}
@@ -113,8 +113,8 @@ const VendorHomepage = () => {
                 {!context?.isLocationShown && (
                     <div className="grid place-items-center h-full">
                         <div className="flex flex-col items-center">
-                            <EyeSlashIcon className="w-16 h-16 mb-1 text-emerald-900" />
-                            <span className="text-emerald-900 font-bold">
+                            <EyeSlashIcon className="w-16 h-16 mb-1 text-emerald-600" />
+                            <span className="text-emerald-600 font-bold">
                                 Your location is hidden
                             </span>
                         </div>
@@ -142,7 +142,7 @@ const VendorHomepage = () => {
                     }
                 }}
             >
-                <Tab.List className="flex space-x-1 rounded-md bg-emerald-300/20 p-1 mb-4">
+                <Tab.List className="flex space-x-1 rounded-md bg-emerald-200/40 p-1 mb-4">
                     {['Manual', 'Static', 'Realtime'].map((tab) => {
                         return (
                             <Tab

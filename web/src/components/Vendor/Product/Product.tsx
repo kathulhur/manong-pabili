@@ -5,10 +5,12 @@ import {
 import { useMutation } from '@redwoodjs/web'
 import { toast } from '@redwoodjs/web/dist/toast'
 
-import Button from 'src/components/Button/Button'
-import { XMarkIcon } from '@heroicons/react/20/solid'
+import { EllipsisVerticalIcon } from '@heroicons/react/20/solid'
 import ConfirmationModal from 'src/components/Modals/ConfirmationModal'
-import { useState } from 'react'
+import { Fragment, useState } from 'react'
+import clsx from 'clsx'
+import { Menu, Transition } from '@headlessui/react'
+import dayjs from 'dayjs'
 
 const UPDATE_PRODUCT_MUTATION = gql`
     mutation UpdateProductAvailabilityMutation(
@@ -33,7 +35,7 @@ const DELETE_PRODUCT_MUTATION = gql`
 const Product = ({
     product,
 }: {
-    product: Pick<ProductType, 'id' | 'name' | 'availability'>
+    product: Pick<ProductType, 'id' | 'name' | 'availability' | 'createdAt'>
 }) => {
     const [isConfirmationModalOpen, setIsCreateProductModalOpen] =
         useState(false)
@@ -110,39 +112,96 @@ const Product = ({
             toast.error('Error updating product availability')
         }
     }
+
     return (
-        <div>
-            <div className="flex justify-between items-center">
-                <span className="font-semibold text-slate-700">
-                    {product.name}
-                </span>
-                <div className="flex items-center space-x-4">
-                    <Button
-                        type="button"
-                        variant="subtle"
-                        onClick={productAvailabilityButtonHandler}
+        <li className="flex items-center justify-between gap-x-6 py-5">
+            <div className="min-w-0">
+                <div className="flex items-start gap-x-3">
+                    <p className="text-sm font-semibold leading-6 text-gray-900">
+                        {product.name}
+                    </p>
+                    <p
+                        className={clsx(
+                            product.availability
+                                ? 'text-emerald-700 bg-emerald-50 ring-emerald-600/20'
+                                : 'text-gray-600 bg-gray-50 ring-gray-500/10',
+                            'rounded-md whitespace-nowrap mt-0.5 px-1.5 py-0.5 text-xs font-medium ring-1 ring-inset'
+                        )}
                     >
                         {product.availability ? 'Available' : 'Unavailable'}
-                    </Button>
-
-                    <Button
-                        icon={<XMarkIcon />}
-                        variant="subtle"
-                        className="text-red-700"
-                        aria-label="Delete"
-                        onClick={() => setIsCreateProductModalOpen(true)}
-                    ></Button>
-                    <ConfirmationModal
-                        title="Delete product"
-                        description="Are you sure you want to delete this product?"
-                        confirmationButtonTitle="Delete"
-                        isOpen={isConfirmationModalOpen}
-                        onClose={() => setIsCreateProductModalOpen(false)}
-                        onConfirm={deleteProductHandler}
-                    />
+                    </p>
+                </div>
+                <div className="mt-1 flex items-center gap-x-2 text-xs leading-5 text-gray-500">
+                    <p className="whitespace-nowrap">
+                        Created at{' '}
+                        {dayjs(product.createdAt).format('MMM D, YYYY')}
+                    </p>
                 </div>
             </div>
-        </div>
+            <div className="flex flex-none items-center gap-x-4">
+                <Menu as="div" className="relative flex-none">
+                    <Menu.Button className="-m-2.5 block p-2.5 text-gray-500 hover:text-gray-900">
+                        <span className="sr-only">Open options</span>
+                        <EllipsisVerticalIcon
+                            className="h-5 w-5"
+                            aria-hidden="true"
+                        />
+                    </Menu.Button>
+                    <Transition
+                        as={Fragment}
+                        enter="transition ease-out duration-100"
+                        enterFrom="transform opacity-0 scale-95"
+                        enterTo="transform opacity-100 scale-100"
+                        leave="transition ease-in duration-75"
+                        leaveFrom="transform opacity-100 scale-100"
+                        leaveTo="transform opacity-0 scale-95"
+                    >
+                        <Menu.Items className="absolute right-0 z-10 mt-2 w-32 origin-top-right rounded-md bg-white py-2 shadow-lg ring-1 ring-gray-900/5 focus:outline-none">
+                            <Menu.Item>
+                                {({ active }) => (
+                                    <span
+                                        onClick={
+                                            productAvailabilityButtonHandler
+                                        }
+                                        className={clsx(
+                                            active ? 'bg-gray-50' : '',
+                                            'block px-3 py-1 text-sm leading-6 text-gray-900 cursor-default'
+                                        )}
+                                    >
+                                        {product.availability
+                                            ? 'Available'
+                                            : 'Unavailable'}
+                                    </span>
+                                )}
+                            </Menu.Item>
+                            <Menu.Item>
+                                {({ active }) => (
+                                    <span
+                                        onClick={() =>
+                                            setIsCreateProductModalOpen(true)
+                                        }
+                                        className={clsx(
+                                            active ? 'bg-gray-50' : '',
+                                            'block px-3 py-1 text-sm leading-6 text-gray-900 cursor-default'
+                                        )}
+                                    >
+                                        Delete
+                                    </span>
+                                )}
+                            </Menu.Item>
+                        </Menu.Items>
+                    </Transition>
+                </Menu>
+                <ConfirmationModal
+                    title="Delete product"
+                    description="Are you sure you want to delete this product?"
+                    confirmationButtonTitle="Delete"
+                    isOpen={isConfirmationModalOpen}
+                    onClose={() => setIsCreateProductModalOpen(false)}
+                    onConfirm={deleteProductHandler}
+                />
+            </div>
+        </li>
     )
 }
 

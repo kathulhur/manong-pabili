@@ -13,7 +13,7 @@ import {
 } from 'types/graphql'
 
 export interface ProductsProps {
-    products: Pick<ProductType, 'id' | 'name' | 'availability'>[]
+    products: Pick<ProductType, 'id' | 'name' | 'availability' | 'createdAt'>[]
 }
 
 const Products = ({ products }: ProductsProps) => {
@@ -68,10 +68,13 @@ const Products = ({ products }: ProductsProps) => {
             })
         } catch (error) {}
     }
+
     return (
         <div className="py-8">
             <div className="flex justify-between items-center mb-8">
-                <h1 className="text-lg font-bold">Products</h1>
+                <h1 className="text-lg text-gray-900 font-semibold">
+                    Products
+                </h1>
                 <div>
                     <Button
                         className="bg-emerald-500 hover:bg-emerald-700 text-white font-bold py-2 px-4 rounded"
@@ -91,11 +94,9 @@ const Products = ({ products }: ProductsProps) => {
                     />
                 </div>
             </div>
-            <ul>
+            <ul role="list" className="divide-y divide-gray-100">
                 {products.map((product) => (
-                    <li key={product.id} className="my-4">
-                        <Product product={product} />
-                    </li>
+                    <Product key={product.id} product={product} />
                 ))}
             </ul>
         </div>
