@@ -56,11 +56,7 @@ export const ImageCellContextProvider = ({
     })
 
     const onDeleteImage = () => {
-        if (
-            confirm('Are you sure you want to delete image ' + image.id + '?')
-        ) {
-            deleteImage({ variables: { id: image.id } })
-        }
+        deleteImage({ variables: { id: image.id } })
     }
 
     const [updateTitle] = useMutation<

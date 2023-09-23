@@ -363,11 +363,11 @@ const User = () => {
                             )}
                         </dd>
                     </div>
-                    <div className="bg-white px-4 py-6 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-3">
+                    <div className="col-span-2 bg-white px-4 py-6 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-3">
                         <dt className="text-sm font-medium leading-6 text-gray-900">
                             Actions
                         </dt>
-                        <dd className="mt-1 text-sm leading-6 text-gray-700 sm:col-span-2 sm:mt-0">
+                        <dd className="mt-1 text-sm leading-6 text-gray-700 sm:col-span-2 grid gap-y-4 sm:block sm:space-x-4">
                             <Button
                                 variant="outline"
                                 onClick={() => {
@@ -375,6 +375,42 @@ const User = () => {
                                 }}
                             >
                                 Verify
+                            </Button>
+                            <Button
+                                variant="outline"
+                                onClick={() => {
+                                    navigate(
+                                        routes.adminNewProduct({
+                                            userId: context?.user.id,
+                                        })
+                                    )
+                                }}
+                            >
+                                Add Product
+                            </Button>
+                            <Button
+                                variant="outline"
+                                onClick={() => {
+                                    navigate(
+                                        routes.adminNewImage({
+                                            userId: context?.user.id,
+                                        })
+                                    )
+                                }}
+                            >
+                                Add Image
+                            </Button>
+                            <Button
+                                variant="outline"
+                                onClick={() => {
+                                    navigate(
+                                        routes.adminNewMarker({
+                                            userId: context?.user.id,
+                                        })
+                                    )
+                                }}
+                            >
+                                Add Marker
                             </Button>
                         </dd>
                     </div>

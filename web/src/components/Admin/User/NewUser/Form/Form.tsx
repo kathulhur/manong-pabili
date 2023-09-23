@@ -17,14 +17,6 @@ const Form = ({ onSubmit, onCancel }: FormProps) => {
     const [password, setPassword] = useState('')
     const submitHandler = (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault()
-        console.log({
-            roles,
-            name,
-            email,
-            mobileNumber,
-            username,
-            password,
-        })
         onSubmit({
             roles,
             gender,

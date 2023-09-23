@@ -17,7 +17,6 @@ const defaultStyling =
 const Pagination = ({ count, paginate }: PaginationProps) => {
     const { page, pageSize } = useContext(PaginationContext)
     const items = []
-    console.log('page', page)
     const numberOfPages = Math.ceil(count / pageSize)
 
     if (numberOfPages <= 6) {

@@ -26,17 +26,6 @@ const Table = ({ products, user }: TableProps) => {
                         Lorem ipsum dolor sit amet consectetur adipisicing
                     </p>
                 </div>
-                <div className="mt-4 sm:ml-16 sm:mt-0 sm:flex-none">
-                    <button
-                        type="button"
-                        className="block w-full rounded-md bg-emerald-600 px-3 py-2 text-center text-sm font-semibold text-white shadow-sm hover:bg-emerald-700 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
-                        onClick={() => {
-                            navigate(routes.adminNewProduct())
-                        }}
-                    >
-                        Add product
-                    </button>
-                </div>
             </div>
             <div className="mt-8 sm:-mx-0">
                 <table className="min-w-full divide-y divide-gray-300">
