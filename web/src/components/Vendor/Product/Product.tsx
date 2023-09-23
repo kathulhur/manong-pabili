@@ -169,8 +169,8 @@ const Product = ({
                                         )}
                                     >
                                         {product.availability
-                                            ? 'Available'
-                                            : 'Unavailable'}
+                                            ? 'Unavailable'
+                                            : 'Available'}
                                     </span>
                                 )}
                             </Menu.Item>
