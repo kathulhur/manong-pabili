@@ -1,5 +1,6 @@
 import { ChevronLeftIcon, ChevronRightIcon } from '@heroicons/react/20/solid'
 import { Link, navigate, routes } from '@redwoodjs/router'
+import clsx from 'clsx'
 import { useContext } from 'react'
 import { PaginationContext } from 'src/pages/Admin/User/UsersPage/Context'
 
@@ -8,19 +9,28 @@ export interface PaginationProps {
     paginate: (page: number) => string
 }
 
+const currentStyling =
+    'z-10 bg-emerald-600 text-white focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-emerald-600'
+const defaultStyling =
+    'text-gray-900 ring-1 ring-inset ring-gray-300 hover:bg-gray-50 focus:outline-offset-0'
+
 const Pagination = ({ count, paginate }: PaginationProps) => {
     const { page, pageSize } = useContext(PaginationContext)
     const items = []
-
+    console.log('page', page)
     const numberOfPages = Math.ceil(count / pageSize)
 
     if (numberOfPages <= 6) {
         // render all the page numbers
         for (let i = 0; i < Math.ceil(count / pageSize); i++) {
+            console.log('i', i)
             items.push(
                 <Link
                     key={i}
-                    className="relative inline-flex items-center px-4 py-2 text-sm font-semibold text-gray-900 ring-1 ring-inset ring-gray-300 hover:bg-gray-50 focus:z-20 focus:outline-offset-0"
+                    className={clsx(
+                        'relative inline-flex items-center px-4 py-2 text-sm font-semibold ',
+                        page === i + 1 ? currentStyling : defaultStyling
+                    )}
                     to={paginate(i + 1)}
                 >
                     {i + 1}
@@ -33,7 +43,12 @@ const Pagination = ({ count, paginate }: PaginationProps) => {
             items.push(
                 <Link
                     key={i}
-                    className="relative inline-flex items-center px-4 py-2 text-sm font-semibold text-gray-900 ring-1 ring-inset ring-gray-300 hover:bg-gray-50 focus:z-20 focus:outline-offset-0"
+                    className={clsx(
+                        'relative inline-flex items-center px-4 py-2 text-sm font-semibold ',
+                        {
+                            currentStyling: page === i + 1,
+                        }
+                    )}
                     to={paginate(i + 1)}
                 >
                     {i + 1}
@@ -50,7 +65,12 @@ const Pagination = ({ count, paginate }: PaginationProps) => {
             items.push(
                 <Link
                     key={i}
-                    className="relative inline-flex items-center px-4 py-2 text-sm font-semibold text-gray-900 ring-1 ring-inset ring-gray-300 hover:bg-gray-50 focus:z-20 focus:outline-offset-0"
+                    className={clsx(
+                        'relative inline-flex items-center px-4 py-2 text-sm font-semibold ',
+                        {
+                            currentStyling: page === i + 1,
+                        }
+                    )}
                     to={paginate(i + 1)}
                 >
                     {i + 1}

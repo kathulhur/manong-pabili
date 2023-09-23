@@ -1,4 +1,4 @@
-import { PaperClipIcon } from '@heroicons/react/20/solid'
+import { ArrowUpRightIcon, PaperClipIcon } from '@heroicons/react/20/solid'
 import { Link, routes, navigate } from '@redwoodjs/router'
 import { useMutation } from '@redwoodjs/web'
 import { toast } from '@redwoodjs/web/toast'
@@ -141,7 +141,7 @@ const User = ({ user }: UserProps) => {
                             Location Information
                         </dt>
                         <dd className="mt-1 text-sm leading-6 text-gray-700 sm:col-span-3 sm:mt-0">
-                            <dl className="grid grid-cols-2 lg:grid-cols-4 gap-4">
+                            <dl className="grid sm:grid-cols-2 lg:grid-cols-4 gap-4">
                                 <div className="">
                                     <dt className="text-sm font-medium leading-6 text-gray-500">
                                         Visibility
@@ -207,7 +207,17 @@ const User = ({ user }: UserProps) => {
                     </div>
                     <div className="bg-white px-4 py-6 col-span-2 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-3">
                         <dt className="text-sm font-medium leading-6 text-gray-900">
-                            Featured Images
+                            <Link
+                                to={routes.adminImages({
+                                    id: user.id,
+                                })}
+                                className="hover:text-gray-500"
+                            >
+                                <span>
+                                    Featured Images
+                                    <ArrowUpRightIcon className="inline-block w-4 h-4 ml-1 text-gray-500" />
+                                </span>
+                            </Link>
                         </dt>
                         <dd className="col-span-2 sm:grid sm:grid-cols-2 sm:gap-8">
                             {user.featuredImages.map((images) => (
@@ -250,8 +260,18 @@ const User = ({ user }: UserProps) => {
                         </dd>
                     </div>
                     <div className="bg-white px-4 py-6 col-span-2 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-3">
-                        <dt className="text-sm font-medium leading-6 text-gray-900">
-                            Markers
+                        <dt className="text-sm font-medium leading-6 text-gray-900 hover:text-gray-500">
+                            <Link
+                                to={routes.adminMarkers({
+                                    id: user.id,
+                                })}
+                                className="hover:text-gray-500"
+                            >
+                                <span>
+                                    Markers
+                                    <ArrowUpRightIcon className="inline-block w-4 h-4 ml-1 text-gray-500" />
+                                </span>
+                            </Link>
                         </dt>
                         <dd className="sm:col-span-2 gap-x-6 gap-y-10 sm:grid-cols-2 lg:grid-cols-4 xl:gap-x-8">
                             {user.Markers.map((images) => (

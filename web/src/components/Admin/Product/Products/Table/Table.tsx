@@ -1,5 +1,7 @@
 import {
     ArrowTopRightOnSquareIcon,
+    ArrowUpRightIcon,
+    LinkIcon,
     PencilSquareIcon,
 } from '@heroicons/react/20/solid'
 import { Link, navigate, routes } from '@redwoodjs/router'
@@ -27,7 +29,7 @@ const Table = ({ products, user }: TableProps) => {
                 <div className="mt-4 sm:ml-16 sm:mt-0 sm:flex-none">
                     <button
                         type="button"
-                        className="block w-full rounded-md bg-indigo-600 px-3 py-2 text-center text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
+                        className="block w-full rounded-md bg-emerald-600 px-3 py-2 text-center text-sm font-semibold text-white shadow-sm hover:bg-emerald-700 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
                         onClick={() => {
                             navigate(routes.adminNewProduct())
                         }}
@@ -44,6 +46,7 @@ const Table = ({ products, user }: TableProps) => {
                                 scope="col"
                                 className="relative py-3.5 pl-4 pr-3 text-left text-sm font-semibold text-gray-900 sm:pl-0"
                             >
+                                <LinkIcon className="h-5 w-5 text-gray-400" />
                                 <span className="sr-only">Links</span>
                             </th>
                             <th
@@ -72,7 +75,7 @@ const Table = ({ products, user }: TableProps) => {
                         {products.map((product) => (
                             <tr key={product.id}>
                                 <td>
-                                    <div className="flex flex-col">
+                                    <div className="max-w-fit">
                                         <Link
                                             to={routes.adminProduct({
                                                 id: product.id,
@@ -82,13 +85,6 @@ const Table = ({ products, user }: TableProps) => {
                                                 className="h-5 w-5 text-gray-400 hover:text-gray-500"
                                                 aria-hidden="true"
                                             />
-                                        </Link>
-                                        <Link
-                                            to={routes.adminEditProduct({
-                                                id: product.id,
-                                            })}
-                                        >
-                                            <PencilSquareIcon className="h-5 w-5 text-gray-400 hover:text-gray-500" />
                                         </Link>
                                     </div>
                                 </td>
@@ -118,7 +114,7 @@ const Table = ({ products, user }: TableProps) => {
                                         >
                                             <span className="flex">
                                                 {product.user.username}
-                                                <ArrowTopRightOnSquareIcon
+                                                <ArrowUpRightIcon
                                                     className="h-5 w-5 text-gray-400"
                                                     aria-hidden="true"
                                                 />

@@ -51,7 +51,7 @@ export const Success = ({ marker }: CellSuccessProps<MarkerCellQuery>) => {
         },
         {
             name: marker.user.username,
-            to: routes.adminMarker({ id: marker.id }),
+            to: routes.adminUser({ id: marker.id }),
         },
         {
             name: 'Markers',
