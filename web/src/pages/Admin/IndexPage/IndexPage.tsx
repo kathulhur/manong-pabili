@@ -40,7 +40,7 @@ const AdminPage = () => {
             <MetaTags title="Admin" description="Admin page" />
             <div className="mt-16 px-8">
                 <div className="flex justify-between">
-                    <h1 className="text-2xl font-bold text-green-500">
+                    <h1 className="text-2xl font-bold text-emerald-500">
                         AdminPage
                     </h1>
                     <Button

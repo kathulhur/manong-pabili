@@ -35,7 +35,7 @@ const IndexPage = () => {
 
             <div className="max-w-7xl mx-auto p-8">
                 <header className="flex items-center justify-between">
-                    <h1 className="font-extrabold text-lg text-green-700">
+                    <h1 className="font-extrabold text-lg text-emerald-700">
                         Manong Pabili
                     </h1>
                     <nav className="flex items-center justify-between gap-4">
@@ -51,7 +51,7 @@ const IndexPage = () => {
                 style={{ backgroundImage: `url(${tahoVendor})` }}
                 className={`relative w-full bg-cover bg-center`}
             >
-                <div className="absolute inset-0 bg-gradient-to-r from-green-300 to-green-400/80"></div>
+                <div className="absolute inset-0 bg-gradient-to-r from-emerald-300 to-emerald-400/80"></div>
                 <div className="relative max-w-7xl mx-auto px-8 pt-20 pb-32">
                     <h2 className="text-3xl font-bold text-slate-900 mb-8">
                         Missed that taho
@@ -81,7 +81,7 @@ const IndexPage = () => {
 
                 <section className="flex flex-col gap-8 items-center justify-between mt-8 mb-16 lg:flex-row">
                     <div className="max-w-md">
-                        <h3 className="font-bold text-green-700 text-xl mb-4">
+                        <h3 className="font-bold text-emerald-700 text-xl mb-4">
                             Consumers
                         </h3>
                         <p className="text-slate-700 mb-2">
@@ -109,7 +109,7 @@ const IndexPage = () => {
                         />
                     </div>
                     <div className="max-w-md">
-                        <h3 className="font-bold text-green-700 text-xl mb-4">
+                        <h3 className="font-bold text-emerald-700 text-xl mb-4">
                             Vendors
                         </h3>
                         <h4 className="font-semibold text-slate-900 mb-2">
@@ -177,7 +177,7 @@ const IndexPage = () => {
                         </div>
                     </div>
                     <div className="max-w-md">
-                        <h3 className="font-bold text-green-700 text-xl mb-4">
+                        <h3 className="font-bold text-emerald-700 text-xl mb-4">
                             Vendors
                         </h3>
 
@@ -238,7 +238,7 @@ const IndexPage = () => {
             </div>
 
             <footer className="relative w-full">
-                <div className="absolute inset-0 bg-gradient-to-r from-green-300 to-green-400/80"></div>
+                <div className="absolute inset-0 bg-gradient-to-r from-emerald-300 to-emerald-400/80"></div>
                 <div className="relative max-w-7xl mx-auto px-8 py-6">
                     <div className="flex items-center justify-between">
                         <div className="flex flex-col space-y-2">

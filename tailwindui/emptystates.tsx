@@ -98,7 +98,7 @@
 //         title: 'Create a Gallery',
 //         description: 'Great for mood boards and inspiration.',
 //         icon: PhotoIcon,
-//         background: 'bg-green-500',
+//         background: 'bg-emerald-500',
 //     },
 //     {
 //         title: 'Create a Board',

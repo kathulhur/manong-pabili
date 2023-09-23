@@ -19,7 +19,7 @@ const VendorHomepage = () => {
     return (
         <div className="max-w-2xl mx-auto p-8">
             <div className="flex justify-between items-center mb-10">
-                <h1 className="font-extrabold text-lg text-green-700">
+                <h1 className="font-extrabold text-lg text-emerald-700">
                     Manong Pabili
                 </h1>
                 <Button
@@ -38,9 +38,9 @@ const VendorHomepage = () => {
                 </p>
                 <div
                     onClick={() => context?.setIsMarkerSelectModalOpen(true)}
-                    className="relative flex items-center justify-center rounded-full p-3 w-12 h-12 bg-green-100 hover:bg-green-200"
+                    className="relative flex items-center justify-center rounded-full p-3 w-12 h-12 bg-emerald-100 hover:bg-emerald-200"
                 >
-                    <PencilSquareIcon className="absolute -top-1 -right-1 w-6 h-6 p-1 rounded-full border-2 border-green-100 bg-white text-slate-700" />
+                    <PencilSquareIcon className="absolute -top-1 -right-1 w-6 h-6 p-1 rounded-full border-2 border-emerald-100 bg-white text-slate-700" />
                     <img src={context?.vendor?.markerUrl} alt="marker icon" />
                 </div>
                 <MarkerSelectModal
@@ -62,10 +62,10 @@ const VendorHomepage = () => {
                     }
                     className={`${
                         context?.isLocationShown
-                            ? 'bg-green-600'
+                            ? 'bg-emerald-600'
                             : 'bg-gray-200'
                     }
-                    relative inline-flex h-6 w-11 flex-shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none focus:ring-2 focus:ring-green-600 focus:ring-offset-2`}
+                    relative inline-flex h-6 w-11 flex-shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none focus:ring-2 focus:ring-emerald-600 focus:ring-offset-2`}
                 >
                     <span className="sr-only">Show location</span>
                     <span
@@ -80,7 +80,7 @@ const VendorHomepage = () => {
                 </Switch>
             </div>
 
-            <section className="relative rounded-md mb-4 h-48 bg-green-100/80 overflow-hidden lg:h-72">
+            <section className="relative rounded-md mb-4 h-48 bg-emerald-100/80 overflow-hidden lg:h-72">
                 <div
                     id="map"
                     ref={context?.onRefSet}
@@ -97,7 +97,7 @@ const VendorHomepage = () => {
                                 context?.locationBroadcastMode === 'MANUAL'
                             }
                             onDragEnd={context?.broadcastLocationHandler}
-                            pulseColor="green"
+                            pulseColor="emerald"
                         />
                     )}
                 {context?.isLocationShown && (
@@ -106,15 +106,15 @@ const VendorHomepage = () => {
                         onClick={context?.focusLocationButtonHandler}
                         aria-label="Focus on my location"
                     >
-                        <MapPinIcon className="w-6 h-6 text-green-600"></MapPinIcon>
+                        <MapPinIcon className="w-6 h-6 text-emerald-600"></MapPinIcon>
                     </button>
                 )}
 
                 {!context?.isLocationShown && (
                     <div className="grid place-items-center h-full">
                         <div className="flex flex-col items-center">
-                            <EyeSlashIcon className="w-16 h-16 mb-1 text-green-900" />
-                            <span className="text-green-900 font-bold">
+                            <EyeSlashIcon className="w-16 h-16 mb-1 text-emerald-900" />
+                            <span className="text-emerald-900 font-bold">
                                 Your location is hidden
                             </span>
                         </div>
@@ -142,18 +142,18 @@ const VendorHomepage = () => {
                     }
                 }}
             >
-                <Tab.List className="flex space-x-1 rounded-md bg-green-300/20 p-1 mb-4">
+                <Tab.List className="flex space-x-1 rounded-md bg-emerald-300/20 p-1 mb-4">
                     {['Manual', 'Static', 'Realtime'].map((tab) => {
                         return (
                             <Tab
                                 key={tab}
                                 className={({ selected }) =>
                                     clsx(
-                                        'w-full rounded-md px-3 py-2 text-sm font-semibold leading-5 text-green-700',
-                                        'ring-white ring-opacity-60 ring-offset-2 ring-offset-green-400 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-green-600',
+                                        'w-full rounded-md px-3 py-2 text-sm font-semibold leading-5 text-emerald-700',
+                                        'ring-white ring-opacity-60 ring-offset-2 ring-offset-emerald-400 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-emerald-600',
                                         selected
                                             ? 'bg-white'
-                                            : 'text-green-500 hover:bg-white/[0.12] hover:text-green-600'
+                                            : 'text-emerald-500 hover:bg-white/[0.12] hover:text-emerald-600'
                                     )
                                 }
                             >

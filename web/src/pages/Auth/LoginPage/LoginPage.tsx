@@ -59,7 +59,7 @@ const LoginPage = () => {
                     <div className="rw-scaffold rw-login-container">
                         <div className="mt-12 p-4">
                             <header>
-                                <h1 className="mb-4 font-bold text-xl text-green-700 text-center">
+                                <h1 className="mb-4 font-bold text-xl text-emerald-700 text-center">
                                     Manong Pabili
                                 </h1>
                                 <h2 className="font-semibold">Login</h2>

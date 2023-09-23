@@ -35,7 +35,7 @@ export const createMarker = ({
         'animate-ping absolute inline-flex h-8 w-8 rounded-full opacity-75',
         pulseColor === 'gray' && 'bg-gray-400',
         pulseColor === 'red' && 'bg-red-400',
-        pulseColor === 'green' && 'bg-green-400'
+        pulseColor === 'emerald' && 'bg-emerald-400'
     )
 
     let image = document.createElement('img')

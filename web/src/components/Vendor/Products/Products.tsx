@@ -74,7 +74,7 @@ const Products = ({ products }: ProductsProps) => {
                 <h1 className="text-lg font-bold">Products</h1>
                 <div>
                     <Button
-                        className="bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded"
+                        className="bg-emerald-500 hover:bg-emerald-700 text-white font-bold py-2 px-4 rounded"
                         type="button"
                         onClick={() =>
                             setIsCreateProductModalOpen(

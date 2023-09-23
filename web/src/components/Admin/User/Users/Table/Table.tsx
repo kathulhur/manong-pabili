@@ -173,7 +173,7 @@ const Table = ({ users, onVerify }: TableProps) => {
                                                     className={clsx({
                                                         'inline-flex items-center rounded-md px-2 py-1 text-xs font-medium ':
                                                             true,
-                                                        'text-green-700 ring-1 ring-inset ring-green-600/20 bg-green-50':
+                                                        'text-emerald-700 ring-1 ring-inset ring-emerald-600/20 bg-emerald-50':
                                                             user.verified,
                                                         'text-red-700 ring-1 ring-inset ring-red-600/20 bg-red-50':
                                                             !user.verified,
@@ -195,7 +195,7 @@ const Table = ({ users, onVerify }: TableProps) => {
                                                 className={clsx({
                                                     'inline-flex items-center rounded-md px-2 py-1 text-xs font-medium ':
                                                         true,
-                                                    'text-green-700 ring-1 ring-inset ring-green-600/20 bg-green-50':
+                                                    'text-emerald-700 ring-1 ring-inset ring-emerald-600/20 bg-emerald-50':
                                                         !user.locationHidden,
                                                     'text-gray-700 ring-1 ring-inset ring-gray-600/20 bg-gray-50':
                                                         user.locationHidden,
@@ -211,7 +211,7 @@ const Table = ({ users, onVerify }: TableProps) => {
                                                 className={clsx({
                                                     'inline-flex items-center rounded-md px-2 py-1 text-xs font-medium ':
                                                         true,
-                                                    'text-green-700 ring-1 ring-inset ring-green-600/20 bg-green-50':
+                                                    'text-emerald-700 ring-1 ring-inset ring-emerald-600/20 bg-emerald-50':
                                                         user.locationBroadcastMode ===
                                                         'REALTIME',
                                                     'text-gray-700 ring-1 ring-inset ring-gray-600/20 bg-gray-50':

@@ -36,7 +36,7 @@ const ConsumerMap = ({ className }: ConsumerMapProps) => {
     const context = useContext(ConsumerMapCellContext)
     return (
         <div className={className}>
-            <div className="flex p-2 space-x-4 bg-green-400">
+            <div className="flex p-2 space-x-4 bg-emerald-400">
                 <div className="flex-1">
                     {context?.selectedSearchType?.value === 'product' && (
                         <ProductSearch
@@ -99,13 +99,13 @@ const ConsumerMap = ({ className }: ConsumerMapProps) => {
                 <div className="absolute w-full h-full">
                     <div className="w-full h-full flex items-center p-4 justify-between">
                         <button
-                            className="z-10 bg-green-400 text-white rounded-full p-2 shadow-md"
+                            className="z-10 bg-emerald-400 text-white rounded-full p-2 shadow-md"
                             onClick={context?.onLeftVendorButtonClicked}
                         >
                             <ChevronLeftIcon className="w-8 h-8" />
                         </button>
                         <button
-                            className="z-10 bg-green-400 text-white rounded-full p-2 shadow-md"
+                            className="z-10 bg-emerald-400 text-white rounded-full p-2 shadow-md"
                             onClick={context?.onRightVendorButtonClicked}
                         >
                             <ChevronRightIcon className="w-8 h-8" />
@@ -118,7 +118,7 @@ const ConsumerMap = ({ className }: ConsumerMapProps) => {
                     className="bg-white text-white rounded-full p-2 shadow-md"
                     onClick={context?.focusLocationButtonHandler}
                 >
-                    <MapPinIcon className="w-6 h-6 text-green-600"></MapPinIcon>
+                    <MapPinIcon className="w-6 h-6 text-emerald-600"></MapPinIcon>
                 </button>
                 <LegendModal
                     isOpen={context?.isLegendModalOpen}
@@ -127,7 +127,7 @@ const ConsumerMap = ({ className }: ConsumerMapProps) => {
             </div>
             <div className="absolute z-10 bottom-5 right-5">
                 <button
-                    className="bg-green-400 text-white rounded-full p-2 shadow-md"
+                    className="bg-emerald-400 text-white rounded-full p-2 shadow-md"
                     onClick={() => context?.setIsLegendModalOpen(true)}
                 >
                     <QuestionMarkCircleIcon className="w-6 h-6" />
@@ -211,7 +211,7 @@ const VendorInfoModal = ({
                             <div className="p-4">
                                 <section className="mb-8">
                                     <div className="flex flex-col items-center">
-                                        <div className="flex items-center justify-center rounded-full p-4 w-24 h-24 bg-green-100 hover:bg-green-200">
+                                        <div className="flex items-center justify-center rounded-full p-4 w-24 h-24 bg-emerald-100 hover:bg-emerald-200">
                                             <img
                                                 src={vendor?.markerUrl}
                                                 alt="marker icon"
