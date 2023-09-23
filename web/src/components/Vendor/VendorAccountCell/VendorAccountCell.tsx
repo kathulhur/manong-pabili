@@ -78,7 +78,7 @@ const DELETE_MARKER_MUTATION = gql`
     }
 `
 
-const UPDATE_USERNAME_MUTATION = gql`
+export const UPDATE_USERNAME_MUTATION = gql`
     mutation UpdateUsernameMutation($id: Int!, $username: String!) {
         updateUsername(id: $id, input: { updatedUsername: $username }) {
             id
@@ -87,7 +87,7 @@ const UPDATE_USERNAME_MUTATION = gql`
     }
 `
 
-const UPDATE_NAME_MUTATION = gql`
+export const UPDATE_NAME_MUTATION = gql`
     mutation UpdateNameMutation($id: Int!, $name: String!) {
         updateName(id: $id, input: { updatedName: $name }) {
             id
@@ -96,7 +96,7 @@ const UPDATE_NAME_MUTATION = gql`
     }
 `
 
-const UPDATE_MOBILE_NUMBER_MUTATION = gql`
+export const UPDATE_MOBILE_NUMBER_MUTATION = gql`
     mutation UpdateMobileNumberMutation($id: Int!, $mobileNumber: String!) {
         updateMobileNumber(
             id: $id
@@ -108,7 +108,7 @@ const UPDATE_MOBILE_NUMBER_MUTATION = gql`
     }
 `
 
-const UPDATE_EMAIL_MUTATION = gql`
+export const UPDATE_EMAIL_MUTATION = gql`
     mutation UpdateEmailMutation($id: Int!, $email: String!) {
         updateEmail(id: $id, input: { updatedEmail: $email }) {
             id

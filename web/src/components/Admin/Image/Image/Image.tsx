@@ -1,4 +1,4 @@
-import { ArrowUpRightIcon } from '@heroicons/react/20/solid'
+import { ArrowUpRightIcon, PencilSquareIcon } from '@heroicons/react/20/solid'
 import { useContext } from 'react'
 import Button from 'src/components/Button'
 import ConfirmationModal from 'src/components/Modals/ConfirmationModal'
@@ -6,6 +6,7 @@ import { formatDatetime } from 'src/lib/formatters'
 import type { Image as ImageType } from 'types/graphql'
 import { ImageCellContext } from '../ImageCell/Context'
 import { Link, routes } from '@redwoodjs/router'
+import SingleInputModalString from 'src/components/Modals/SingleInputModalString'
 
 interface Props {
     image: Pick<
@@ -44,6 +45,25 @@ const Image = () => {
                         </dt>
                         <dd className="mt-1 text-sm leading-6 text-gray-700 sm:col-span-2 sm:mt-0">
                             {context?.image.title}
+                            <button
+                                onClick={() => {
+                                    context?.toggleUpdateTitleModal()
+                                }}
+                                className="ml-2 text-sm text-gray-500 hover:text-gray-700"
+                            >
+                                <PencilSquareIcon className="w-4 h-4 inline-block fill-orange-600 hover:fill-orange-500" />
+                            </button>
+                            <SingleInputModalString
+                                defaultValue={context?.image.title}
+                                isOpen={context?.isUpdateTitleModalOpen}
+                                onClose={() => {
+                                    context?.toggleUpdateTitleModal()
+                                }}
+                                label="Update Mobile Number"
+                                onSubmit={(value) => {
+                                    context?.onUpdateTitle(value)
+                                }}
+                            />
                         </dd>
                     </div>
                     <div className="bg-white px-4 py-6 sm:col-span-2 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-3">

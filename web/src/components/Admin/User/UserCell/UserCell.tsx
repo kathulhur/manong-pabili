@@ -2,9 +2,12 @@ import type { UserCellQuery } from 'types/graphql'
 
 import type { CellSuccessProps, CellFailureProps } from '@redwoodjs/web'
 
-import UserType from 'src/components/Admin/User/User'
-import { Link, routes } from '@redwoodjs/router'
-import LoadingComponent from 'src/components/Loading/Loading'
+import User from 'src/components/Admin/User/User'
+import { UserCellContextProvider } from './Context'
+import Breadcrumb, {
+    BreadcrumbProps,
+} from 'src/components/Breadcrumb/Breadcrumb'
+import { routes } from '@redwoodjs/router'
 export const QUERY = gql`
     query UserCellQuery($id: Int!) {
         user: detailedUser(id: $id) {
@@ -43,6 +46,23 @@ export const QUERY = gql`
     }
 `
 
+export const VERIFY_USER_MUTATION = gql`
+    mutation VerifyUserMutation($id: Int!) {
+        verifyUser(id: $id) {
+            id
+            verified
+        }
+    }
+`
+
+export const ADMIN_DELETE_USER_MUTATION = gql`
+    mutation AdminDeleteUserMutation($id: Int!) {
+        softDeleteUser(id: $id) {
+            id
+        }
+    }
+`
+
 export const Loading = () => null
 
 export const Empty = () => <div>User not found</div>
@@ -52,28 +72,23 @@ export const Failure = ({ error }: CellFailureProps) => (
 )
 
 export const Success = ({ user }: CellSuccessProps<UserCellQuery>) => {
+    const pages: BreadcrumbProps['pages'] = [
+        {
+            name: 'Users',
+            to: routes.adminUsers(),
+        },
+        {
+            name: user.name,
+            to: routes.adminUser({ id: user.id }),
+            current: true,
+        },
+    ]
     return (
-        <div className="m-8">
-            <div>
-                <div className="font-semibold space-x-2">
-                    <Link
-                        to={routes.adminUsers()}
-                        className="hover:underline hover:underline-offset-1"
-                    >
-                        Users
-                    </Link>
-                    <span>&gt;</span>
-                    <Link
-                        to={routes.adminUser({ id: user.id })}
-                        className="hover:underline hover:underline-offset-1"
-                    >
-                        {user.name}
-                    </Link>
-                </div>
+        <UserCellContextProvider user={user}>
+            <div className="space-y-8">
+                <Breadcrumb pages={pages} />
+                <User />
             </div>
-            <div className="mt-8">
-                <UserType user={user} />
-            </div>
-        </div>
+        </UserCellContextProvider>
     )
 }

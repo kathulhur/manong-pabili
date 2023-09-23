@@ -7,7 +7,7 @@ export interface SingleInputModalStringProps {
     isOpen: boolean
     label: string
     onClose: () => void
-    onSubmit: (username: String) => void
+    onSubmit: (value: string) => void
 }
 
 const SingleInputModalString = ({

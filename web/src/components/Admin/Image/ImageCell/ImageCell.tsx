@@ -33,6 +33,15 @@ export const DELETE_IMAGE_MUTATION = gql`
     }
 `
 
+export const ADMIN_UPDATE_IMAGE_TITLE_MUTATION = gql`
+    mutation AdminUpdateImageTitleMutation($id: Int!, $title: String!) {
+        updateImage(id: $id, input: { title: $title }) {
+            id
+            title
+        }
+    }
+`
+
 export const Loading = () => null
 
 export const Empty = () => <div>Image not found</div>

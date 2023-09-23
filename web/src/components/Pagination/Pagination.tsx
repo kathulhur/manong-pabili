@@ -23,7 +23,6 @@ const Pagination = ({ count, paginate }: PaginationProps) => {
     if (numberOfPages <= 6) {
         // render all the page numbers
         for (let i = 0; i < Math.ceil(count / pageSize); i++) {
-            console.log('i', i)
             items.push(
                 <Link
                     key={i}

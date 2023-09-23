@@ -1,9 +1,7 @@
 import {
     ArrowTopRightOnSquareIcon,
     ArrowUpRightIcon,
-    EyeIcon,
     LinkIcon,
-    PencilSquareIcon,
 } from '@heroicons/react/20/solid'
 import { Link, routes } from '@redwoodjs/router'
 import clsx from 'clsx'
@@ -25,10 +23,9 @@ export interface TableProps {
         | 'locationBroadcastMode'
         | 'markerUrl'
     >[]
-    onVerify: (id: number) => void
 }
 
-const Table = ({ users, onVerify }: TableProps) => {
+const Table = ({ users }: TableProps) => {
     return (
         <div className="my-8">
             <div className="sm:flex sm:items-center">
@@ -226,7 +223,7 @@ const Table = ({ users, onVerify }: TableProps) => {
                                                 className="text-gray-700 hover:text-gray-500"
                                             >
                                                 <span>
-                                                    View Products
+                                                    View
                                                     <ArrowUpRightIcon className="inline-block w-4 h-4 ml-1 -mt-1" />
                                                 </span>
 
@@ -243,7 +240,7 @@ const Table = ({ users, onVerify }: TableProps) => {
                                                 className="text-gray-700 hover:text-gray-500"
                                             >
                                                 <span>
-                                                    View Images
+                                                    View
                                                     <ArrowUpRightIcon className="inline-block w-4 h-4 ml-1 -mt-1" />
                                                 </span>
                                                 <span className="sr-only">
@@ -259,7 +256,7 @@ const Table = ({ users, onVerify }: TableProps) => {
                                                 className="text-gray-700 hover:text-gray-500"
                                             >
                                                 <span>
-                                                    View Markers
+                                                    View
                                                     <ArrowUpRightIcon className="inline-block w-4 h-4 ml-1 -mt-1" />
                                                 </span>
                                             </Link>

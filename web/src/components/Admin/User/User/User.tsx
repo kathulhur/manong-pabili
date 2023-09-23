@@ -1,23 +1,17 @@
-import { ArrowUpRightIcon, PaperClipIcon } from '@heroicons/react/20/solid'
-import { Link, routes, navigate } from '@redwoodjs/router'
-import { useMutation } from '@redwoodjs/web'
-import { toast } from '@redwoodjs/web/toast'
-import clsx from 'clsx'
-import FeaturedImage from 'src/components/Vendor/FeaturedImage/FeaturedImage'
-
 import {
-    DeleteUserMutation,
-    DeleteUserMutationVariables,
-    User as UserType,
-} from 'types/graphql'
+    ArrowUpRightIcon,
+    PaperClipIcon,
+    PencilSquareIcon,
+} from '@heroicons/react/20/solid'
+import { Link, routes, navigate } from '@redwoodjs/router'
+import clsx from 'clsx'
+import Button from 'src/components/Button/Button'
 
-export const DELETE_USER_MUTATION = gql`
-    mutation DeleteUserMutation($id: Int!) {
-        softDeleteUser(id: $id) {
-            id
-        }
-    }
-`
+import { User as UserType } from 'types/graphql'
+import { UserCellContext } from '../UserCell/Context'
+import { useContext } from 'react'
+import ConfirmationModal from 'src/components/Modals/ConfirmationModal'
+import SingleInputModalString from 'src/components/Modals/SingleInputModalString'
 
 interface UserProps {
     user: Pick<
@@ -49,26 +43,8 @@ interface UserProps {
     }
 }
 
-const User = ({ user }: UserProps) => {
-    const [deleteUser] = useMutation<
-        DeleteUserMutation,
-        DeleteUserMutationVariables
-    >(DELETE_USER_MUTATION, {
-        onCompleted: () => {
-            toast.success('User deleted')
-            navigate(routes.adminUsers())
-        },
-        onError: (error) => {
-            toast.error(error.message)
-        },
-    })
-
-    const onDeleteClick = (id: DeleteUserMutationVariables['id']) => {
-        if (confirm('Are you sure you want to delete user ' + id + '?')) {
-            deleteUser({ variables: { id } })
-        }
-    }
-
+const User = () => {
+    const context = useContext(UserCellContext)
     return (
         <div>
             <div className="px-4 sm:px-0">
@@ -91,12 +67,14 @@ const User = ({ user }: UserProps) => {
                                     'inline-flex items-center rounded-md px-2 py-1 text-xs font-medium ':
                                         true,
                                     'text-emerald-700 ring-1 ring-inset ring-emerald-600/20 bg-emerald-50':
-                                        user.verified,
+                                        context?.user.verified,
                                     'text-red-700 ring-1 ring-inset ring-red-600/20 bg-red-50':
-                                        !user.verified,
+                                        !context?.user.verified,
                                 })}
                             >
-                                {user.verified ? 'Verified' : 'Unverified'}
+                                {context?.user.verified
+                                    ? 'Verified'
+                                    : 'Unverified'}
                             </span>
                         </dd>
                     </dl>
@@ -109,7 +87,26 @@ const User = ({ user }: UserProps) => {
                             Full name
                         </dt>
                         <dd className="mt-1 text-sm leading-6 text-gray-700 sm:col-span-2 sm:mt-0">
-                            {user.name}
+                            {context?.user.name}
+                            <button
+                                onClick={() => {
+                                    context?.toggleUpdateNameModal()
+                                }}
+                                className="ml-2 text-sm text-gray-500 hover:text-gray-700"
+                            >
+                                <PencilSquareIcon className="w-4 h-4 inline-block fill-orange-600 hover:fill-orange-500" />
+                            </button>
+                            <SingleInputModalString
+                                defaultValue={context?.user.name}
+                                isOpen={context?.isUpdateNameModalOpen}
+                                onClose={() => {
+                                    context?.toggleUpdateNameModal()
+                                }}
+                                label="Update Name"
+                                onSubmit={(value) => {
+                                    context?.onUpdateName(value)
+                                }}
+                            />
                         </dd>
                     </div>
                     <div className="bg-white px-4 py-6 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-3">
@@ -117,7 +114,26 @@ const User = ({ user }: UserProps) => {
                             Username
                         </dt>
                         <dd className="mt-1 text-sm leading-6 text-gray-700 sm:col-span-2 sm:mt-0">
-                            {user.username}
+                            {context?.user.username}
+                            <button
+                                onClick={() => {
+                                    context?.toggleUpdateUsernameModal()
+                                }}
+                                className="ml-2 text-sm text-gray-500 hover:text-gray-700"
+                            >
+                                <PencilSquareIcon className="w-4 h-4 inline-block fill-orange-600" />
+                            </button>
+                            <SingleInputModalString
+                                defaultValue={context?.user.username}
+                                isOpen={context?.isUpdateUsernameModalOpen}
+                                onClose={() => {
+                                    context?.toggleUpdateUsernameModal()
+                                }}
+                                label="Update Username"
+                                onSubmit={(value) => {
+                                    context?.onUpdateUsername(value)
+                                }}
+                            />
                         </dd>
                     </div>
                     <div className="bg-white px-4 py-6 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-3">
@@ -125,7 +141,26 @@ const User = ({ user }: UserProps) => {
                             Email address
                         </dt>
                         <dd className="mt-1 text-sm leading-6 text-gray-700 sm:col-span-2 sm:mt-0">
-                            margotfoster@example.com
+                            {context?.user.email}
+                            <button
+                                onClick={() => {
+                                    context?.toggleUpdateEmailModal()
+                                }}
+                                className="ml-2 text-sm text-gray-500 hover:text-gray-700"
+                            >
+                                <PencilSquareIcon className="w-4 h-4 inline-block fill-orange-600 hover:fill-orange-500" />
+                            </button>
+                            <SingleInputModalString
+                                defaultValue={context?.user.email}
+                                isOpen={context?.isUpdateEmailModalOpen}
+                                onClose={() => {
+                                    context?.toggleUpdateEmailModal()
+                                }}
+                                label="Update Email"
+                                onSubmit={(value) => {
+                                    context?.onUpdateEmail(value)
+                                }}
+                            />
                         </dd>
                     </div>
                     <div className="bg-white px-4 py-6 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-3">
@@ -133,7 +168,26 @@ const User = ({ user }: UserProps) => {
                             Mobile Number
                         </dt>
                         <dd className="mt-1 text-sm leading-6 text-gray-700 sm:col-span-2 sm:mt-0">
-                            {user.mobileNumber}
+                            {context?.user.mobileNumber}
+                            <button
+                                onClick={() => {
+                                    context?.toggleUpdateMobileNumberModal()
+                                }}
+                                className="ml-2 text-sm text-gray-500 hover:text-gray-700"
+                            >
+                                <PencilSquareIcon className="w-4 h-4 inline-block fill-orange-600 hover:fill-orange-500" />
+                            </button>
+                            <SingleInputModalString
+                                defaultValue={context?.user.mobileNumber}
+                                isOpen={context?.isUpdateMobileNumberModalOpen}
+                                onClose={() => {
+                                    context?.toggleUpdateMobileNumberModal()
+                                }}
+                                label="Update Mobile Number"
+                                onSubmit={(value) => {
+                                    context?.onUpdateMobileNumber(value)
+                                }}
+                            />
                         </dd>
                     </div>
                     <div className="col-span-2 bg-white px-4 py-6 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-3">
@@ -152,12 +206,14 @@ const User = ({ user }: UserProps) => {
                                                 'inline-flex items-center rounded-md px-2 py-1 text-xs font-medium ':
                                                     true,
                                                 'text-emerald-700 ring-1 ring-inset ring-emerald-600/20 bg-emerald-50':
-                                                    !user.locationHidden,
+                                                    !context?.user
+                                                        .locationHidden,
                                                 'text-gray-700 ring-1 ring-inset ring-gray-600/20 bg-gray-50':
-                                                    user.locationHidden,
+                                                    context?.user
+                                                        .locationHidden,
                                             })}
                                         >
-                                            {user.locationHidden
+                                            {context?.user.locationHidden
                                                 ? 'Hidden'
                                                 : 'Visible'}
                                         </span>
@@ -173,16 +229,22 @@ const User = ({ user }: UserProps) => {
                                                 'inline-flex items-center rounded-md px-2 py-1 text-xs font-medium ':
                                                     true,
                                                 'text-emerald-700 ring-1 ring-inset ring-emerald-600/20 bg-emerald-50':
-                                                    user.locationBroadcastMode ===
+                                                    context?.user
+                                                        .locationBroadcastMode ===
                                                     'REALTIME',
                                                 'text-gray-700 ring-1 ring-inset ring-gray-600/20 bg-gray-50':
-                                                    user.locationBroadcastMode ===
+                                                    context?.user
+                                                        .locationBroadcastMode ===
                                                         'STATIC' ||
-                                                    user.locationBroadcastMode ===
+                                                    context?.user
+                                                        .locationBroadcastMode ===
                                                         'MANUAL',
                                             })}
                                         >
-                                            {user.locationBroadcastMode}
+                                            {
+                                                context?.user
+                                                    .locationBroadcastMode
+                                            }
                                         </span>
                                     </dd>
                                 </div>
@@ -191,7 +253,7 @@ const User = ({ user }: UserProps) => {
                                         Latitude
                                     </dt>
                                     <dd className="mt-1 text-sm leading-6 text-gray-900 sm:mt-0">
-                                        {user.latitude || 'N/A'}
+                                        {context?.user.latitude || 'N/A'}
                                     </dd>
                                 </div>
                                 <div>
@@ -199,7 +261,7 @@ const User = ({ user }: UserProps) => {
                                         Longitude
                                     </dt>
                                     <dd className="mt-1 text-sm leading-6 text-gray-900 sm:mt-0">
-                                        {user.longitude || 'N/A'}
+                                        {context?.user.longitude || 'N/A'}
                                     </dd>
                                 </div>
                             </dl>
@@ -209,7 +271,7 @@ const User = ({ user }: UserProps) => {
                         <dt className="text-sm font-medium leading-6 text-gray-900">
                             <Link
                                 to={routes.adminImages({
-                                    id: user.id,
+                                    id: context?.user.id,
                                 })}
                                 className="hover:text-gray-500"
                             >
@@ -220,7 +282,7 @@ const User = ({ user }: UserProps) => {
                             </Link>
                         </dt>
                         <dd className="col-span-2 sm:grid sm:grid-cols-2 sm:gap-8">
-                            {user.featuredImages.map((images) => (
+                            {context?.user.featuredImages.map((images) => (
                                 <div
                                     key={images.id}
                                     className="group relative max-w-sm"
@@ -250,7 +312,7 @@ const User = ({ user }: UserProps) => {
                                     </div>
                                 </div>
                             ))}
-                            {user.Markers.length === 0 && (
+                            {context?.user.Markers.length === 0 && (
                                 <div className="">
                                     <span className="text-gray-500 text-sm">
                                         No featured Images
@@ -263,7 +325,7 @@ const User = ({ user }: UserProps) => {
                         <dt className="text-sm font-medium leading-6 text-gray-900 hover:text-gray-500">
                             <Link
                                 to={routes.adminMarkers({
-                                    id: user.id,
+                                    id: context?.user.id,
                                 })}
                                 className="hover:text-gray-500"
                             >
@@ -274,7 +336,7 @@ const User = ({ user }: UserProps) => {
                             </Link>
                         </dt>
                         <dd className="sm:col-span-2 gap-x-6 gap-y-10 sm:grid-cols-2 lg:grid-cols-4 xl:gap-x-8">
-                            {user.Markers.map((images) => (
+                            {context?.user.Markers.map((images) => (
                                 <a
                                     key={images.id}
                                     href={images.url}
@@ -290,7 +352,7 @@ const User = ({ user }: UserProps) => {
                                     </div>
                                 </a>
                             ))}
-                            {user.Markers.length === 0 && (
+                            {context?.user.Markers.length === 0 && (
                                 <div className="">
                                     <span className="text-gray-500 text-sm">
                                         No Markers
@@ -299,7 +361,43 @@ const User = ({ user }: UserProps) => {
                             )}
                         </dd>
                     </div>
+                    <div className="bg-white px-4 py-6 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-3">
+                        <dt className="text-sm font-medium leading-6 text-gray-900">
+                            Actions
+                        </dt>
+                        <dd className="mt-1 text-sm leading-6 text-gray-700 sm:col-span-2 sm:mt-0">
+                            <Button
+                                variant="outline"
+                                onClick={() => {
+                                    context?.onVerifyUser()
+                                }}
+                            >
+                                Verify
+                            </Button>
+                        </dd>
+                    </div>
                 </dl>
+                <section className="p-4 border border-dashed border-red-700 rounded-lg mt-16">
+                    <h2 className="mb-4 font-semibold text-red-700">
+                        Danger Zone
+                    </h2>
+                    <Button
+                        variant="danger"
+                        onClick={() => {
+                            context?.toggleDeleteUserModal()
+                        }}
+                    >
+                        Delete User
+                    </Button>
+                    <ConfirmationModal
+                        isOpen={context?.isDeleteUserModalOpen}
+                        onClose={() => context?.toggleDeleteUserModal()}
+                        onConfirm={() => context?.onDeleteUser()}
+                        title="Delete User"
+                        description="Are you sure you want to delete this user? This action cannot be undone."
+                        confirmationButtonTitle="Delete"
+                    />
+                </section>
             </div>
         </div>
     )
