@@ -22,8 +22,8 @@ import {
     type DeleteAccountMutationVariables,
     type UploadImageMutation,
     type UploadImageMutationVariables,
-    type DeleteImageMutation,
-    type DeleteImageMutationVariables,
+    type DeleteVendorImageMutation,
+    type DeleteVendorImageMutationVariables,
     type DeleteVendorMarkerMutation,
     type DeleteVendorMarkerMutationVariables,
     type UpdateEmailMutation,
@@ -38,7 +38,6 @@ import { toast } from '@redwoodjs/web/dist/toast'
 import { PlusIcon, XMarkIcon } from '@heroicons/react/20/solid'
 import FeaturedImage from 'src/components/Vendor/FeaturedImage/FeaturedImage'
 import Button from '../../Button/Button'
-import { DELETE_IMAGE_MUTATION } from '../../Admin/Image/Image/Image'
 import UpdateEmailModal from '../../Modals/UpdateEmailModal'
 
 export const QUERY = gql`
@@ -59,6 +58,14 @@ export const QUERY = gql`
                 id
                 url
             }
+        }
+    }
+`
+
+export const DELETE_VENDOR_IMAGE_MUTATION = gql`
+    mutation DeleteVendorImageMutation($id: Int!) {
+        softDeleteImage(id: $id) {
+            id
         }
     }
 `
@@ -191,9 +198,9 @@ export const Success = ({
             UPLOAD_IMAGE_MUTATION
         )
     const [deleteImage, { loading: imageDeleteLoading }] = useMutation<
-        DeleteImageMutation,
-        DeleteImageMutationVariables
-    >(DELETE_IMAGE_MUTATION)
+        DeleteVendorImageMutation,
+        DeleteVendorImageMutationVariables
+    >(DELETE_VENDOR_IMAGE_MUTATION)
     const [deleteMarker, { loading: deleteMarkerLoading }] = useMutation<
         DeleteVendorMarkerMutation,
         DeleteVendorMarkerMutationVariables

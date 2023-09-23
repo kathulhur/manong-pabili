@@ -9,6 +9,7 @@ import { ProductCellContext } from '../ProductCell/Context'
 import SingleInputModalString from 'src/components/Modals/SingleInputModalString'
 import Button from 'src/components/Button'
 import ConfirmationModal from 'src/components/Modals/ConfirmationModal'
+import { ArrowUpRightIcon } from '@heroicons/react/20/solid'
 
 export interface ProductProps {
     product: Pick<
@@ -95,6 +96,19 @@ const Product = () => {
                                     Update
                                 </button>
                             </span>
+                        </dd>
+                    </div>
+                    <div className="px-4 py-6 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-0">
+                        <dt className="text-sm font-medium leading-6 text-gray-900">
+                            Owner
+                        </dt>
+                        <dd className="mt-1 text-sm leading-6 text-gray-700 sm:col-span-2 sm:mt-0 hover:text-gray-500">
+                            <a href={context?.product.user.username}>
+                                <span>
+                                    {context?.product.user.username}
+                                    <ArrowUpRightIcon className="inline-block w-4 h-4 ml-1 -mt-1" />
+                                </span>
+                            </a>
                         </dd>
                     </div>
                     <div className="px-4 py-6 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-0">

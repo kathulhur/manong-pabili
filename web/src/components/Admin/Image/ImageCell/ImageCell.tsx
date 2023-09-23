@@ -1,12 +1,14 @@
-import type { FindImageById } from 'types/graphql'
-
+import type { ImageCellQuery } from 'types/graphql'
 import type { CellSuccessProps, CellFailureProps } from '@redwoodjs/web'
-import LoadingComponent from 'src/components/Loading/Loading'
 import Image from 'src/components/Admin/Image/Image'
-import { Link, routes } from '@redwoodjs/router'
+import { routes } from '@redwoodjs/router'
+import Breadcrumb, {
+    BreadcrumbProps,
+} from 'src/components/Breadcrumb/Breadcrumb'
+import { ImageCellContextProvider } from './Context'
 
 export const QUERY = gql`
-    query FindImageById($id: Int!) {
+    query ImageCellQuery($id: Int!) {
         image: image(id: $id) {
             id
             title
@@ -16,6 +18,17 @@ export const QUERY = gql`
             updatedAt
             deletedAt
             deleted
+            user {
+                id
+                username
+            }
+        }
+    }
+`
+export const DELETE_IMAGE_MUTATION = gql`
+    mutation DeleteAdminImageMutation($id: Int!) {
+        softDeleteImage(id: $id) {
+            id
         }
     }
 `
@@ -28,43 +41,32 @@ export const Failure = ({ error }: CellFailureProps) => (
     <div className="rw-cell-error">{error?.message}</div>
 )
 
-export const Success = ({ image }: CellSuccessProps<FindImageById>) => {
+export const Success = ({ image }: CellSuccessProps<ImageCellQuery>) => {
+    let pages: BreadcrumbProps['pages'] = [
+        {
+            name: 'Users',
+            to: routes.adminUsers(),
+        },
+        {
+            name: image.user.username,
+            to: routes.adminUser({ id: image.user.id }),
+        },
+        {
+            name: 'Images',
+            to: routes.adminImages(),
+        },
+        {
+            name: image.title,
+            to: routes.adminImage({ id: image.id }),
+            current: true,
+        },
+    ]
     return (
-        <div className="m-8">
-            <div className="p-2">
-                <div className="font-semibold space-x-2">
-                    <Link
-                        to={routes.adminUsers()}
-                        className="hover:underline hover:underline-offset-1"
-                    >
-                        Users
-                    </Link>
-                    <span>&gt;</span>
-                    <Link
-                        to={routes.adminUser({ id: image.userId })}
-                        className="hover:underline hover:underline-offset-1"
-                    >
-                        {image.userId}
-                    </Link>
-                    <span>&gt;</span>
-                    <Link
-                        to={routes.adminImages({ id: image.userId })}
-                        className="hover:underline hover:underline-offset-1"
-                    >
-                        Images
-                    </Link>
-                    <span>&gt;</span>
-                    <Link
-                        to={routes.adminImage({ id: image.userId })}
-                        className="hover:underline hover:underline-offset-1"
-                    >
-                        {image.title}
-                    </Link>
-                </div>
+        <ImageCellContextProvider image={image}>
+            <div className="space-y-8">
+                <Breadcrumb pages={pages} />
+                <Image />
             </div>
-            <div className="mt-8">
-                <Image image={image} />
-            </div>
-        </div>
+        </ImageCellContextProvider>
     )
 }

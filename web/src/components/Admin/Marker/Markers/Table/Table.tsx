@@ -38,7 +38,7 @@ const Table = ({ markers, user }: TableProps) => {
                 <div className="mt-4 sm:ml-16 sm:mt-0 sm:flex-none">
                     <button
                         type="button"
-                        className="block w-full rounded-md bg-indigo-600 px-3 py-2 text-center text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
+                        className="block w-full rounded-md bg-emerald-600 px-3 py-2 text-center text-sm font-semibold text-white shadow-sm hover:bg-emerald-700 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
                     >
                         Add Marker
                     </button>
@@ -82,7 +82,7 @@ const Table = ({ markers, user }: TableProps) => {
                                 {markers.map((marker) => (
                                     <tr key={marker.id}>
                                         <td>
-                                            <div className="flex flex-col">
+                                            <div className="max-w-fit">
                                                 <Link
                                                     to={routes.adminMarker({
                                                         id: marker.id,
@@ -90,14 +90,6 @@ const Table = ({ markers, user }: TableProps) => {
                                                     className="text-gray-400 hover:text-gray-700"
                                                 >
                                                     <ArrowTopRightOnSquareIcon className="w-5 h-5 " />
-                                                </Link>
-                                                <Link
-                                                    to={routes.adminEditMarker({
-                                                        id: marker.id,
-                                                    })}
-                                                    className="mt-1 text-gray-400 hover:text-gray-700"
-                                                >
-                                                    <PencilSquareIcon className="w-5 h-5" />
                                                 </Link>
                                             </div>
                                         </td>
@@ -112,10 +104,11 @@ const Table = ({ markers, user }: TableProps) => {
                                             <a
                                                 href={marker.url}
                                                 target="_blank"
-                                                className="text-indigo-600 hover:text-indigo-900"
+                                                className="text-gray-700 hover:text-gray-500"
                                             >
-                                                <span className="hidden sm:block">
-                                                    {truncate(marker.url)}
+                                                <span>
+                                                    {marker.url}
+                                                    <ArrowUpRightIcon className="w-5 h-5 text-gray-400 hidden sm:inline-block" />
                                                 </span>
                                                 <ArrowUpRightIcon className="w-5 h-5 text-gray-400 sm:hidden" />
                                             </a>
@@ -126,7 +119,7 @@ const Table = ({ markers, user }: TableProps) => {
                                                     to={routes.adminUser({
                                                         id: marker.user.id,
                                                     })}
-                                                    className="text-indigo-600 hover:text-indigo-900"
+                                                    className="text-gray-700 hover:text-gray-500"
                                                 >
                                                     <span className="flex">
                                                         <ArrowTopRightOnSquareIcon className="w-5 h-5 text-gray-400" />

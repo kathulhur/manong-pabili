@@ -1,5 +1,6 @@
 import {
     ArrowTopRightOnSquareIcon,
+    ArrowUpRightIcon,
     EyeIcon,
     LinkIcon,
     PencilSquareIcon,
@@ -43,7 +44,7 @@ const Table = ({ users, onVerify }: TableProps) => {
                 <div className="mt-4 sm:ml-16 sm:mt-0 sm:flex-none">
                     <Link
                         to={routes.adminNewUser()}
-                        className="block rounded-md bg-indigo-600 px-3 py-2 text-center text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
+                        className="block rounded-md bg-emerald-600 px-3 py-2 text-center text-sm font-semibold text-white shadow-sm hover:bg-emerald-700 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
                     >
                         Add user
                     </Link>
@@ -129,14 +130,6 @@ const Table = ({ users, onVerify }: TableProps) => {
                                                     })}
                                                 >
                                                     <ArrowTopRightOnSquareIcon className="w-5 h-5" />
-                                                </Link>
-                                                <Link
-                                                    className="hover:text-gray-500"
-                                                    to={routes.adminEditUser({
-                                                        id: user.id,
-                                                    })}
-                                                >
-                                                    <PencilSquareIcon className="w-5 h-5" />
                                                 </Link>
                                             </div>
                                         </td>
@@ -230,9 +223,13 @@ const Table = ({ users, onVerify }: TableProps) => {
                                                 to={routes.adminProducts({
                                                     userId: user.id,
                                                 })}
-                                                className="text-indigo-600 hover:text-indigo-900"
+                                                className="text-gray-700 hover:text-gray-500"
                                             >
-                                                View Products
+                                                <span>
+                                                    View Products
+                                                    <ArrowUpRightIcon className="inline-block w-4 h-4 ml-1 -mt-1" />
+                                                </span>
+
                                                 <span className="sr-only">
                                                     , {user.name}
                                                 </span>
@@ -243,9 +240,12 @@ const Table = ({ users, onVerify }: TableProps) => {
                                                 to={routes.adminImages({
                                                     userId: user.id,
                                                 })}
-                                                className="text-indigo-600 hover:text-indigo-900"
+                                                className="text-gray-700 hover:text-gray-500"
                                             >
-                                                View Images
+                                                <span>
+                                                    View Images
+                                                    <ArrowUpRightIcon className="inline-block w-4 h-4 ml-1 -mt-1" />
+                                                </span>
                                                 <span className="sr-only">
                                                     , {user.name}
                                                 </span>
@@ -256,11 +256,11 @@ const Table = ({ users, onVerify }: TableProps) => {
                                                 to={routes.adminMarkers({
                                                     userId: user.id,
                                                 })}
-                                                className="text-indigo-600 hover:text-indigo-900"
+                                                className="text-gray-700 hover:text-gray-500"
                                             >
-                                                View Markers
-                                                <span className="sr-only">
-                                                    , {user.name}
+                                                <span>
+                                                    View Markers
+                                                    <ArrowUpRightIcon className="inline-block w-4 h-4 ml-1 -mt-1" />
                                                 </span>
                                             </Link>
                                         </td>
