@@ -160,8 +160,8 @@ const Product = ({
                             {[
                                 {
                                     label: product.availability
-                                        ? 'Unavailable'
-                                        : 'Available',
+                                        ? 'Set to unavailable'
+                                        : 'Set to available',
                                     onClick: productAvailabilityButtonHandler,
                                 },
                                 {
