@@ -4,7 +4,7 @@ import { useEffect } from 'react'
 import { useAuth } from 'src/auth'
 import Button from 'src/components/Button/Button'
 import tahoVendor from './taho-vendor.jpg'
-import { ChevronDoubleRightIcon } from '@heroicons/react/20/solid'
+import { ChevronRightIcon } from '@heroicons/react/20/solid'
 import vendor_homepage from './vendor-homepage.gif'
 import mapGIF from './map.gif'
 import mapIcon from './map-icon.png'
@@ -35,13 +35,15 @@ const IndexPage = () => {
 
             <div className="max-w-7xl mx-auto p-8">
                 <header className="flex items-center justify-between">
-                    <h1 className="font-extrabold text-lg text-emerald-700">
+                    <h1 className="font-extrabold text-emerald-600 text-base lg:text-lg">
                         Manong Pabili
                     </h1>
-                    <nav className="flex items-center justify-between gap-4">
-                        <Link to={routes.login()}>Login</Link>
+                    <nav className="flex items-center justify-between gap-2">
+                        <Link to={routes.login()}>
+                            <Button variant="secondary">Login</Button>
+                        </Link>
                         <Link to={routes.signup()}>
-                            <Button>Sign up</Button>
+                            <Button>Sign Up</Button>
                         </Link>
                     </nav>
                 </header>
@@ -64,12 +66,12 @@ const IndexPage = () => {
                         nearby.
                     </p>
                     <div className="w-auto">
-                        <Button className="px-4 py-3">
-                            <Link to={routes.consumerMap()} className="flex">
-                                View vendors
-                                <ChevronDoubleRightIcon className="w-4" />
-                            </Link>
-                        </Button>
+                        <Link to={routes.consumerMap()}>
+                            <Button>
+                                View Vendors
+                                <ChevronRightIcon className="w-4 h-4" />
+                            </Button>
+                        </Link>
                     </div>
                 </div>
             </section>
