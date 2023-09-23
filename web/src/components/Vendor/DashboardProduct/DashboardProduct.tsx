@@ -54,7 +54,7 @@ const DashboardProduct = ({
     return (
         <div>
             <div className="flex justify-between items-center">
-                <span className="font-semibold text-slate-700">
+                <span className="font-medium text-gray-700">
                     {product.name}
                 </span>
                 <Button
