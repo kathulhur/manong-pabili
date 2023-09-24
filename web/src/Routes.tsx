@@ -11,20 +11,23 @@ import { Router, Route, Private, Set } from '@redwoodjs/router'
 import { useAuth } from './auth'
 import VerifiedVendorLayout from './layouts/VerifiedVendorLayout/VerifiedVendorLayout'
 import AdminNavLayout from './layouts/AdminNavLayout/AdminNavLayout'
+import IndexLayout from './layouts/IndexLayout/IndexLayout'
 
 const Routes = () => {
     return (
         <Router useAuth={useAuth}>
-            <Route path="/forbidden" page={ForbiddenPage} name="forbidden" />
-            <Route path="/" page={IndexPage} name="index" />
-            <Route path="/auth/login" page={AuthLoginPage} name="login" />
-            <Route path="/auth/signup" page={AuthSignupPage} name="signup" />
+            <Set wrap={IndexLayout}>
+                <Route path="/forbidden" page={ForbiddenPage} name="forbidden" />
+                <Route path="/" page={IndexPage} name="index" />
+                <Route path="/team" page={TeamPage} name="team" />
+                <Route path="/auth/login" page={AuthLoginPage} name="login" />
+                <Route path="/auth/signup" page={AuthSignupPage} name="signup" />
 
-            <Route path="/forgot-password" page={ForgotPasswordPage} name="forgotPassword" />
-            <Route path="/reset-password" page={ResetPasswordPage} name="resetPassword" />
+                <Route path="/forgot-password" page={ForgotPasswordPage} name="forgotPassword" />
+                <Route path="/reset-password" page={ResetPasswordPage} name="resetPassword" />
+                <Route notfound page={NotFoundPage} />
+            </Set>
             <Route path="/consumer/map" page={ConsumerMapPage} name="consumerMap" />
-
-            <Route notfound page={NotFoundPage} />
 
             <Private unauthenticated="login" roles={'VENDOR'}>
                 <Set wrap={VerifiedVendorLayout}>

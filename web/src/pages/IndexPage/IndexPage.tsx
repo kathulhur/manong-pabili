@@ -3,9 +3,7 @@ import { MetaTags } from '@redwoodjs/web'
 import { useEffect } from 'react'
 import { useAuth } from 'src/auth'
 import Button from 'src/components/Button/Button'
-import tahoVendor from './taho-vendor.jpg'
 import { ChevronRightIcon } from '@heroicons/react/20/solid'
-import vendor_homepage from './vendor-homepage.gif'
 import mapGIF from './map.gif'
 import mapIcon from './map-icon.png'
 
@@ -33,24 +31,10 @@ const IndexPage = () => {
         <>
             <MetaTags title="Index" description="Index page" />
 
-            <div className="max-w-7xl mx-auto p-8">
-                <header className="flex items-center justify-between">
-                    <h1 className="font-extrabold text-emerald-600 text-base lg:text-lg">
-                        Manong Pabili
-                    </h1>
-                    <nav className="flex items-center justify-between gap-2">
-                        <Link to={routes.login()}>
-                            <Button variant="secondary">Login</Button>
-                        </Link>
-                        <Link to={routes.signup()}>
-                            <Button>Sign Up</Button>
-                        </Link>
-                    </nav>
-                </header>
-            </div>
-
             <section
-                style={{ backgroundImage: `url(${tahoVendor})` }}
+                style={{
+                    backgroundImage: `url(${'https://res.cloudinary.com/dsvf9d8p9/image/upload/q_60/v1695521181/taho-vendor_kxnelb.jpg'})`,
+                }}
                 className={`relative w-full bg-cover bg-center`}
             >
                 <div className="absolute inset-0 bg-gradient-to-r from-emerald-300 to-emerald-400/80"></div>
@@ -105,8 +89,10 @@ const IndexPage = () => {
                 <section className="flex flex-col-reverse gap-8 items-center justify-between mt-8 mb-16 lg:flex-row">
                     <div className="max-w-md w-full h-72 ">
                         <img
-                            src={vendor_homepage}
-                            alt="Share location"
+                            src={
+                                'https://res.cloudinary.com/dsvf9d8p9/image/upload/v1695523924/vendor-homepage.gif'
+                            }
+                            alt="vendor homepage gif"
                             className="w-full h-full object-scale-down"
                         />
                     </div>
@@ -238,33 +224,6 @@ const IndexPage = () => {
                     </div>
                 </section>
             </div>
-
-            <footer className="relative w-full">
-                <div className="absolute inset-0 bg-gradient-to-r from-emerald-300 to-emerald-400/80"></div>
-                <div className="relative max-w-7xl mx-auto px-8 py-6">
-                    <div className="flex items-center justify-between">
-                        <div className="flex flex-col space-y-2">
-                            <span className="text-sm text-slate-900">
-                                2023. Manong Pabili.
-                            </span>
-                            <a
-                                href="https://github.com/kathulhur/manong-pabili/"
-                                target="_blank"
-                                className="text-sm text-slate-900 rw-link"
-                            >
-                                Github Repository
-                            </a>
-                        </div>
-                        <a
-                            href="https://www.flaticon.com/free-icons/map"
-                            title="map icons"
-                            className="text-sm text-black"
-                        >
-                            Map icons created by Freepik - Flaticon
-                        </a>
-                    </div>
-                </div>
-            </footer>
         </>
     )
 }
