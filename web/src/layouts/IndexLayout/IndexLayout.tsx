@@ -10,7 +10,7 @@ const IndexLayout = ({ children }: IndexLayoutProps) => {
         <div className="min-h-screen flex flex-col">
             <div className="max-w-7xl mx-auto p-8 w-full">
                 <header className="flex items-center justify-between">
-                    <h1 className="font-extrabold text-emerald-600 sm:text-lg ">
+                    <h1 className="font-extrabold text-emerald-600 text-sm sm:text-lg ">
                         <Link to={routes.index()}>Manong Pabili</Link>
                     </h1>
                     <nav className="flex items-center justify-between gap-2">
