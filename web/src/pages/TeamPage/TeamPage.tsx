@@ -3,7 +3,7 @@ const people = [
         name: 'Joseph Crisostomo',
         role: 'Full-stack Developer',
         imageUrl:
-            'https://res.cloudinary.com/dsvf9d8p9/image/upload/v1695523912/seph1_jatbtj.jpg',
+            'https://res.cloudinary.com/dsvf9d8p9/image/upload/q_50/v1695523912/seph1_jatbtj.jpg',
         linkedinUrl:
             'https://www.linkedin.com/in/joseph-karl-crisostomo-aa009021b/',
     },
@@ -11,7 +11,7 @@ const people = [
         name: 'Gregorio Suapero',
         role: 'Front-end Developer',
         imageUrl:
-            'https://res.cloudinary.com/dsvf9d8p9/image/upload/v1695523912/seph1_jatbtj.jpg',
+            'https://res.cloudinary.com/dsvf9d8p9/image/upload/q_50/v1695529111/greg_abdiuk.jpg',
         linkedinUrl: '#',
     },
     // More people...
