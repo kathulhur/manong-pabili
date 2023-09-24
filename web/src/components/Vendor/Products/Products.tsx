@@ -70,7 +70,7 @@ const Products = ({ products }: ProductsProps) => {
     }
 
     return (
-        <div className="py-8">
+        <div>
             <div className="flex justify-between items-center mb-8">
                 <h1 className="text-lg text-gray-900 font-semibold">
                     Products

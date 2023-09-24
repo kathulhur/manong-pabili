@@ -16,7 +16,9 @@ const ProductsPage = () => {
             <div>
                 <MetaTags title="Products" description="Products page" />
                 <div className="max-w-2xl mx-auto p-8">
-                    <GoBack />
+                    <div className="mb-4">
+                        <GoBack />
+                    </div>
                     <ProductsCell userId={currentUser?.id} />
                 </div>
             </div>
