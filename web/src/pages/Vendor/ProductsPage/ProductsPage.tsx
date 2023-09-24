@@ -4,6 +4,7 @@ import { MetaTags } from '@redwoodjs/web'
 
 import { useAuth } from 'src/auth'
 import Button from 'src/components/Button/Button'
+import Container from 'src/components/Vendor/Container/Container'
 import GoBack from 'src/components/GoBack/GoBack'
 import ProductsCell from 'src/components/Vendor/ProductsCell'
 import FadeTransitionLayout from 'src/layouts/FadeTransitionLayout/FadeTransitionLayout'
@@ -15,12 +16,10 @@ const ProductsPage = () => {
         <FadeTransitionLayout>
             <div>
                 <MetaTags title="Products" description="Products page" />
-                <div className="max-w-2xl mx-auto p-8">
-                    <div className="mb-4">
-                        <GoBack />
-                    </div>
+                <Container>
+                    <GoBack className="mb-4" />
                     <ProductsCell userId={currentUser?.id} />
-                </div>
+                </Container>
             </div>
         </FadeTransitionLayout>
     )
