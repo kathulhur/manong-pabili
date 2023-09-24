@@ -49,7 +49,7 @@ const BaseModal = ({
 
 BaseModal.Title = ({ children }: { children: string }) => {
     return (
-        <Dialog.Title as="h3" className="mb-4 text-lg font-bold text-slate-900">
+        <Dialog.Title as="h3" className="mb-4 text-lg font-bold text-gray-900">
             {children}
         </Dialog.Title>
     )

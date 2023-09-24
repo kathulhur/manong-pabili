@@ -111,11 +111,12 @@ const MarkerSelectModal = ({
 
             <div
                 className={clsx(
-                    'grid grid-cols-5 gap-4 items-center sm:grid-cols-6 lg:grid-cols-8'
+                    'grid grid-cols-4 gap-4 items-center sm:grid-cols-6'
                 )}
             >
                 {Object.values(icons).map((url) => (
                     <div
+                        className="p-3 bg-gray-100 rounded-md hover:bg-gray-200"
                         tabIndex={0}
                         key={url}
                         onClick={() => {
@@ -131,6 +132,7 @@ const MarkerSelectModal = ({
                 ))}
                 {data?.vendorMarkers.map((marker) => (
                     <div
+                        className="p-3 bg-gray-100 rounded-md hover:bg-gray-200"
                         tabIndex={0}
                         key={marker.url}
                         onClick={() => {
@@ -145,15 +147,16 @@ const MarkerSelectModal = ({
                     </div>
                 ))}
                 <Button
+                    variant="secondary"
+                    className="h-full"
                     disabled={
                         uploadMarkerLoading || data?.vendorMarkers.length >= 2
                     }
                     onClick={() => {
                         setIsUploadCustomMarkerModalOpen(true)
                     }}
-                    variant="outline"
                 >
-                    <PlusIcon className="w-8 h-8" />
+                    <PlusIcon />
                 </Button>
                 <CustomMarkerUploadModal
                     isOpen={isUploadCustomMarkerModalOpen}
@@ -166,9 +169,9 @@ const MarkerSelectModal = ({
                     }}
                 />
             </div>
-            <p className="mt-8 text-sm">
-                Note: You can only have up to 3 custom markers. If you want to
-                add a new one, delete existing markers on your profile page.
+            <p className="mt-8 text-xs text-gray-600">
+                You can only have up to 3 custom markers. If you want to add a
+                new one, delete existing markers on your profile page.
             </p>
         </BaseModal>
     )
