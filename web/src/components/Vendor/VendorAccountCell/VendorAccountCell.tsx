@@ -39,6 +39,7 @@ import { PlusIcon, XMarkIcon } from '@heroicons/react/20/solid'
 import FeaturedImage from 'src/components/Vendor/FeaturedImage/FeaturedImage'
 import Button from '../../Button/Button'
 import UpdateEmailModal from '../../Modals/UpdateEmailModal'
+import Skeleton from 'src/components/Skeleton/Skeleton'
 
 export const QUERY = gql`
     query FindVendorAccountQuery($userId: Int!) {
@@ -151,7 +152,21 @@ const UPLOAD_IMAGE_MUTATION = gql`
     }
 `
 
-export const Loading = () => <div>Loading...</div>
+export const Loading = () => (
+    <Skeleton>
+        <Skeleton.Rectangle width={180} className="mb-8" />
+        <Skeleton.Rectangle width={120} height={20} className="mb-2" />
+        <Skeleton.Rectangle width={240} height={28} className="mb-4" />
+        <Skeleton.Rectangle width={120} height={20} className="mb-2" />
+        <Skeleton.Rectangle width={240} height={28} className="mb-4" />
+        <Skeleton.Rectangle width={120} height={20} className="mb-2" />
+        <Skeleton.Rectangle width={240} height={28} className="mb-4" />
+        <Skeleton.Rectangle width={120} height={20} className="mb-2" />
+        <Skeleton.Rectangle width={240} height={28} className="mb-8" />
+        <Skeleton.Rectangle width={240} height={20} className="mb-2" />
+        <Skeleton.Rectangle height={100} className="mb-8" />
+    </Skeleton>
+)
 
 export const Empty = () => <div>Empty</div>
 

@@ -1,3 +1,4 @@
+import clsx from 'clsx'
 import { ReactNode } from 'react'
 
 const Skeleton = ({ children }: { children: ReactNode }) => {
@@ -18,11 +19,13 @@ Skeleton.Rectangle = ({
     height = 40,
     lines = 1,
     gap = 4,
+    className,
 }: {
     width?: number | string
     height?: number
     lines?: number
     gap?: number
+    className?: string
 }) => {
     return (
         <div className="flex flex-col" style={{ gap }}>
@@ -31,8 +34,11 @@ Skeleton.Rectangle = ({
                 .map(() => {
                     return (
                         <div
-                            style={{ width, height }}
-                            className="bg-gray-200 rounded-md"
+                            style={{ maxWidth: width, height }}
+                            className={clsx(
+                                'bg-gray-200 rounded-md',
+                                className
+                            )}
                         ></div>
                     )
                 })}
