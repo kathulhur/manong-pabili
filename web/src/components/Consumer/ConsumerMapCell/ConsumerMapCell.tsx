@@ -40,7 +40,11 @@ export const QUERY = gql`
 export const Loading = () => <div>Loading...</div>
 
 export const Empty = () => {
-    return <ConsumerMap className="h-screen w-full" />
+    return (
+        <ConsumerMapCellContextProvider vendors={[]} products={[]}>
+            <ConsumerMap className="h-screen w-full" />
+        </ConsumerMapCellContextProvider>
+    )
 }
 
 export const Failure = ({ error }: CellFailureProps<ConsumerMapCellQuery>) => (

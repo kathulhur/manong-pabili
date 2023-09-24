@@ -165,6 +165,7 @@ export const ConsumerMapCellContextProvider = ({
     }
 
     function onLeftVendorButtonClicked() {
+        if (filteredVendors.length === 0) return
         let safeIndex = focusedVendorIndex % filteredVendors.length
         map.setCenter([
             filteredVendors[safeIndex].longitude,
@@ -179,6 +180,7 @@ export const ConsumerMapCellContextProvider = ({
     }
 
     function onRightVendorButtonClicked() {
+        if (filteredVendors.length === 0) return
         let safeIndex = focusedVendorIndex % filteredVendors.length
         map.setCenter([
             filteredVendors[safeIndex].longitude,
