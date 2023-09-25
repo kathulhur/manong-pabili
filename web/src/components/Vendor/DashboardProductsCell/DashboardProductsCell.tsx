@@ -13,6 +13,7 @@ import { toast } from '@redwoodjs/web/toast'
 import { PlusIcon } from '@heroicons/react/20/solid'
 import Button from 'src/components/Button/Button'
 import { CREATE_PRODUCT_MUTATION } from 'src/components/Admin/Product/NewProduct'
+import Skeleton from 'src/components/Skeleton/Skeleton'
 
 export const QUERY = gql`
     query DashboardProductsQuery($userId: Int!) {
@@ -25,7 +26,11 @@ export const QUERY = gql`
     }
 `
 
-export const Loading = () => <div>Loading...</div>
+export const Loading = () => (
+    <Skeleton>
+        <Skeleton.Rectangle lines={4} gap={20} height={28} />
+    </Skeleton>
+)
 
 export const Empty = () => {
     const { currentUser } = useAuth()

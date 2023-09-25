@@ -1,8 +1,11 @@
+import { BounceLoader } from 'react-spinners'
+
 const Loading = () => {
+    return (
+        <div className="grid place-items-center w-full h-screen -my-5">
+            <BounceLoader color="#059669" size={40} />
+        </div>
+    )
+}
 
-  return (
-    <span className="loading loading-dots loading-lg"></span>
-  );
-};
-
-export default Loading;
+export default Loading

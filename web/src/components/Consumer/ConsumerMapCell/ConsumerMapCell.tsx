@@ -9,6 +9,8 @@ import {
     ConsumerMapCellContextProvider,
 } from './Context'
 
+import LoadingComponent from '../../Loading/Loading'
+
 export const QUERY = gql`
     query ConsumerMapCellQuery {
         mapVendors {
@@ -37,7 +39,7 @@ export const QUERY = gql`
     }
 `
 
-export const Loading = () => <div>Loading...</div>
+export const Loading = () => <LoadingComponent />
 
 export const Empty = () => {
     return (

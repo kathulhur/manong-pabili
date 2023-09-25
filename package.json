@@ -27,6 +27,7 @@
   },
   "packageManager": "yarn@3.6.1",
   "dependencies": {
-    "dayjs": "^1.11.10"
+    "dayjs": "^1.11.10",
+    "react-spinners": "^0.13.8"
   }
 }
