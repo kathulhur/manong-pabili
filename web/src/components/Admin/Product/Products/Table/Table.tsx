@@ -23,7 +23,7 @@ const Table = ({ products, user }: TableProps) => {
                         Products
                     </h1>
                     <p className="mt-2 text-sm text-gray-700">
-                        Lorem ipsum dolor sit amet consectetur adipisicing
+                        List of all vendor products
                     </p>
                 </div>
             </div>

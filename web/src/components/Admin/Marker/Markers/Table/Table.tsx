@@ -32,7 +32,7 @@ const Table = ({ markers, user }: TableProps) => {
                         Markers
                     </h1>
                     <p className="mt-2 text-sm text-gray-700">
-                        A list of all the markers
+                        A list of all the markers uploaded by vendors
                     </p>
                 </div>
             </div>
