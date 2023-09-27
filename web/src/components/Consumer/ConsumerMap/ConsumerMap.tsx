@@ -205,7 +205,7 @@ const VendorInfoModal = ({
                                     variant="subtle"
                                     onClick={onLeftButtonClicked}
                                 >
-                                    <ChevronLeftIcon className="w-12 h-12" />
+                                    <ChevronLeftIcon className="w-6 h-6 sm:w-8 sm:h-8" />
                                 </Button>
                             </div>
                             <div className="p-4">
@@ -217,7 +217,7 @@ const VendorInfoModal = ({
                                                 alt="marker icon"
                                             />
                                         </div>
-                                        <h2 className="font-bold text-lg">
+                                        <h2 className="font-bold mt-2 sm:text-lg">
                                             {vendor.name}
                                         </h2>
                                     </div>
@@ -277,7 +277,7 @@ const VendorInfoModal = ({
                                     variant="subtle"
                                     onClick={onRightButtonClicked}
                                 >
-                                    <ChevronRightIcon className="w-12 h-12" />
+                                    <ChevronRightIcon className="w-6 h-6 sm:w-8 sm:h-8" />
                                 </Button>
                             </div>
                         </div>

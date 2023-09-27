@@ -229,6 +229,9 @@ export const VendorHomepageContextProvider = ({
 
     const showLocationButtonHandler = async () => {
         setIsLocationShown(true)
+        if (locationBroadcastMode === 'REALTIME') {
+            setLocationBroadcastmode('STATIC')
+        }
         map.setCenter([vendor.longitude, vendor.latitude])
         await broadcastLocationHandler({
             latitude: vendor.latitude,

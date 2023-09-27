@@ -40,6 +40,7 @@ import FeaturedImage from 'src/components/Vendor/FeaturedImage/FeaturedImage'
 import Button from '../../Button/Button'
 import UpdateEmailModal from '../../Modals/UpdateEmailModal'
 import Skeleton from 'src/components/Skeleton/Skeleton'
+import ConfirmationModal from 'src/components/Modals/ConfirmationModal'
 
 export const QUERY = gql`
     query FindVendorAccountQuery($userId: Int!) {
@@ -232,6 +233,8 @@ export const Success = ({
         useState(false)
     const [isUploadFeatureImageModalOpen, setIsUploadFeatureImageModalOpen] =
         useState(false)
+    const [isDeleteMarkerModalOpen, setIsDeleteMarkerModalOpen] =
+        useState(false)
     const onSubmitUsername = async (username: string) => {
         try {
             await updateUsername({
@@ -423,44 +426,40 @@ export const Success = ({
 
     const deleteImageHandler = async (id: number) => {
         try {
-            if (
-                confirm('Are you sure you want to delete this image?') === true
-            ) {
-                await deleteImage({
-                    variables: {
-                        id,
-                    },
-                    onCompleted: () => {
-                        toast.success('Image deleted successfully')
-                    },
-                    onError: (err) => {
-                        toast.error('Image delete failed')
-                    },
-                    update: (cache, { data }) => {
-                        const deletedImageId = data?.softDeleteImage?.id
-                        if (deletedImageId) {
-                            cache.modify({
-                                id: cache.identify({
-                                    __typename: 'User',
-                                    id: vendorAccount.id,
-                                }), // Identify the vendor object
-                                fields: {
-                                    featuredImages: (
-                                        existingImagesRefs,
-                                        { readField }
-                                    ) => {
-                                        return existingImagesRefs.filter(
-                                            (imageRef) =>
-                                                deletedImageId !==
-                                                readField('id', imageRef)
-                                        )
-                                    },
+            await deleteImage({
+                variables: {
+                    id,
+                },
+                onCompleted: () => {
+                    toast.success('Image deleted successfully')
+                },
+                onError: (err) => {
+                    toast.error('Image delete failed')
+                },
+                update: (cache, { data }) => {
+                    const deletedImageId = data?.softDeleteImage?.id
+                    if (deletedImageId) {
+                        cache.modify({
+                            id: cache.identify({
+                                __typename: 'User',
+                                id: vendorAccount.id,
+                            }), // Identify the vendor object
+                            fields: {
+                                featuredImages: (
+                                    existingImagesRefs,
+                                    { readField }
+                                ) => {
+                                    return existingImagesRefs.filter(
+                                        (imageRef) =>
+                                            deletedImageId !==
+                                            readField('id', imageRef)
+                                    )
                                 },
-                            })
-                        }
-                    },
-                })
-            }
+                            },
+                        })
+                    }
+                },
+            })
         } catch (err) {
             alert(err.message)
         }
@@ -468,44 +467,40 @@ export const Success = ({
 
     const deleteMarkerHandler = async (id: number) => {
         try {
-            if (
-                confirm('Are you sure you want to delete this marker?') === true
-            ) {
-                deleteMarker({
-                    variables: {
-                        id,
-                    },
-                    onCompleted: () => {
-                        toast.success('Marker deleted successfully')
-                    },
-                    onError: (err) => {
-                        toast.error('Marker delete failed')
-                    },
-                    update: (cache, { data }) => {
-                        const deletedMarkerId = data?.softDeleteMarker?.id
-                        if (deletedMarkerId) {
-                            cache.modify({
-                                id: cache.identify({
-                                    __typename: 'User',
-                                    id: vendorAccount.id,
-                                }), // Identify the vendor object
-                                fields: {
-                                    Markers: (
-                                        existingMarkersRefs,
-                                        { readField }
-                                    ) => {
-                                        return existingMarkersRefs.filter(
-                                            (markerRef) =>
-                                                deletedMarkerId !==
-                                                readField('id', markerRef)
-                                        )
-                                    },
+            deleteMarker({
+                variables: {
+                    id,
+                },
+                onCompleted: () => {
+                    toast.success('Marker deleted successfully')
+                },
+                onError: (err) => {
+                    toast.error('Marker delete failed')
+                },
+                update: (cache, { data }) => {
+                    const deletedMarkerId = data?.softDeleteMarker?.id
+                    if (deletedMarkerId) {
+                        cache.modify({
+                            id: cache.identify({
+                                __typename: 'User',
+                                id: vendorAccount.id,
+                            }), // Identify the vendor object
+                            fields: {
+                                Markers: (
+                                    existingMarkersRefs,
+                                    { readField }
+                                ) => {
+                                    return existingMarkersRefs.filter(
+                                        (markerRef) =>
+                                            deletedMarkerId !==
+                                            readField('id', markerRef)
+                                    )
                                 },
-                            })
-                        }
-                    },
-                })
-            }
+                            },
+                        })
+                    }
+                },
+            })
         } catch (err) {
             toast.error(err.message)
         }
@@ -543,7 +538,7 @@ export const Success = ({
                             {vendorAccount?.name}
                         </p>
                     </div>
-                    <Button
+                    {/* <Button
                         variant="secondary"
                         onClick={() => setIsUpdateNameModalOpen(true)}
                     >
@@ -554,7 +549,7 @@ export const Success = ({
                         isOpen={isUpdateNameModalOpen}
                         onClose={() => setIsUpdateNameModalOpen(false)}
                         onSubmit={onSubmitName}
-                    />
+                    /> */}
                 </div>
                 <div className="flex space-x-8 justify-between items-center">
                     <div>
@@ -628,13 +623,23 @@ export const Success = ({
                                 <Button
                                     variant="danger"
                                     onClick={() =>
-                                        deleteMarkerHandler(image.id)
+                                        setIsDeleteMarkerModalOpen(true)
                                     }
                                     disabled={deleteMarkerLoading}
                                 >
                                     <XMarkIcon className="w-2 h-2" />
                                 </Button>
                             </div>
+                            <ConfirmationModal
+                                isOpen={isDeleteMarkerModalOpen}
+                                title="Delete Image"
+                                description="Are you sure you want to delete this image?"
+                                confirmationButtonTitle="Delete"
+                                onConfirm={() => deleteMarkerHandler(image.id)}
+                                onClose={() => {
+                                    setIsDeleteMarkerModalOpen(false)
+                                }}
+                            />
                             <img
                                 src={image.url}
                                 alt="marker icon"

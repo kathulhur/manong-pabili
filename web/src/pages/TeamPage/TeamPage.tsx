@@ -1,7 +1,7 @@
 const people = [
     {
         name: 'Joseph Crisostomo',
-        role: 'Full-stack Developer',
+        role: 'Team Lead',
         imageUrl:
             'https://res.cloudinary.com/dsvf9d8p9/image/upload/q_50/v1695523912/seph1_jatbtj.jpg',
         linkedinUrl:
@@ -36,7 +36,7 @@ const TeamPage = () => {
                     {people.map((person) => (
                         <li key={person.name}>
                             <img
-                                className="mx-auto h-56 w-56 rounded-full"
+                                className="mx-auto h-56 w-56 rounded-full ring-1 ring-gray-300"
                                 src={person.imageUrl}
                                 alt=""
                             />
