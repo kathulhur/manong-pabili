@@ -8,6 +8,7 @@ import type {
 } from 'types/graphql'
 import { VendorHomepageContextProvider } from './Context'
 import Skeleton from 'src/components/Skeleton/Skeleton'
+import Container from '../Container/Container'
 export const beforeQuery = ({ userId }) => {
     return {
         variables: { id: userId },
@@ -79,15 +80,16 @@ export const UPDATE_VENDOR_MARKER = gql`
 `
 
 export const Loading = () => (
-    <div className="max-w-2xl mx-auto p-8">
+    <Container>
         <Skeleton>
             <div className="space-y-8">
                 <Skeleton.Rectangle key={1} lines={1} gap={20} height={48} />
                 <Skeleton.Rectangle key={2} lines={1} gap={20} height={48} />
                 <Skeleton.Rectangle key={3} lines={1} gap={20} height={192} />
+                <Skeleton.Rectangle key={2} lines={1} gap={20} height={48} />
             </div>
         </Skeleton>
-    </div>
+    </Container>
 )
 
 export const Empty = () => <div>Empty</div>
